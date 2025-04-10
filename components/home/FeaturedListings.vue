@@ -1,41 +1,34 @@
 <template>
-  <section class="py-16">
+  <section class="py-12 bg-gray-50">
     <div class="container mx-auto px-4">
       <div class="flex justify-between items-center mb-8">
-        <h2 class="text-3xl font-bold">Featured Listings</h2>
-        <div class="flex gap-2">
-          <button class="swiper-button-prev-custom w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-md hover:bg-gray-50">
-            <i class="fas fa-chevron-left text-blue-600"></i>
-          </button>
-          <button class="swiper-button-next-custom w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-md hover:bg-gray-50">
-            <i class="fas fa-chevron-right text-blue-600"></i>
-          </button>
+        <div>
+          <h2 class="text-3xl font-bold mb-2">اقامتگاه‌های برتر</h2>
+          <p class="text-gray-600">بهترین اقامتگاه‌های ما را کشف کنید</p>
         </div>
-      </div>
-      <swiper
-        :modules="[Navigation]"
-        :slides-per-view="4"
-        :space-between="12"
-        :loop="true"
-        :navigation="{
-          nextEl: '.swiper-button-next-custom',
-          prevEl: '.swiper-button-prev-custom'
-        }"
-        :breakpoints="{
-          640: { slidesPerView: 1 },
-          1024: { slidesPerView: 2 },
-          1280: { slidesPerView: 4 }
-        }"
-        class="listing-slider"
-      >
-        <swiper-slide v-for="listing in listings" :key="listing.id">
-          <ListingCard :listing="listing" />
-        </swiper-slide>
-      </swiper>
-      <div class="text-center mt-12">
-        <NuxtLink to="/listings" class="btn-primary text-lg px-8 py-3" @click="scrollToTop">
-          View All Listings
+        <NuxtLink 
+          to="/listings" 
+          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          @click="scrollToTop"
+        >
+          مشاهده همه
         </NuxtLink>
+      </div>
+
+      <!-- Listings Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ListingCard 
+          v-for="listing in listings.slice(0, 6)" 
+          :key="listing.id" 
+          :listing="listing"
+        />
+      </div>
+
+      <!-- Empty State -->
+      <div v-if="!listings.length" class="text-center py-12">
+        <i class="fas fa-home text-gray-400 text-5xl mb-4"></i>
+        <h3 class="text-xl font-semibold mb-2">هیچ اقامتگاهی یافت نشد</h3>
+        <p class="text-gray-600">در حال حاضر هیچ اقامتگاه برتری موجود نیست</p>
       </div>
     </div>
   </section>
