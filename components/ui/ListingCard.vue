@@ -1,8 +1,19 @@
 <template>
   <div class="bg-white rounded-lg shadow-md overflow-hidden">
     <div class="relative">
-      <img :src="getImageUrl" :alt="listing.title" class="w-full h-48 object-cover">
-      <div class="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-medium">
+      <!-- Image Slideshow -->
+      <swiper
+        :modules="[Pagination]"
+        :pagination="{ clickable: true }"
+        :slides-per-view="1"
+        class="listing-swiper"
+      >
+        <swiper-slide v-for="(image, index) in getAllImages" :key="index">
+          <img :src="image" :alt="`${listing.title} - تصویر ${index + 1}`" class="w-full h-48 object-cover">
+        </swiper-slide>
+      </swiper>
+      
+      <div class="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-medium z-10">
         {{ formatPrice }} / شب
       </div>
     </div>
@@ -54,6 +65,10 @@
 
 <script setup>
 import { computed } from 'vue'
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import { Pagination } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/pagination'
 
 const props = defineProps({
   listing: {
@@ -65,14 +80,14 @@ const props = defineProps({
   }
 })
 
-// Handle different image formats from API
-const getImageUrl = computed(() => {
-  if (props.listing.image) {
-    return props.listing.image
-  } else if (props.listing.images && props.listing.images.length > 0) {
-    return props.listing.images[0]
+// Get all available images for the listing
+const getAllImages = computed(() => {
+  if (props.listing.images && props.listing.images.length > 0) {
+    return props.listing.images
+  } else if (props.listing.image) {
+    return [props.listing.image]
   } else {
-    return '/images/placeholder.jpg' // Fallback image
+    return ['/images/placeholder.jpg'] // Fallback image
   }
 })
 
@@ -99,78 +114,58 @@ const getCategories = computed(() => {
   if (props.listing.categories && props.listing.categories.length > 0) {
     return props.listing.categories
   } else if (props.listing.tags && props.listing.tags.length > 0) {
-    return props.listing.tags.slice(0, 2)
-  } else {
-    return []
+    return props.listing.tags.slice(0, 2) // Limit to 2 tags
   }
+  return []
+})
+
+// Get location display
+const getLocationDisplay = computed(() => {
+  if (props.listing.location) {
+    return props.listing.location
+  } else if (props.listing.city_fa) {
+    return props.listing.city_fa
+  } else if (props.listing.province_fa) {
+    return props.listing.province_fa
+  }
+  return 'موقعیت نامشخص'
 })
 
 // Get capacity from different possible sources
 const getCapacity = computed(() => {
   if (props.listing.capacity) {
-    return props.listing.capacity.base + (props.listing.capacity.extra || 0)
-  } else if (props.listing.capacity_base) {
-    return props.listing.capacity_base + (props.listing.capacity_extra || 0)
-  } else {
-    return 'N/A'
-  }
-})
-
-// Get location display with province before city
-const getLocationDisplay = computed(() => {
-  // Prioritize Persian names (province_fa and city_fa)
-  if (props.listing.province_fa && props.listing.city_fa) {
-    return `${props.listing.province_fa}، ${props.listing.city_fa}`
-  }
-  
-  // If we have province_fa but no city_fa, try to use city
-  if (props.listing.province_fa && props.listing.city) {
-    return `${props.listing.province_fa}، ${props.listing.city}`
-  }
-  
-  // If we have city_fa but no province_fa, try to use province
-  if (props.listing.city_fa && props.listing.province) {
-    return `${props.listing.province}، ${props.listing.city_fa}`
-  }
-  
-  // If we have province and city separately
-  if (props.listing.province && props.listing.city) {
-    return `${props.listing.province}، ${props.listing.city}`
-  }
-  
-  // If we have a location field that might contain both
-  if (props.listing.location) {
-    // Check if location contains a comma or separator
-    if (props.listing.location.includes('،') || props.listing.location.includes(',')) {
-      return props.listing.location
+    if (typeof props.listing.capacity === 'number') {
+      return props.listing.capacity
+    } else if (props.listing.capacity.total) {
+      return props.listing.capacity.total
     }
-    
-    // If it's just a city name, try to add province
-    if (props.listing.province_fa) {
-      return `${props.listing.province_fa}، ${props.listing.location}`
-    } else if (props.listing.province) {
-      return `${props.listing.province}، ${props.listing.location}`
-    }
-    
-    return props.listing.location
   }
-  
-  // Fallback to city_fa if available
-  if (props.listing.city_fa) {
-    return props.listing.city_fa
-  }
-  
-  // Fallback to city if available
-  if (props.listing.city) {
-    return props.listing.city
-  }
-  
-  return 'Location not available'
+  return 'نامشخص'
 })
 </script>
 
 <style scoped>
+.listing-swiper {
+  height: 12rem;
+}
+
+:deep(.swiper-pagination) {
+  bottom: 0.5rem;
+}
+
+:deep(.swiper-pagination-bullet) {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: white;
+  opacity: 0.7;
+}
+
+:deep(.swiper-pagination-bullet-active) {
+  opacity: 1;
+  background: #3b82f6;
+}
+
 .btn-primary {
-  @apply bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors;
+  @apply bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-vazir;
 }
 </style> 
