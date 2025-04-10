@@ -50,19 +50,62 @@
           
           <!-- Pagination -->
           <div v-if="!$listingsApi.loading.value && !$listingsApi.error.value" class="mt-8 flex justify-center">
-            <div class="flex space-x-2">
+            <div class="flex flex-wrap justify-center gap-2 max-w-full">
+              <!-- Previous Page Button -->
               <button 
-                v-for="page in totalPages" 
+                v-if="currentPage > 1"
+                @click="goToPage(currentPage - 1)"
+                class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
+              >
+                <i class="fas fa-chevron-right"></i>
+              </button>
+              
+              <!-- First Page -->
+              <button 
+                v-if="currentPage > 3"
+                @click="goToPage(1)"
+                class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
+              >
+                1
+              </button>
+              
+              <!-- Ellipsis -->
+              <span v-if="currentPage > 4" class="px-2 py-2">...</span>
+              
+              <!-- Page Numbers -->
+              <button 
+                v-for="page in displayedPages" 
                 :key="page"
                 @click="goToPage(page)"
                 :class="[
-                  'px-4 py-2 rounded-lg',
+                  'px-3 py-2 rounded-lg',
                   currentPage === page 
                     ? 'bg-blue-600 text-white' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 ]"
               >
                 {{ page }}
+              </button>
+              
+              <!-- Ellipsis -->
+              <span v-if="currentPage < totalPages - 3" class="px-2 py-2">...</span>
+              
+              <!-- Last Page -->
+              <button 
+                v-if="currentPage < totalPages - 2"
+                @click="goToPage(totalPages)"
+                class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
+              >
+                {{ totalPages }}
+              </button>
+              
+              <!-- Next Page Button -->
+              <button 
+                v-if="currentPage < totalPages"
+                @click="goToPage(currentPage + 1)"
+                class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
+              >
+                <i class="fas fa-chevron-left"></i>
               </button>
             </div>
           </div>
@@ -127,7 +170,13 @@ const updateWindowWidth = () => {
 onMounted(() => {
   updateWindowWidth()
   window.addEventListener('resize', updateWindowWidth)
-  $listingsApi.fetchListings({ page: 1, size: 12, keyword: 'city-tehran' })
+  
+  // Get page from URL query or default to 1
+  const pageFromQuery = parseInt(route.query.page) || 1
+  const page = pageFromQuery > 0 ? pageFromQuery : 1
+  
+  // Fetch listings with the page from URL
+  $listingsApi.fetchListings({ page, size: itemsPerPage, keyword: 'city-tehran' })
 })
 
 onUnmounted(() => {
@@ -195,6 +244,28 @@ const handleModalFilters = (newFilters) => {
 
 // Remove the localListings array and use API results directly
 const filteredListings = computed(() => {
+  // If we have filters applied, we need to filter the API results
+  const hasFilters = 
+    filters.value.search || 
+    filters.value.city || 
+    filters.value.type || 
+    filters.value.minPrice || 
+    filters.value.maxPrice || 
+    filters.value.passengerCount || 
+    filters.value.roomsCount || 
+    filters.value.locationType || 
+    filters.value.checkinDate || 
+    filters.value.checkoutDate || 
+    filters.value.selectedRules.length > 0 || 
+    filters.value.selectedAmenities.length > 0 || 
+    filters.value.sortBy !== 'price-asc'
+  
+  // If no filters are applied, just return the API results
+  if (!hasFilters) {
+    return $listingsApi.listings.value
+  }
+  
+  // Otherwise, apply filters to the API results
   let result = [...$listingsApi.listings.value]
 
   // Apply search filter
@@ -289,10 +360,39 @@ const totalPages = computed(() => {
   return Math.ceil($listingsApi.total.value / itemsPerPage)
 })
 
+// Calculate which page numbers to display
+const displayedPages = computed(() => {
+  const pages = []
+  const maxDisplayed = 5 // Maximum number of page buttons to show
+  
+  if (totalPages.value <= maxDisplayed) {
+    // If total pages is less than max displayed, show all pages
+    for (let i = 1; i <= totalPages.value; i++) {
+      pages.push(i)
+    }
+  } else {
+    // Calculate the range of pages to show around the current page
+    let start = Math.max(1, currentPage.value - Math.floor(maxDisplayed / 2))
+    let end = Math.min(totalPages.value, start + maxDisplayed - 1)
+    
+    // Adjust start if we're near the end
+    if (end === totalPages.value) {
+      start = Math.max(1, end - maxDisplayed + 1)
+    }
+    
+    // Add pages to the array
+    for (let i = start; i <= end; i++) {
+      pages.push(i)
+    }
+  }
+  
+  return pages
+})
+
+// Use the API results directly for pagination
 const paginatedListings = computed(() => {
-  const startIndex = (currentPage.value - 1) * itemsPerPage
-  const endIndex = startIndex + itemsPerPage
-  return filteredListings.value.slice(startIndex, endIndex)
+  // The API already returns the correct page of results, so we don't need to slice
+  return $listingsApi.listings.value
 })
 
 // Reset to first page when filters change
@@ -313,20 +413,51 @@ const updatePageQuery = (page) => {
   }, 10)
 }
 
-// Watch for route changes to update currentPage
-watch(() => route.query.page, (newPage) => {
-  if (newPage) {
-    const page = parseInt(newPage)
-    if (page > 0 && page <= totalPages.value) {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+// Watch for route query changes to update filters
+watch(() => route.query, (newQuery) => {
+  // Update filters from query parameters
+  if (newQuery.search !== undefined) filters.value.search = newQuery.search
+  if (newQuery.city !== undefined) filters.value.city = newQuery.city
+  if (newQuery.type !== undefined) filters.value.type = newQuery.type
+  if (newQuery.minPrice !== undefined) filters.value.minPrice = newQuery.minPrice
+  if (newQuery.maxPrice !== undefined) filters.value.maxPrice = newQuery.maxPrice
+  if (newQuery.passengerCount !== undefined) filters.value.passengerCount = newQuery.passengerCount
+  if (newQuery.roomsCount !== undefined) filters.value.roomsCount = newQuery.roomsCount
+  if (newQuery.locationType !== undefined) filters.value.locationType = newQuery.locationType
+  if (newQuery.checkinDate !== undefined) filters.value.checkinDate = newQuery.checkinDate
+  if (newQuery.checkoutDate !== undefined) filters.value.checkoutDate = newQuery.checkoutDate
+  if (newQuery.selectedRules !== undefined) filters.value.selectedRules = newQuery.selectedRules.split(',')
+  if (newQuery.selectedAmenities !== undefined) filters.value.selectedAmenities = newQuery.selectedAmenities.split(',')
+  if (newQuery.sortBy !== undefined) filters.value.sortBy = newQuery.sortBy
+  
+  // Fetch listings when page parameter changes
+  if (newQuery.page !== undefined) {
+    const page = parseInt(newQuery.page)
+    if (page > 0) {
+      // Fetch new listings for the page from URL
+      $listingsApi.fetchListings({ 
+        page, 
+        size: itemsPerPage, 
+        keyword: 'city-tehran' 
+      })
     }
   }
-})
+}, { deep: true })
 
 // Update pagination navigation to use the new currentPage setter
 const goToPage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page
+    
+    // Fetch new listings for the selected page
+    $listingsApi.fetchListings({ 
+      page, 
+      size: itemsPerPage, 
+      keyword: 'city-tehran' 
+    })
+    
+    // Scroll to top when changing pages
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 }
 
@@ -382,21 +513,4 @@ onMounted(() => {
   if (query.selectedAmenities) filters.value.selectedAmenities = query.selectedAmenities.split(',')
   if (query.sortBy) filters.value.sortBy = query.sortBy
 })
-
-// Watch for route query changes to update filters
-watch(() => route.query, (newQuery) => {
-  if (newQuery.search !== undefined) filters.value.search = newQuery.search
-  if (newQuery.city !== undefined) filters.value.city = newQuery.city
-  if (newQuery.type !== undefined) filters.value.type = newQuery.type
-  if (newQuery.minPrice !== undefined) filters.value.minPrice = newQuery.minPrice
-  if (newQuery.maxPrice !== undefined) filters.value.maxPrice = newQuery.maxPrice
-  if (newQuery.passengerCount !== undefined) filters.value.passengerCount = newQuery.passengerCount
-  if (newQuery.roomsCount !== undefined) filters.value.roomsCount = newQuery.roomsCount
-  if (newQuery.locationType !== undefined) filters.value.locationType = newQuery.locationType
-  if (newQuery.checkinDate !== undefined) filters.value.checkinDate = newQuery.checkinDate
-  if (newQuery.checkoutDate !== undefined) filters.value.checkoutDate = newQuery.checkoutDate
-  if (newQuery.selectedRules !== undefined) filters.value.selectedRules = newQuery.selectedRules.split(',')
-  if (newQuery.selectedAmenities !== undefined) filters.value.selectedAmenities = newQuery.selectedAmenities.split(',')
-  if (newQuery.sortBy !== undefined) filters.value.sortBy = newQuery.sortBy
-}, { deep: true })
 </script> 
