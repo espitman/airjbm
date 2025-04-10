@@ -9,10 +9,10 @@
           <p class="text-gray-600 font-vazir">{{ description }}</p>
         </div>
         <div class="flex items-center gap-4">
-          <button class="swiper-button-next-custom">
+          <button :class="`swiper-button-next-${uniqueId}`">
             <i class="fas fa-chevron-left"></i>
           </button>
-          <button class="swiper-button-prev-custom">
+          <button :class="`swiper-button-prev-${uniqueId}`">
             <i class="fas fa-chevron-right"></i>
           </button>
         </div>
@@ -46,8 +46,8 @@
           :slides-per-view="1"
           :space-between="20"
           :navigation="{
-            nextEl: '.swiper-button-next-custom',
-            prevEl: '.swiper-button-prev-custom'
+            nextEl: `.swiper-button-next-${uniqueId}`,
+            prevEl: `.swiper-button-prev-${uniqueId}`
           }"
           :breakpoints="{
             640: { slidesPerView: 2 },
@@ -101,6 +101,9 @@ const props = defineProps({
     default: 'بهترین اقامتگاه‌های ما را کشف کنید'
   }
 })
+
+// Generate a unique ID for this component instance
+const uniqueId = ref(`featured-${Math.random().toString(36).substring(2, 9)}`)
 
 // Local state for this component instance
 const listings = ref<any[]>([])
@@ -156,8 +159,9 @@ onMounted(() => {
   padding: 1rem 0;
 }
 
-.swiper-button-next-custom,
-.swiper-button-prev-custom {
+/* Use attribute selectors to target the specific buttons for this swiper instance */
+[class^="swiper-button-next-"],
+[class^="swiper-button-prev-"] {
   width: 40px;
   height: 40px;
   background-color: white;
@@ -170,14 +174,14 @@ onMounted(() => {
   transition: all 0.3s ease;
 }
 
-.swiper-button-next-custom:hover,
-.swiper-button-prev-custom:hover {
+[class^="swiper-button-next-"]:hover,
+[class^="swiper-button-prev-"]:hover {
   background-color: #f3f4f6;
   transform: scale(1.05);
 }
 
-.swiper-button-next-custom i,
-.swiper-button-prev-custom i {
+[class^="swiper-button-next-"] i,
+[class^="swiper-button-prev-"] i {
   color: #4b5563;
   font-size: 1rem;
 }
