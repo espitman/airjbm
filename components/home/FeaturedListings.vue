@@ -1,27 +1,50 @@
 <template>
   <section class="py-12 bg-gray-50">
     <div class="container mx-auto px-4">
-      <div class="flex justify-between items-center mb-8">
+      <div class="flex justify-between items-center mb-4">
         <div>
           <h2 class="text-3xl font-bold mb-2">اقامتگاه‌های برتر</h2>
           <p class="text-gray-600">بهترین اقامتگاه‌های ما را کشف کنید</p>
         </div>
-        <NuxtLink 
-          to="/listings" 
-          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          @click="scrollToTop"
-        >
-          مشاهده همه
-        </NuxtLink>
+        <div class="flex items-center gap-4">
+          <!-- Custom Navigation Buttons -->
+          <div class="flex gap-2">
+            <button class="swiper-button-next-custom">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="swiper-button-prev-custom">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+         
+        </div>
       </div>
 
-      <!-- Listings Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <ListingCard 
-          v-for="listing in listings.slice(0, 6)" 
-          :key="listing.id" 
-          :listing="listing"
-        />
+      <!-- Listings Carousel -->
+      <div v-if="listings.length" class="listing-slider">
+        <Swiper
+          :modules="[Navigation]"
+          :slides-per-view="1"
+          :space-between="20"
+          :navigation="{
+            nextEl: '.swiper-button-next-custom',
+            prevEl: '.swiper-button-prev-custom'
+          }"
+          :breakpoints="{
+            640: {
+              slidesPerView: 2,
+              spaceBetween: 20
+            },
+            1024: {
+              slidesPerView: 3,
+              spaceBetween: 30
+            }
+          }"
+        >
+          <SwiperSlide v-for="listing in listings.slice(0, 6)" :key="listing.id">
+            <ListingCard :listing="listing" />
+          </SwiperSlide>
+        </Swiper>
       </div>
 
       <!-- Empty State -->

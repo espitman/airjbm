@@ -1,5 +1,5 @@
 <template>
-  <nav class="hidden lg:flex items-center space-x-8">
+  <nav class="hidden lg:flex items-center space-x-8 space-x-reverse">
     <NuxtLink 
       v-for="link in links" 
       :key="link.to" 

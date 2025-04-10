@@ -6,14 +6,14 @@
         {{ listing.price }} / شب
       </div>
       <div class="absolute bottom-4 left-4 bg-white px-2 py-1 rounded-full text-sm font-medium flex items-center">
-        <i class="fas fa-star text-yellow-400 mr-1"></i>
+        <i class="fas fa-star text-yellow-400 ml-1"></i>
         {{ listing.rating }}
       </div>
     </div>
     <div class="p-4">
       <h3 class="text-lg font-semibold mb-2">{{ listing.title }}</h3>
       <div class="flex items-center text-gray-500 mb-2">
-        <i class="fas fa-map-marker-alt mr-2"></i>
+        <i class="fas fa-map-marker-alt ml-2"></i>
         {{ listing.location }}
       </div>
       <div class="flex flex-wrap gap-2 mb-4">
@@ -23,20 +23,20 @@
         </span>
       </div>
       <div class="flex items-center text-gray-500 text-sm">
-        <div class="flex items-center mr-4">
-          <i class="fas fa-bed mr-2"></i>
+        <div class="flex items-center ml-4">
+          <i class="fas fa-bed ml-2"></i>
           {{ listing.rooms }} اتاق
         </div>
-        <div class="flex items-center mr-4">
-          <i class="fas fa-user mr-2"></i>
+        <div class="flex items-center ml-4">
+          <i class="fas fa-user ml-2"></i>
           {{ listing.capacity.base + listing.capacity.extra }} مسافر
         </div>
         <div class="flex items-center">
-          <i class="fas fa-comment mr-2"></i>
+          <i class="fas fa-comment ml-2"></i>
           {{ listing.comments }} نظر
         </div>
       </div>
-      <div class="flex justify-between items-center">
+      <div class="flex justify-between items-center mt-4">
         <div class="flex items-center gap-4">
           <div class="flex items-center">
             <i class="fas fa-star text-yellow-400 ml-1"></i>
@@ -49,7 +49,7 @@
         </div>
         <NuxtLink :to="`/listings/${listing.id}`" 
                   class="btn-primary">
-          View Details
+          مشاهده جزئیات
         </NuxtLink>
       </div>
     </div>
