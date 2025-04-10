@@ -10,14 +10,16 @@
           class="listing-swiper"
         >
           <swiper-slide v-for="(image, index) in getAllImages" :key="index">
-            <div class="relative overflow-hidden group">
-              <img 
-                :src="image" 
-                :alt="`${listing.title} - تصویر ${index + 1}`" 
-                class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
-              >
-              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-            </div>
+            <NuxtLink :to="`/listings/${listing.id}`" class="block">
+              <div class="relative overflow-hidden group">
+                <img 
+                  :src="image" 
+                  :alt="`${listing.title} - تصویر ${index + 1}`" 
+                  class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+                >
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+              </div>
+            </NuxtLink>
           </swiper-slide>
         </swiper>
       </div>
@@ -27,7 +29,9 @@
       </div>
     </div>
     <div class="p-4">
-      <h3 class="text-lg font-semibold mb-2">{{ listing.title }}</h3>
+      <NuxtLink :to="`/listings/${listing.id}`" class="block">
+        <h3 class="text-lg font-semibold mb-2 hover:text-blue-600 transition-colors">{{ listing.title }}</h3>
+      </NuxtLink>
       <div class="flex items-center text-gray-500 mb-2">
         <i class="fas fa-map-marker-alt ml-2"></i>
         {{ getLocationDisplay }}
@@ -47,7 +51,6 @@
           <i class="fas fa-user ml-2"></i>
           {{ getCapacity }} 
         </div>
-        
       </div>
       <div class="flex justify-between items-center mt-4">
         <div class="flex items-center gap-4">
@@ -60,10 +63,6 @@
             <span>{{ listing.comments || listing.rate_count }}</span>
           </div>
         </div>
-        <NuxtLink :to="`/listings/${listing.id}`" 
-                  class="btn-primary">
-          مشاهده جزئیات
-        </NuxtLink>
       </div>
     </div>
   </div>
