@@ -163,6 +163,11 @@ const currentPage = computed({
 })
 const itemsPerPage = 16
 
+// Get the keyword from the URL parameter
+const keyword = computed(() => {
+  return route.params.keyword || 'city-tehran'
+})
+
 const updateWindowWidth = () => {
   windowWidth.value = window.innerWidth
 }
@@ -175,8 +180,8 @@ onMounted(() => {
   const pageFromQuery = parseInt(route.query.page) || 1
   const page = pageFromQuery > 0 ? pageFromQuery : 1
   
-  // Fetch listings with the page from URL
-  $listingsApi.fetchListings({ page, size: itemsPerPage, keyword: 'city-tehran' })
+  // Fetch listings with the page from URL and keyword from route params
+  $listingsApi.fetchListings({ page, size: itemsPerPage, keyword: keyword.value })
 })
 
 onUnmounted(() => {
@@ -208,39 +213,6 @@ const filters = ref({
   selectedAmenities: [],
   sortBy: 'price-asc'
 })
-
-const showRulesModal = ref(false)
-const showAmenitiesModal = ref(false)
-
-const updateSelectedRules = (rules) => {
-  filters.value.selectedRules = rules
-}
-
-const updateSelectedAmenities = (amenities) => {
-  filters.value.selectedAmenities = amenities
-}
-
-const handleModalApplyFilters = (modalFilters) => {
-  // Update the filters with the modal values
-  if (modalFilters.selectedRules) {
-    filters.value.selectedRules = modalFilters.selectedRules
-  }
-  if (modalFilters.selectedAmenities) {
-    filters.value.selectedAmenities = modalFilters.selectedAmenities
-  }
-  
-  // Update the URL with the new filter values
-  updateFiltersInUrl(filters.value)
-}
-
-const handleModalFilters = (newFilters) => {
-  filters.value = {
-    ...filters.value,
-    selectedRules: newFilters.selectedRules,
-    selectedAmenities: newFilters.selectedAmenities
-  }
-  updateFiltersInUrl(filters.value)
-}
 
 // Remove the localListings array and use API results directly
 const filteredListings = computed(() => {
@@ -438,11 +410,26 @@ watch(() => route.query, (newQuery) => {
       $listingsApi.fetchListings({ 
         page, 
         size: itemsPerPage, 
-        keyword: 'city-tehran' 
+        keyword: keyword.value 
       })
     }
   }
 }, { deep: true })
+
+// Watch for route parameter changes to update keyword
+watch(() => route.params.keyword, (newKeyword) => {
+  if (newKeyword) {
+    // Reset to first page when keyword changes
+    currentPage.value = 1
+    
+    // Fetch listings with the new keyword
+    $listingsApi.fetchListings({ 
+      page: 1, 
+      size: itemsPerPage, 
+      keyword: newKeyword 
+    })
+  }
+})
 
 // Update pagination navigation to use the new currentPage setter
 const goToPage = (page) => {
@@ -453,7 +440,7 @@ const goToPage = (page) => {
     $listingsApi.fetchListings({ 
       page, 
       size: itemsPerPage, 
-      keyword: 'city-tehran' 
+      keyword: keyword.value 
     })
     
     // Scroll to top when changing pages
@@ -462,43 +449,79 @@ const goToPage = (page) => {
 }
 
 // Function to update filters in URL
-const updateFiltersInUrl = (newFilters) => {
-  console.log('Updating filters in URL:', newFilters)
-  
-  // Create a new query object
+const updateFiltersInUrl = () => {
   const query = { ...route.query }
   
-  // Update or remove query parameters based on filter values
-  Object.entries(newFilters).forEach(([key, value]) => {
-    if (value && (typeof value === 'string' || typeof value === 'number')) {
-      query[key] = value.toString()
-    } else if (Array.isArray(value) && value.length > 0) {
-      query[key] = value.join(',')
-    } else {
-      delete query[key]
-    }
-  })
+  // Only include non-empty filters in the URL
+  if (filters.value.search) query.search = filters.value.search
+  else delete query.search
   
-  // Reset to page 1 when filters change
-  delete query.page
+  if (filters.value.city) query.city = filters.value.city
+  else delete query.city
   
-  // Update URL with new query parameters
-  console.log('New query parameters:', query)
-  router.push({
-    query: {
-      ...query,
-      page: 1
-    }
-  })
+  if (filters.value.type) query.type = filters.value.type
+  else delete query.type
   
-  // Update the main filters object
-  filters.value = { ...newFilters }
+  if (filters.value.minPrice) query.minPrice = filters.value.minPrice
+  else delete query.minPrice
+  
+  if (filters.value.maxPrice) query.maxPrice = filters.value.maxPrice
+  else delete query.maxPrice
+  
+  if (filters.value.passengerCount) query.passengerCount = filters.value.passengerCount
+  else delete query.passengerCount
+  
+  if (filters.value.roomsCount) query.roomsCount = filters.value.roomsCount
+  else delete query.roomsCount
+  
+  if (filters.value.locationType) query.locationType = filters.value.locationType
+  else delete query.locationType
+  
+  if (filters.value.checkinDate) query.checkinDate = filters.value.checkinDate
+  else delete query.checkinDate
+  
+  if (filters.value.checkoutDate) query.checkoutDate = filters.value.checkoutDate
+  else delete query.checkoutDate
+  
+  if (filters.value.selectedRules.length > 0) query.selectedRules = filters.value.selectedRules.join(',')
+  else delete query.selectedRules
+  
+  if (filters.value.selectedAmenities.length > 0) query.selectedAmenities = filters.value.selectedAmenities.join(',')
+  else delete query.selectedAmenities
+  
+  if (filters.value.sortBy !== 'price-asc') query.sortBy = filters.value.sortBy
+  else delete query.sortBy
+  
+  // Reset to first page when filters change
+  query.page = undefined
+  
+  router.push({ query })
 }
 
-// Initialize filters from URL on page load
+// Function to handle modal filters
+const handleModalFilters = (newFilters) => {
+  filters.value = { ...newFilters }
+  updateFiltersInUrl()
+}
+
+// Function to handle modal apply filters
+const handleModalApplyFilters = () => {
+  updateFiltersInUrl()
+}
+
+// Function to update selected rules
+const updateSelectedRules = (rules) => {
+  filters.value.selectedRules = rules
+}
+
+// Function to update selected amenities
+const updateSelectedAmenities = (amenities) => {
+  filters.value.selectedAmenities = amenities
+}
+
+// Initialize filters from URL query parameters
 onMounted(() => {
   const query = route.query
-  
   if (query.search) filters.value.search = query.search
   if (query.city) filters.value.city = query.city
   if (query.type) filters.value.type = query.type
