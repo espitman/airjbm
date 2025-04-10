@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+  <div class="bg-white rounded-lg shadow-md overflow-hidden relative">
     <div class="relative">
       <!-- Image Slideshow with Gradient Overlay -->
       <div class="relative">
@@ -18,20 +18,6 @@
                   class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
                 >
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <!-- Rating Square -->
-                <div class="absolute bottom-4 right-4 flex items-center">
-                  <div class="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center shadow-md">
-                    <div class="text-sm font-bold text-white">{{ listing.rate_score || '0' }}</div>
-                  </div>
-                  <div class="flex flex-col items-start mr-2">
-                    <div class="text-xs text-white font-medium">{{ listing.rate_count || '0' }} نظر</div>
-                    <div class="flex mt-1">
-                      <i v-for="i in 5" :key="i" 
-                         class="fas fa-star text-xs" 
-                         :class="i <= Math.floor(listing.rate_score || 0) ? 'text-yellow-400' : 'text-gray-300'"></i>
-                    </div>
-                  </div>
-                </div>
               </div>
             </NuxtLink>
           </swiper-slide>
@@ -40,6 +26,21 @@
       
       <div class="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-medium z-10">
         {{ formatPrice }} / شب
+      </div>
+      
+      <!-- Rating Square - Positioned at bottom right -->
+      <div class="absolute bottom-4 right-4 z-20 flex items-center">
+        <div class="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center shadow-md">
+          <div class="text-sm font-bold text-white">{{ listing.rate_score || '0' }}</div>
+        </div>
+        <div class="flex flex-col items-start mr-2">
+          <div class="text-xs text-white font-medium">{{ listing.rate_count || '0' }} نظر</div>
+          <div class="flex">
+            <i v-for="i in 5" :key="i" 
+               class="fas fa-star text-xs" 
+               :class="i <= Math.floor(listing.rate_score || 0) ? 'text-yellow-400' : 'text-gray-300'"></i>
+          </div>
+        </div>
       </div>
     </div>
     <div class="p-4">
