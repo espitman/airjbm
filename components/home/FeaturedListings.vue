@@ -74,17 +74,6 @@
           </swiper-slide>
         </swiper>
       </div>
-      
-      <!-- View All Link -->
-      <div class="text-center mt-6">
-        <NuxtLink 
-          :to="`/listings?keyword=${keyword}`" 
-          class="inline-flex items-center text-blue-600 hover:text-blue-800 font-vazir"
-        >
-          مشاهده همه
-          <i class="fas fa-arrow-left mr-2"></i>
-        </NuxtLink>
-      </div>
     </div>
   </section>
 </template>
