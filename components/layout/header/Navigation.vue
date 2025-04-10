@@ -1,21 +1,21 @@
 <template>
-  <nav class="hidden lg:flex items-center space-x-8 space-x-reverse">
+  <nav class="hidden lg:flex items-center space-x-8">
     <NuxtLink 
-      v-for="item in navigation" 
-      :key="item.name"
-      :to="item.href"
-      class="text-gray-600 hover:text-blue-600 transition-colors"
+      v-for="link in links" 
+      :key="link.to" 
+      :to="link.to"
+      class="text-gray-700 hover:text-blue-600 transition-colors"
     >
-      {{ item.name }}
+      {{ link.text }}
     </NuxtLink>
   </nav>
 </template>
 
 <script setup>
-const navigation = [
-  { name: 'Home', href: '/' },
-  { name: 'Listings', href: '/listings' },
-  { name: 'About', href: '/about' },
-  { name: 'Contact', href: '/contact' }
+const links = [
+  { to: '/', text: 'خانه' },
+  { to: '/listings', text: 'اقامتگاه‌ها' },
+  { to: '/about', text: 'درباره ما' },
+  { to: '/contact', text: 'تماس با ما' }
 ]
 </script> 

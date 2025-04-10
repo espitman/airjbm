@@ -2,15 +2,19 @@
   <div class="bg-white rounded-lg shadow-md overflow-hidden">
     <div class="relative">
       <img :src="listing.image" :alt="listing.title" class="w-full h-48 object-cover">
-      <div class="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-sm font-semibold shadow-sm h-8 flex items-center">
-        {{ listing.price }}
+      <div class="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-medium">
+        {{ listing.price }} / شب
+      </div>
+      <div class="absolute bottom-4 left-4 bg-white px-2 py-1 rounded-full text-sm font-medium flex items-center">
+        <i class="fas fa-star text-yellow-400 mr-1"></i>
+        {{ listing.rating }}
       </div>
     </div>
     <div class="p-4">
-      <h3 class="text-xl font-semibold mb-2">{{ listing.title }}</h3>
-      <div class="flex items-center text-gray-600 mb-2">
-        <i class="fas fa-map-marker-alt ml-2"></i>
-        <span>{{ listing.location }}</span>
+      <h3 class="text-lg font-semibold mb-2">{{ listing.title }}</h3>
+      <div class="flex items-center text-gray-500 mb-2">
+        <i class="fas fa-map-marker-alt mr-2"></i>
+        {{ listing.location }}
       </div>
       <div class="flex flex-wrap gap-2 mb-4">
         <span v-for="category in listing.categories" :key="category" 
@@ -18,14 +22,18 @@
           {{ category }}
         </span>
       </div>
-      <div class="flex items-center gap-4 mb-4 text-gray-600">
-        <div class="flex items-center">
-          <i class="fas fa-bed ml-2"></i>
-          <span>{{ listing.rooms }} {{ listing.rooms === 1 ? 'Room' : 'Rooms' }}</span>
+      <div class="flex items-center text-gray-500 text-sm">
+        <div class="flex items-center mr-4">
+          <i class="fas fa-bed mr-2"></i>
+          {{ listing.rooms }} اتاق
+        </div>
+        <div class="flex items-center mr-4">
+          <i class="fas fa-user mr-2"></i>
+          {{ listing.capacity.base + listing.capacity.extra }} مسافر
         </div>
         <div class="flex items-center">
-          <i class="fas fa-users ml-2"></i>
-          <span>{{ listing.capacity.base }}+{{ listing.capacity.extra }} Guests</span>
+          <i class="fas fa-comment mr-2"></i>
+          {{ listing.comments }} نظر
         </div>
       </div>
       <div class="flex justify-between items-center">

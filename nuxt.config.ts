@@ -9,15 +9,15 @@ export default defineNuxtConfig({
   ],
   app: {
     head: {
-      title: 'Jabama - Directory Listing',
+      title: 'جاباما - رزرو اقامتگاه',
       htmlAttrs: {
-        dir: 'rtl',
-        lang: 'fa'
+        lang: 'fa',
+        dir: 'rtl'
       },
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { hid: 'description', name: 'description', content: 'Modern Directory Listing Template for Jabama' }
+        { name: 'description', content: 'رزرو آنلاین اقامتگاه با جاباما' }
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

@@ -1,27 +1,37 @@
 <template>
-  <section class="relative py-10 h-[320px]">
-    <!-- Background Image with Overlay -->
-    <div class="absolute inset-0 z-0 overflow-hidden">
+  <section class="relative h-[300px] bg-gray-900">
+    <!-- Background Image -->
+    <div class="absolute inset-0">
       <img 
-        src="https://cdn.jabama.com/image/jabama-images/1297502/833d6419-d033-44d1-b531-26afaf35797e.jpg" 
-        alt="Hero Background" 
-        class="w-full h-full object-cover object-middle"
-      />
-      <div class="absolute inset-0 bg-gray-900 opacity-80"></div>
+        src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&h=600&q=80" 
+        alt="Hero background" 
+        class="w-full h-full object-cover object-center"
+      >
+      <div class="absolute inset-0 bg-black opacity-50"></div>
     </div>
-    
+
     <!-- Content -->
-    <div class="container mx-auto px-4 relative z-10 h-full flex items-center">
-      <div class="max-w-3xl mx-auto text-center text-white">
-        <h1 class="text-4xl font-bold mb-4">Find the Best Places in Your City</h1>
-        <p class="text-lg mb-6">Discover restaurants, hotels, shops, and more with our comprehensive directory.</p>
-        <div class="flex flex-wrap justify-center gap-4">
-          <NuxtLink to="/listings" class="btn-primary text-lg px-8 py-3 rounded-lg w-[260px]">
-            Browse Listings
+    <div class="relative h-full container mx-auto px-4 flex items-center">
+      <div class="text-center mx-auto max-w-3xl">
+        <h1 class="text-4xl font-bold text-white mb-4">
+          بهترین اقامتگاه‌ها را با جاباما پیدا کنید
+        </h1>
+        <p class="text-lg text-gray-200 mb-8">
+          هزاران اقامتگاه در سراسر دنیا منتظر شما هستند
+        </p>
+        <div class="flex justify-center gap-4">
+          <NuxtLink 
+            to="/listings" 
+            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            مشاهده اقامتگاه‌ها
           </NuxtLink>
-          <button class="bg-white text-gray-900 px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors text-lg w-[260px]">
-            Add Your Business
-          </button>
+          <NuxtLink 
+            to="/about" 
+            class="px-6 py-3 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            درباره ما
+          </NuxtLink>
         </div>
       </div>
     </div>

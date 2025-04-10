@@ -11,18 +11,18 @@
       @click="closeFilters"
     >
       <h3 class="text-xl font-semibold flex items-center">
-        Filters
+        فیلترها
       </h3>
     </div>
     
     <!-- City -->
     <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1">شهر</label>
       <select 
         v-model="localFilters.city" 
         class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
       >
-        <option value="">All Cities</option>
+        <option value="">همه شهرها</option>
         <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
       </select>
     </div>
@@ -31,22 +31,22 @@
     <div class="mb-4">
       <div class="flex gap-2">
         <div class="w-1/2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">نوع</label>
           <select 
             v-model="localFilters.type" 
             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
           >
-            <option value="">All Types</option>
+            <option value="">همه انواع</option>
             <option v-for="type in types" :key="type" :value="type">{{ type }}</option>
           </select>
         </div>
         <div class="w-1/2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Location Type</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">نوع مکان</label>
           <select 
             v-model="localFilters.locationType" 
             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
           >
-            <option value="">All Locations</option>
+            <option value="">همه مکان‌ها</option>
             <option v-for="type in locationTypes" :key="type" :value="type">{{ type }}</option>
           </select>
         </div>
@@ -55,11 +55,11 @@
 
     <!-- Price Range -->
     <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1">محدوده قیمت</label>
       <div class="px-2">
         <div class="flex gap-4 mb-2">
           <div class="w-1/2">
-            <label class="block text-xs text-gray-600 mb-1">Min Price</label>
+            <label class="block text-xs text-gray-600 mb-1">حداقل قیمت</label>
             <input 
               type="range" 
               v-model="localFilters.minPrice" 
@@ -71,7 +71,7 @@
             <div class="text-xs text-gray-600 mt-1">${{ localFilters.minPrice || 0 }}</div>
           </div>
           <div class="w-1/2">
-            <label class="block text-xs text-gray-600 mb-1">Max Price</label>
+            <label class="block text-xs text-gray-600 mb-1">حداکثر قیمت</label>
             <input 
               type="range" 
               v-model="localFilters.maxPrice" 
@@ -90,20 +90,20 @@
     <div class="mb-4">
       <div class="flex gap-2">
         <div class="w-1/2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Passenger Count</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">تعداد مسافر</label>
           <input 
             type="number" 
             v-model="localFilters.passengerCount" 
-            placeholder="Number of passengers" 
+            placeholder="تعداد مسافران" 
             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
           >
         </div>
         <div class="w-1/2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Rooms Count</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">تعداد اتاق</label>
           <input 
             type="number" 
             v-model="localFilters.roomsCount" 
-            placeholder="Number of rooms" 
+            placeholder="تعداد اتاق‌ها" 
             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
           >
         </div>
@@ -114,7 +114,7 @@
     <div class="mb-4">
       <div class="flex gap-2">
         <div class="w-1/2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Check-in Date</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">تاریخ ورود</label>
           <input 
             type="date" 
             v-model="localFilters.checkinDate" 
@@ -122,7 +122,7 @@
           >
         </div>
         <div class="w-1/2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Check-out Date</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">تاریخ خروج</label>
           <input 
             type="date" 
             v-model="localFilters.checkoutDate" 
@@ -138,22 +138,22 @@
         @click="$emit('show-modal')"
         class="w-full flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg transition-colors"
       >
-        <h3 class="text-lg font-semibold">Filters</h3>
+        <h3 class="text-lg font-semibold">فیلترها</h3>
         <i class="fas fa-chevron-right text-gray-400"></i>
       </button>
     </div>
 
     <!-- Sort By -->
     <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1">مرتب‌سازی بر اساس</label>
       <select 
         v-model="localFilters.sortBy" 
         class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
       >
-        <option value="price-asc">Price: Low to High</option>
-        <option value="price-desc">Price: High to Low</option>
-        <option value="rating-desc">Rating: High to Low</option>
-        <option value="rating-asc">Rating: Low to High</option>
+        <option value="price-asc">قیمت: کم به زیاد</option>
+        <option value="price-desc">قیمت: زیاد به کم</option>
+        <option value="rating-desc">امتیاز: زیاد به کم</option>
+        <option value="rating-asc">امتیاز: کم به زیاد</option>
       </select>
     </div>
 
@@ -162,7 +162,7 @@
       @click="applyFilters" 
       class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm"
     >
-      Apply Filters
+      اعمال فیلترها
     </button>
   </div>
 </template>
@@ -182,9 +182,9 @@ const emit = defineEmits(['update:filters', 'close', 'apply-filters', 'show-moda
 
 const showModal = ref(false)
 
-const cities = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Miami']
-const types = ['Hotel', 'Apartment', 'House', 'Villa', 'Resort']
-const locationTypes = ['City Center', 'Suburb', 'Beach', 'Mountain', 'Countryside']
+const cities = ['نیویورک', 'لس آنجلس', 'شیکاگو', 'هیوستون', 'میامی']
+const types = ['هتل', 'آپارتمان', 'خانه', 'ویلا', 'اقامتگاه']
+const locationTypes = ['مرکز شهر', 'حومه', 'ساحل', 'کوهستان', 'روستا']
 
 // Create a local copy of filters that won't affect the parent until Apply is clicked
 const localFilters = ref({
