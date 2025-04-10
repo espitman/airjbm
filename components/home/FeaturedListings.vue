@@ -1,9 +1,11 @@
 <template>
-  <section class="py-12 bg-gray-50 overflow-hidden">
+  <section class="py-6 bg-gray-50 overflow-hidden">
     <div class="container mx-auto px-4">
       <div class="flex justify-between items-center mb-4">
         <div>
-          <h2 class="text-3xl font-bold mb-2 font-vazir">{{ title }}</h2>
+          <NuxtLink :to="`/listings/${keyword}`" class="block">
+            <h2 class="text-3xl font-bold mb-2 font-vazir hover:text-blue-600 transition-colors">{{ title }}</h2>
+          </NuxtLink>
           <p class="text-gray-600 font-vazir">{{ description }}</p>
         </div>
         <div class="flex items-center gap-4">
@@ -17,15 +19,15 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="$listingsApi.loading.value" class="flex justify-center items-center h-64">
+      <div v-if="loading" class="flex justify-center items-center h-64">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
 
       <!-- Error State -->
-      <div v-else-if="$listingsApi.error.value" class="text-center py-12">
-        <p class="text-red-600 font-vazir">{{ $listingsApi.error.value }}</p>
+      <div v-else-if="error" class="text-center py-12">
+        <p class="text-red-600 font-vazir">{{ error }}</p>
         <button 
-          @click="$listingsApi.fetchListings({ page: 1, size: 12, keyword: keyword })" 
+          @click="fetchListings()" 
           class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-vazir"
         >
           تلاش مجدد
@@ -33,7 +35,7 @@
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="$listingsApi.listings.value.length === 0" class="text-center py-12">
+      <div v-else-if="listings.length === 0" class="text-center py-12">
         <p class="text-gray-500 font-vazir">در حال حاضر هیچ آگهی ویژه‌ای وجود ندارد.</p>
       </div>
 
@@ -53,7 +55,7 @@
           }"
           class="featured-listings-swiper"
         >
-          <swiper-slide v-for="listing in $listingsApi.listings.value" :key="listing.id">
+          <swiper-slide v-for="listing in listings" :key="listing.id">
             <ListingCard
               :listing="{
                 id: listing.id,
@@ -77,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation } from 'swiper/modules'
 import ListingCard from '~/components/ui/ListingCard.vue'
@@ -100,18 +102,53 @@ const props = defineProps({
   }
 })
 
-const { $listingsApi } = useNuxtApp()
+// Local state for this component instance
+const listings = ref<any[]>([])
+const loading = ref(true)
+const error = ref<string | null>(null)
+const total = ref(0)
 
-onMounted(() => {
-  $listingsApi.fetchListings({ page: 1, size: 12, keyword: props.keyword })
-})
+// Fetch listings for this specific component
+const fetchListings = async () => {
+  try {
+    loading.value = true
+    error.value = null
 
-const scrollToTop = () => {
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  })
+    const url = `https://jayaber.liara.run/search/${props.keyword}`
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({ page: 1, size: 12 })
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch listings: ${response.status} ${response.statusText}`)
+    }
+
+    const data = await response.json()
+    
+    if (!data.items || !Array.isArray(data.items)) {
+      throw new Error('Invalid response format: items array not found')
+    }
+
+    listings.value = data.items
+    total.value = data.total
+  } catch (err) {
+    console.error('Error fetching listings:', err)
+    error.value = err instanceof Error ? err.message : 'An error occurred while fetching listings'
+  } finally {
+    loading.value = false
+  }
 }
+
+// Fetch listings when component is mounted
+onMounted(() => {
+  fetchListings()
+})
 </script>
 
 <style scoped>
@@ -119,27 +156,29 @@ const scrollToTop = () => {
   padding: 1rem 0;
 }
 
-.swiper-button-prev-custom,
-.swiper-button-next-custom {
+.swiper-button-next-custom,
+.swiper-button-prev-custom {
   width: 40px;
   height: 40px;
-  border-radius: 8px !important;
+  background-color: white;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.swiper-button-prev-custom:hover,
-.swiper-button-next-custom:hover {
-  background: #e5e7eb;
-  color: #4b5563;
+.swiper-button-next-custom:hover,
+.swiper-button-prev-custom:hover {
+  background-color: #f3f4f6;
+  transform: scale(1.05);
 }
 
-:deep(.swiper-button-next),
-:deep(.swiper-button-prev) {
-  display: none;
+.swiper-button-next-custom i,
+.swiper-button-prev-custom i {
+  color: #4b5563;
+  font-size: 1rem;
 }
 </style> 

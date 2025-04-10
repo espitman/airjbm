@@ -3,7 +3,7 @@
     <HeroSection />
     <PopularCategories  />
     <FeaturedListings 
-      keyword="province-tehran" 
+      keyword="city-tehran" 
       title="اقامتگاه‌های تهران" 
       description="بهترین اقامتگاه‌های تهران را کشف کنید" 
     />
