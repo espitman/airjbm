@@ -1,17 +1,22 @@
 <template>
   <div class="bg-white rounded-lg shadow-md overflow-hidden">
     <div class="relative">
-      <!-- Image Slideshow -->
-      <swiper
-        :modules="[Pagination]"
-        :pagination="{ clickable: true }"
-        :slides-per-view="1"
-        class="listing-swiper"
-      >
-        <swiper-slide v-for="(image, index) in getAllImages" :key="index">
-          <img :src="image" :alt="`${listing.title} - تصویر ${index + 1}`" class="w-full h-48 object-cover">
-        </swiper-slide>
-      </swiper>
+      <!-- Image Slideshow with Gradient Overlay -->
+      <div class="relative">
+        <swiper
+          :modules="[Pagination]"
+          :pagination="{ clickable: true }"
+          :slides-per-view="1"
+          class="listing-swiper"
+        >
+          <swiper-slide v-for="(image, index) in getAllImages" :key="index">
+            <div class="relative">
+              <img :src="image" :alt="`${listing.title} - تصویر ${index + 1}`" class="w-full h-48 object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            </div>
+          </swiper-slide>
+        </swiper>
+      </div>
       
       <div class="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-medium z-10">
         {{ formatPrice }} / شب
