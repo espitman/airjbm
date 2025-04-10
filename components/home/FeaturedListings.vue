@@ -85,10 +85,17 @@ import { Listing } from '~/plugins/listingsApi'
 import 'swiper/css'
 import 'swiper/css/navigation'
 
+const props = defineProps({
+  keyword: {
+    type: String,
+    default: 'province-mazandaran'
+  }
+})
+
 const { $listingsApi } = useNuxtApp()
 
 onMounted(() => {
-  $listingsApi.fetchListings({ page: 1, size: 12, keyword: 'province-mazandaran' })
+  $listingsApi.fetchListings({ page: 1, size: 12, keyword: props.keyword })
 })
 
 const scrollToTop = () => {

@@ -2,7 +2,7 @@
   <div>
     <HeroSection />
     <PopularCategories  />
-    <FeaturedListings  />
+    <FeaturedListings keyword="province-tehran" />
   </div>
 </template>
 
