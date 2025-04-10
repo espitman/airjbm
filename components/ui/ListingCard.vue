@@ -30,7 +30,7 @@
       
       <!-- Rating Square - Positioned at bottom right -->
       <div class="absolute bottom-4 right-4 z-20 flex items-center">
-        <div class="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center shadow-md">
+        <div class="bg-[#2E3F6E] w-8 h-8 rounded-lg flex items-center justify-center shadow-md">
           <div class="text-sm font-bold text-white">{{ listing.rate_score || '0' }}</div>
         </div>
         <div class="flex flex-col items-start mr-2">
@@ -45,7 +45,7 @@
     </div>
     <div class="p-4">
       <NuxtLink :to="`/listings/${listing.id}`" class="block">
-        <h3 class="text-lg font-semibold mb-2 hover:text-blue-600 transition-colors">{{ listing.title }}</h3>
+        <h3 class="text-lg font-semibold mb-2 hover:text-[#2E3F6E] transition-colors">{{ listing.title }}</h3>
       </NuxtLink>
       <div class="flex items-center text-gray-500 mb-2">
         <i class="fas fa-map-marker-alt ml-2"></i>
