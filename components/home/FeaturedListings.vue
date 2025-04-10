@@ -3,7 +3,7 @@
     <div class="container mx-auto px-4">
       <div class="flex justify-between items-center mb-4">
         <div>
-          <NuxtLink :to="`/listings/${keyword}`" class="block">
+          <NuxtLink :to="`/listings?keyword=${keyword}`" class="block">
             <h2 class="text-3xl font-bold mb-2 font-vazir hover:text-blue-600 transition-colors">{{ title }}</h2>
           </NuxtLink>
           <p class="text-gray-600 font-vazir">{{ description }}</p>
@@ -60,7 +60,7 @@
               :listing="{
                 id: listing.id,
                 title: listing.title,
-                image: listing.images[0],
+                images: listing.images,
                 location: listing.city_fa,
                 province: listing.province_fa,
                 price: listing.price_not_checkin_based.min_price,
@@ -73,6 +73,17 @@
             />
           </swiper-slide>
         </swiper>
+      </div>
+      
+      <!-- View All Link -->
+      <div class="text-center mt-6">
+        <NuxtLink 
+          :to="`/listings?keyword=${keyword}`" 
+          class="inline-flex items-center text-blue-600 hover:text-blue-800 font-vazir"
+        >
+          مشاهده همه
+          <i class="fas fa-arrow-left mr-2"></i>
+        </NuxtLink>
       </div>
     </div>
   </section>
