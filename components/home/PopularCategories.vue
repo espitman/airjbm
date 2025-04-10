@@ -13,7 +13,7 @@
           <h3 class="text-xl font-semibold mb-2">{{ category.name }}</h3>
           <p class="text-gray-600 mb-4">{{ category.description }}</p>
           <NuxtLink 
-            :to="`/listings?category=${category.id}`"
+            :to="`/listings/all-${category.id}`"
             class="text-blue-600 hover:text-blue-700 transition-colors"
           >
             مشاهده اقامتگاه‌ها
@@ -27,28 +27,28 @@
 <script setup>
 const categories = [
   {
-    id: 'hotels',
-    name: 'هتل‌ها',
-    icon: 'fa-hotel',
-    description: 'اقامت در بهترین هتل‌های شهر'
-  },
-  {
-    id: 'apartments',
-    name: 'آپارتمان‌ها',
-    icon: 'fa-building',
-    description: 'آپارتمان‌های مبله با امکانات کامل'
-  },
-  {
     id: 'villas',
-    name: 'ویلاها',
+    name: 'ویلا',
     icon: 'fa-home',
     description: 'ویلاهای لوکس با منظره زیبا'
   },
   {
-    id: 'resorts',
-    name: 'اقامتگاه‌های تفریحی',
-    icon: 'fa-umbrella-beach',
-    description: 'اقامتگاه‌های ساحلی و تفریحی'
+    id: 'apartment',
+    name: 'آپارتمان',
+    icon: 'fa-building',
+    description: 'آپارتمان‌های مبله با امکانات کامل'
+  },
+  {
+    id: 'cottage',
+    name: 'کلبه',
+    icon: 'fa-house-damage',
+    description: 'کلبه‌های دنج و راحت'
+  },
+  {
+    id: 'ecotourism',
+    name: 'بومگردی',
+    icon: 'fa-mountain',
+    description: 'اقامتگاه‌های بومگردی منحصر به فرد'
   }
 ]
 </script> 
