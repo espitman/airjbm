@@ -3,7 +3,7 @@
     <!-- Background Image -->
     <div class="absolute inset-0">
       <img 
-        src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&h=600&q=80" 
+        src="https://cdn.jabama.com/image/jabama-images/1297502/833d6419-d033-44d1-b531-26afaf35797e.jpg" 
         alt="Hero background" 
         class="w-full h-full object-cover object-center"
       >
