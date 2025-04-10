@@ -4,7 +4,7 @@
       <div class="flex justify-between items-center mb-4">
         <div>
           <NuxtLink :to="`/listings?keyword=${keyword}`" class="block">
-            <h2 class="text-3xl font-bold mb-2 font-vazir hover:text-[#2E3F6E] transition-colors">{{ title }}</h2>
+            <h2 class="text-3xl font-bold mb-2 font-vazir hover:text-blue-600 transition-colors">{{ title }}</h2>
           </NuxtLink>
           <p class="text-gray-600 font-vazir">{{ description }}</p>
         </div>
@@ -20,7 +20,7 @@
 
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center items-center h-64">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2E3F6E]"></div>
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
 
       <!-- Error State -->
@@ -28,7 +28,7 @@
         <p class="text-red-600 font-vazir">{{ error }}</p>
         <button 
           @click="fetchListings()" 
-          class="mt-4 px-4 py-2 bg-[#2E3F6E] text-white rounded-lg hover:bg-[#2E3F6E]/90 transition-colors font-vazir"
+          class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-vazir"
         >
           تلاش مجدد
         </button>
@@ -182,7 +182,7 @@ onMounted(() => {
 
 [class^="swiper-button-next-"] i,
 [class^="swiper-button-prev-"] i {
-  color: #2E3F6E;
+  color: #4b5563;
   font-size: 1rem;
 }
 </style> 
