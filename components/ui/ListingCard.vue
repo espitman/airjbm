@@ -126,13 +126,27 @@ const getCategories = computed(() => {
 
 // Get location display
 const getLocationDisplay = computed(() => {
-  if (props.listing.location) {
-    return props.listing.location
-  } else if (props.listing.city_fa) {
-    return props.listing.city_fa
-  } else if (props.listing.province_fa) {
+  // If we have both province and city, show both
+  if (props.listing.province_fa && props.listing.city_fa) {
+    return `${props.listing.province_fa}، ${props.listing.city_fa}`
+  }
+  
+  // If we have just province
+  if (props.listing.province_fa) {
     return props.listing.province_fa
   }
+  
+  // If we have just city
+  if (props.listing.city_fa) {
+    return props.listing.city_fa
+  }
+  
+  // If we have location
+  if (props.listing.location) {
+    return props.listing.location
+  }
+  
+  // Fallback
   return 'موقعیت نامشخص'
 })
 
