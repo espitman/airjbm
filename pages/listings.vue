@@ -29,7 +29,18 @@
 
         <!-- Listings Grid -->
         <div :class="['lg:w-3/4', {'w-full': !showFilters && windowWidth < 1024}]">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Loading State -->
+          <div v-if="$listingsApi.loading.value" class="flex justify-center items-center min-h-[400px]">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+          </div>
+
+          <!-- Error State -->
+          <div v-else-if="$listingsApi.error.value" class="text-center py-8">
+            <p class="text-red-600">{{ $listingsApi.error.value }}</p>
+          </div>
+
+          <!-- Listings Grid -->
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ListingCard 
               v-for="listing in paginatedListings" 
               :key="listing.id" 
@@ -38,7 +49,7 @@
           </div>
           
           <!-- Pagination -->
-          <div class="mt-8 flex justify-center">
+          <div v-if="!$listingsApi.loading.value && !$listingsApi.error.value" class="mt-8 flex justify-center">
             <div class="flex space-x-2">
               <button 
                 v-for="page in totalPages" 
@@ -85,6 +96,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useNuxtApp } from '#app'
 import Filters from '~/components/ui/Filters.vue'
 import FilterModals from '~/components/ui/FilterModals.vue'
 import ListingCard from '~/components/ui/ListingCard.vue'
@@ -92,6 +104,7 @@ import RulesAmenitiesModal from '~/components/ui/RulesAmenitiesModal.vue'
 
 const route = useRoute()
 const router = useRouter()
+const { $listingsApi } = useNuxtApp()
 
 const showFilters = ref(true)
 const showModal = ref(false)
@@ -114,6 +127,7 @@ const updateWindowWidth = () => {
 onMounted(() => {
   updateWindowWidth()
   window.addEventListener('resize', updateWindowWidth)
+  $listingsApi.fetchListings({ page: 1, size: 12, keyword: 'city-tehran' })
 })
 
 onUnmounted(() => {
@@ -179,620 +193,9 @@ const handleModalFilters = (newFilters) => {
   updateFiltersInUrl(filters.value)
 }
 
-// Sample listings data with 32 items
-const listings = ref([
-  {
-    id: 1,
-    title: 'Iconic Cafe',
-    image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: '40 Journal Square Plaza, NJ, USA',
-    city: 'New York',
-    type: 'Restaurant',
-    price: 299,
-    categories: ['Restaurants', 'Cafe'],
-    rating: 4.1,
-    rooms: 2,
-    capacity: { base: 4, extra: 2 },
-    comments: 24,
-    locationType: 'City Center',
-    rules: ['No Smoking', 'Quiet Hours'],
-    amenities: ['WiFi', 'Restaurant'],
-    checkinDate: '2024-03-20',
-    checkoutDate: '2024-03-25'
-  },
-  {
-    id: 2,
-    title: 'MontePlaza Hotel',
-    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: '70 Bright St New York, USA',
-    city: 'New York',
-    type: 'Hotel',
-    price: 199,
-    categories: ['Hotels'],
-    rating: 5.0,
-    rooms: 3,
-    capacity: { base: 6, extra: 3 },
-    comments: 42,
-    locationType: 'City Center',
-    rules: ['No Smoking', 'No Parties', 'Quiet Hours'],
-    amenities: ['WiFi', 'Pool', 'Parking', 'Gym', 'Restaurant', 'Spa', 'Room Service'],
-    checkinDate: '2024-03-21',
-    checkoutDate: '2024-03-26'
-  },
-  {
-    id: 3,
-    title: 'Premium Fitness Gym',
-    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'W 85th St, New York, USA',
-    city: 'New York',
-    type: 'Gym',
-    price: 99,
-    categories: ['Fitness', 'Gym'],
-    rating: 5.0,
-    rooms: 5,
-    capacity: { base: 20, extra: 10 },
-    comments: 56,
-    locationType: 'City Center',
-    rules: ['No Smoking'],
-    amenities: ['WiFi', 'Parking', 'Gym'],
-    checkinDate: '2024-03-22',
-    checkoutDate: '2024-03-27'
-  },
-  {
-    id: 4,
-    title: 'Luxury Beach Resort',
-    image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Miami Beach, FL, USA',
-    city: 'Miami',
-    type: 'Resort',
-    price: 399,
-    categories: ['Resorts', 'Beach'],
-    rating: 4.8,
-    rooms: 8,
-    capacity: { base: 16, extra: 8 },
-    comments: 78,
-    locationType: 'Beach',
-    rules: ['No Smoking', 'No Pets'],
-    amenities: ['WiFi', 'Pool', 'Parking', 'Gym', 'Restaurant', 'Spa', 'Room Service', 'Beach Access'],
-    checkinDate: '2024-03-23',
-    checkoutDate: '2024-03-28'
-  },
-  {
-    id: 5,
-    title: 'Mountain View Cabin',
-    image: 'https://images.unsplash.com/photo-1542718610-a1d39d1cf300?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Aspen, CO, USA',
-    city: 'Aspen',
-    type: 'House',
-    price: 249,
-    categories: ['Houses', 'Mountain'],
-    rating: 4.6,
-    rooms: 4,
-    capacity: { base: 8, extra: 4 },
-    comments: 32,
-    locationType: 'Mountain',
-    rules: ['No Smoking', 'No Parties'],
-    amenities: ['WiFi', 'Parking', 'Fireplace', 'Kitchen'],
-    checkinDate: '2024-03-24',
-    checkoutDate: '2024-03-29'
-  },
-  {
-    id: 6,
-    title: 'Downtown Loft',
-    image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Chicago Loop, IL, USA',
-    city: 'Chicago',
-    type: 'Apartment',
-    price: 179,
-    categories: ['Apartments', 'Urban'],
-    rating: 4.3,
-    rooms: 2,
-    capacity: { base: 4, extra: 2 },
-    comments: 18,
-    locationType: 'City Center',
-    rules: ['No Smoking', 'No Pets'],
-    amenities: ['WiFi', 'Parking', 'Kitchen', 'Washer/Dryer'],
-    checkinDate: '2024-03-25',
-    checkoutDate: '2024-03-30'
-  },
-  {
-    id: 7,
-    title: 'Seaside Villa',
-    image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Malibu, CA, USA',
-    city: 'Los Angeles',
-    type: 'Villa',
-    price: 599,
-    categories: ['Villas', 'Beach'],
-    rating: 4.9,
-    rooms: 6,
-    capacity: { base: 12, extra: 6 },
-    comments: 45,
-    locationType: 'Beach',
-    rules: ['No Smoking', 'No Parties'],
-    amenities: ['WiFi', 'Pool', 'Parking', 'Gym', 'Restaurant', 'Spa', 'Beach Access'],
-    checkinDate: '2024-03-26',
-    checkoutDate: '2024-03-31'
-  },
-  {
-    id: 8,
-    title: 'Urban Boutique Hotel',
-    image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Houston Downtown, TX, USA',
-    city: 'Houston',
-    type: 'Hotel',
-    price: 159,
-    categories: ['Hotels', 'Urban'],
-    rating: 4.4,
-    rooms: 3,
-    capacity: { base: 6, extra: 3 },
-    comments: 29,
-    locationType: 'City Center',
-    rules: ['No Smoking', 'Quiet Hours'],
-    amenities: ['WiFi', 'Parking', 'Restaurant', 'Room Service'],
-    checkinDate: '2024-03-27',
-    checkoutDate: '2024-04-01'
-  },
-  {
-    id: 9,
-    title: 'Cozy Bistro',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'French Quarter, New Orleans, LA, USA',
-    city: 'New Orleans',
-    type: 'Restaurant',
-    price: 129,
-    categories: ['Restaurants', 'Bistro'],
-    rating: 4.7,
-    rooms: 1,
-    capacity: { base: 2, extra: 1 },
-    comments: 36,
-    locationType: 'City Center',
-    rules: ['No Smoking'],
-    amenities: ['WiFi', 'Restaurant'],
-    checkinDate: '2024-03-28',
-    checkoutDate: '2024-04-02'
-  },
-  {
-    id: 10,
-    title: 'Lakeside Cottage',
-    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Lake Tahoe, CA, USA',
-    city: 'Lake Tahoe',
-    type: 'House',
-    price: 279,
-    categories: ['Houses', 'Lake'],
-    rating: 4.5,
-    rooms: 3,
-    capacity: { base: 6, extra: 3 },
-    comments: 22,
-    locationType: 'Countryside',
-    rules: ['No Smoking', 'No Parties'],
-    amenities: ['WiFi', 'Parking', 'Kitchen', 'Fireplace'],
-    checkinDate: '2024-03-29',
-    checkoutDate: '2024-04-03'
-  },
-  {
-    id: 11,
-    title: 'Tech Hub Office',
-    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Silicon Valley, CA, USA',
-    city: 'San Francisco',
-    type: 'Office',
-    price: 349,
-    categories: ['Offices', 'Tech'],
-    rating: 4.2,
-    rooms: 5,
-    capacity: { base: 10, extra: 5 },
-    comments: 15,
-    locationType: 'Suburb',
-    rules: ['No Smoking', 'Quiet Hours'],
-    amenities: ['WiFi', 'Parking', 'Conference Room', 'Kitchen'],
-    checkinDate: '2024-03-30',
-    checkoutDate: '2024-04-04'
-  },
-  {
-    id: 12,
-    title: 'Historic Mansion',
-    image: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Charleston, SC, USA',
-    city: 'Charleston',
-    type: 'House',
-    price: 499,
-    categories: ['Houses', 'Historic'],
-    rating: 4.8,
-    rooms: 8,
-    capacity: { base: 16, extra: 8 },
-    comments: 41,
-    locationType: 'City Center',
-    rules: ['No Smoking', 'No Parties'],
-    amenities: ['WiFi', 'Parking', 'Pool', 'Garden'],
-    checkinDate: '2024-03-31',
-    checkoutDate: '2024-04-05'
-  },
-  {
-    id: 13,
-    title: 'Rooftop Restaurant',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Downtown LA, CA, USA',
-    city: 'Los Angeles',
-    type: 'Restaurant',
-    price: 199,
-    categories: ['Restaurants', 'Rooftop'],
-    rating: 4.6,
-    rooms: 1,
-    capacity: { base: 2, extra: 1 },
-    comments: 33,
-    locationType: 'City Center',
-    rules: ['No Smoking'],
-    amenities: ['WiFi', 'Restaurant', 'Bar'],
-    checkinDate: '2024-04-01',
-    checkoutDate: '2024-04-06'
-  },
-  {
-    id: 14,
-    title: 'Ski Lodge',
-    image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Vail, CO, USA',
-    city: 'Vail',
-    type: 'Resort',
-    price: 449,
-    categories: ['Resorts', 'Ski'],
-    rating: 4.7,
-    rooms: 6,
-    capacity: { base: 12, extra: 6 },
-    comments: 52,
-    locationType: 'Mountain',
-    rules: ['No Smoking', 'No Pets'],
-    amenities: ['WiFi', 'Pool', 'Parking', 'Gym', 'Restaurant', 'Spa', 'Ski Storage'],
-    checkinDate: '2024-04-02',
-    checkoutDate: '2024-04-07'
-  },
-  {
-    id: 15,
-    title: 'Beachfront Apartment',
-    image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Venice Beach, CA, USA',
-    city: 'Los Angeles',
-    type: 'Apartment',
-    price: 229,
-    categories: ['Apartments', 'Beach'],
-    rating: 4.4,
-    rooms: 2,
-    capacity: { base: 4, extra: 2 },
-    comments: 27,
-    locationType: 'Beach',
-    rules: ['No Smoking', 'No Parties'],
-    amenities: ['WiFi', 'Parking', 'Kitchen', 'Beach Access'],
-    checkinDate: '2024-04-03',
-    checkoutDate: '2024-04-08'
-  },
-  {
-    id: 16,
-    title: 'Business Hotel',
-    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Chicago Loop, IL, USA',
-    city: 'Chicago',
-    type: 'Hotel',
-    price: 189,
-    categories: ['Hotels', 'Business'],
-    rating: 4.3,
-    rooms: 3,
-    capacity: { base: 6, extra: 3 },
-    comments: 31,
-    locationType: 'City Center',
-    rules: ['No Smoking', 'Quiet Hours'],
-    amenities: ['WiFi', 'Parking', 'Restaurant', 'Business Center'],
-    checkinDate: '2024-04-04',
-    checkoutDate: '2024-04-09'
-  },
-  {
-    id: 17,
-    title: 'Mountain Retreat',
-    image: 'https://images.unsplash.com/photo-1542718610-a1d39d1cf300?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Denver, CO, USA',
-    city: 'Denver',
-    type: 'House',
-    price: 259,
-    categories: ['Houses', 'Mountain'],
-    rating: 4.5,
-    rooms: 4,
-    capacity: { base: 8, extra: 4 },
-    comments: 23,
-    locationType: 'Mountain',
-    rules: ['No Smoking', 'No Parties'],
-    amenities: ['WiFi', 'Parking', 'Fireplace', 'Kitchen'],
-    checkinDate: '2024-04-05',
-    checkoutDate: '2024-04-10'
-  },
-  {
-    id: 18,
-    title: 'Urban Loft',
-    image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Seattle, WA, USA',
-    city: 'Seattle',
-    type: 'Apartment',
-    price: 199,
-    categories: ['Apartments', 'Urban'],
-    rating: 4.2,
-    rooms: 2,
-    capacity: { base: 4, extra: 2 },
-    comments: 19,
-    locationType: 'City Center',
-    rules: ['No Smoking', 'No Pets'],
-    amenities: ['WiFi', 'Parking', 'Kitchen', 'Washer/Dryer'],
-    checkinDate: '2024-04-06',
-    checkoutDate: '2024-04-11'
-  },
-  {
-    id: 19,
-    title: 'Luxury Villa',
-    image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Beverly Hills, CA, USA',
-    city: 'Los Angeles',
-    type: 'Villa',
-    price: 699,
-    categories: ['Villas', 'Luxury'],
-    rating: 4.9,
-    rooms: 7,
-    capacity: { base: 14, extra: 7 },
-    comments: 48,
-    locationType: 'Suburb',
-    rules: ['No Smoking', 'No Parties'],
-    amenities: ['WiFi', 'Pool', 'Parking', 'Gym', 'Restaurant', 'Spa', 'Tennis Court'],
-    checkinDate: '2024-04-07',
-    checkoutDate: '2024-04-12'
-  },
-  {
-    id: 20,
-    title: 'Boutique Hotel',
-    image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Austin, TX, USA',
-    city: 'Austin',
-    type: 'Hotel',
-    price: 169,
-    categories: ['Hotels', 'Boutique'],
-    rating: 4.6,
-    rooms: 3,
-    capacity: { base: 6, extra: 3 },
-    comments: 35,
-    locationType: 'City Center',
-    rules: ['No Smoking', 'Quiet Hours'],
-    amenities: ['WiFi', 'Parking', 'Restaurant', 'Bar'],
-    checkinDate: '2024-04-08',
-    checkoutDate: '2024-04-13'
-  },
-  {
-    id: 21,
-    title: 'Italian Restaurant',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Little Italy, NY, USA',
-    city: 'New York',
-    type: 'Restaurant',
-    price: 149,
-    categories: ['Restaurants', 'Italian'],
-    rating: 4.7,
-    rooms: 1,
-    capacity: { base: 2, extra: 1 },
-    comments: 42,
-    locationType: 'City Center',
-    rules: ['No Smoking'],
-    amenities: ['WiFi', 'Restaurant', 'Bar'],
-    checkinDate: '2024-04-09',
-    checkoutDate: '2024-04-14'
-  },
-  {
-    id: 22,
-    title: 'Lake House',
-    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Minneapolis, MN, USA',
-    city: 'Minneapolis',
-    type: 'House',
-    price: 239,
-    categories: ['Houses', 'Lake'],
-    rating: 4.4,
-    rooms: 3,
-    capacity: { base: 6, extra: 3 },
-    comments: 21,
-    locationType: 'Countryside',
-    rules: ['No Smoking', 'No Parties'],
-    amenities: ['WiFi', 'Parking', 'Kitchen', 'Fireplace'],
-    checkinDate: '2024-04-10',
-    checkoutDate: '2024-04-15'
-  },
-  {
-    id: 23,
-    title: 'Tech Startup Office',
-    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Boston, MA, USA',
-    city: 'Boston',
-    type: 'Office',
-    price: 329,
-    categories: ['Offices', 'Tech'],
-    rating: 4.3,
-    rooms: 4,
-    capacity: { base: 8, extra: 4 },
-    comments: 17,
-    locationType: 'City Center',
-    rules: ['No Smoking', 'Quiet Hours'],
-    amenities: ['WiFi', 'Parking', 'Conference Room', 'Kitchen'],
-    checkinDate: '2024-04-11',
-    checkoutDate: '2024-04-16'
-  },
-  {
-    id: 24,
-    title: 'Historic Inn',
-    image: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Savannah, GA, USA',
-    city: 'Savannah',
-    type: 'Hotel',
-    price: 189,
-    categories: ['Hotels', 'Historic'],
-    rating: 4.5,
-    rooms: 4,
-    capacity: { base: 8, extra: 4 },
-    comments: 33,
-    locationType: 'City Center',
-    rules: ['No Smoking', 'No Pets'],
-    amenities: ['WiFi', 'Parking', 'Restaurant', 'Garden'],
-    checkinDate: '2024-04-12',
-    checkoutDate: '2024-04-17'
-  },
-  {
-    id: 25,
-    title: 'Sushi Restaurant',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Downtown Seattle, WA, USA',
-    city: 'Seattle',
-    type: 'Restaurant',
-    price: 169,
-    categories: ['Restaurants', 'Japanese'],
-    rating: 4.8,
-    rooms: 1,
-    capacity: { base: 2, extra: 1 },
-    comments: 39,
-    locationType: 'City Center',
-    rules: ['No Smoking'],
-    amenities: ['WiFi', 'Restaurant', 'Bar'],
-    checkinDate: '2024-04-13',
-    checkoutDate: '2024-04-18'
-  },
-  {
-    id: 26,
-    title: 'Ski Resort',
-    image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Park City, UT, USA',
-    city: 'Park City',
-    type: 'Resort',
-    price: 479,
-    categories: ['Resorts', 'Ski'],
-    rating: 4.7,
-    rooms: 7,
-    capacity: { base: 14, extra: 7 },
-    comments: 58,
-    locationType: 'Mountain',
-    rules: ['No Smoking', 'No Pets'],
-    amenities: ['WiFi', 'Pool', 'Parking', 'Gym', 'Restaurant', 'Spa', 'Ski Storage'],
-    checkinDate: '2024-04-14',
-    checkoutDate: '2024-04-19'
-  },
-  {
-    id: 27,
-    title: 'Beachfront Condo',
-    image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'San Diego, CA, USA',
-    city: 'San Diego',
-    type: 'Apartment',
-    price: 249,
-    categories: ['Apartments', 'Beach'],
-    rating: 4.5,
-    rooms: 2,
-    capacity: { base: 4, extra: 2 },
-    comments: 29,
-    locationType: 'Beach',
-    rules: ['No Smoking', 'No Parties'],
-    amenities: ['WiFi', 'Parking', 'Kitchen', 'Beach Access'],
-    checkinDate: '2024-04-15',
-    checkoutDate: '2024-04-20'
-  },
-  {
-    id: 28,
-    title: 'Business Center Hotel',
-    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Dallas, TX, USA',
-    city: 'Dallas',
-    type: 'Hotel',
-    price: 199,
-    categories: ['Hotels', 'Business'],
-    rating: 4.4,
-    rooms: 3,
-    capacity: { base: 6, extra: 3 },
-    comments: 36,
-    locationType: 'City Center',
-    rules: ['No Smoking', 'Quiet Hours'],
-    amenities: ['WiFi', 'Parking', 'Restaurant', 'Business Center'],
-    checkinDate: '2024-04-16',
-    checkoutDate: '2024-04-21'
-  },
-  {
-    id: 29,
-    title: 'Mountain Cabin',
-    image: 'https://images.unsplash.com/photo-1542718610-a1d39d1cf300?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Boulder, CO, USA',
-    city: 'Boulder',
-    type: 'House',
-    price: 229,
-    categories: ['Houses', 'Mountain'],
-    rating: 4.6,
-    rooms: 3,
-    capacity: { base: 6, extra: 3 },
-    comments: 25,
-    locationType: 'Mountain',
-    rules: ['No Smoking', 'No Parties'],
-    amenities: ['WiFi', 'Parking', 'Fireplace', 'Kitchen'],
-    checkinDate: '2024-04-17',
-    checkoutDate: '2024-04-22'
-  },
-  {
-    id: 30,
-    title: 'Urban Studio',
-    image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Portland, OR, USA',
-    city: 'Portland',
-    type: 'Apartment',
-    price: 159,
-    categories: ['Apartments', 'Urban'],
-    rating: 4.2,
-    rooms: 1,
-    capacity: { base: 2, extra: 1 },
-    comments: 16,
-    locationType: 'City Center',
-    rules: ['No Smoking', 'No Pets'],
-    amenities: ['WiFi', 'Parking', 'Kitchen', 'Washer/Dryer'],
-    checkinDate: '2024-04-18',
-    checkoutDate: '2024-04-23'
-  },
-  {
-    id: 31,
-    title: 'Luxury Mansion',
-    image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Newport, RI, USA',
-    city: 'Newport',
-    type: 'House',
-    price: 799,
-    categories: ['Houses', 'Luxury'],
-    rating: 4.9,
-    rooms: 10,
-    capacity: { base: 20, extra: 10 },
-    comments: 52,
-    locationType: 'Suburb',
-    rules: ['No Smoking', 'No Parties'],
-    amenities: ['WiFi', 'Pool', 'Parking', 'Gym', 'Restaurant', 'Spa', 'Tennis Court', 'Garden'],
-    checkinDate: '2024-04-19',
-    checkoutDate: '2024-04-24'
-  },
-  {
-    id: 32,
-    title: 'Boutique Inn',
-    image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    location: 'Nashville, TN, USA',
-    city: 'Nashville',
-    type: 'Hotel',
-    price: 179,
-    categories: ['Hotels', 'Boutique'],
-    rating: 4.5,
-    rooms: 3,
-    capacity: { base: 6, extra: 3 },
-    comments: 38,
-    locationType: 'City Center',
-    rules: ['No Smoking', 'Quiet Hours'],
-    amenities: ['WiFi', 'Parking', 'Restaurant', 'Bar'],
-    checkinDate: '2024-04-20',
-    checkoutDate: '2024-04-25'
-  }
-])
-
+// Remove the localListings array and use API results directly
 const filteredListings = computed(() => {
-  let result = [...listings.value]
+  let result = [...$listingsApi.listings.value]
 
   // Apply search filter
   if (filters.value.search) {
@@ -883,7 +286,7 @@ const filteredListings = computed(() => {
 
 // Pagination
 const totalPages = computed(() => {
-  return Math.ceil(filteredListings.value.length / itemsPerPage)
+  return Math.ceil($listingsApi.total.value / itemsPerPage)
 })
 
 const paginatedListings = computed(() => {

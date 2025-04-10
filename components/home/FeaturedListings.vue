@@ -17,15 +17,15 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading" class="flex justify-center items-center h-64">
+      <div v-if="$listingsApi.loading.value" class="flex justify-center items-center h-64">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
 
       <!-- Error State -->
-      <div v-else-if="error" class="text-center py-12">
-        <p class="text-red-600 font-vazir">{{ error }}</p>
+      <div v-else-if="$listingsApi.error.value" class="text-center py-12">
+        <p class="text-red-600 font-vazir">{{ $listingsApi.error.value }}</p>
         <button 
-          @click="fetchListings" 
+          @click="$listingsApi.fetchListings({ page: 1, size: 12, keyword: 'province-mazandaran' })" 
           class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-vazir"
         >
           تلاش مجدد
@@ -33,7 +33,7 @@
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="listings.length === 0" class="text-center py-12">
+      <div v-else-if="$listingsApi.listings.value.length === 0" class="text-center py-12">
         <p class="text-gray-500 font-vazir">در حال حاضر هیچ آگهی ویژه‌ای وجود ندارد.</p>
       </div>
 
@@ -53,7 +53,7 @@
           }"
           class="featured-listings-swiper"
         >
-          <swiper-slide v-for="listing in listings" :key="listing.id">
+          <swiper-slide v-for="listing in $listingsApi.listings.value" :key="listing.id">
             <ListingCard
               :listing="{
                 id: listing.id,
@@ -85,10 +85,9 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 
 const { $listingsApi } = useNuxtApp()
-const { listings, loading, error, fetchListings } = $listingsApi()
 
 onMounted(() => {
-  fetchListings({ page: 1, size: 12, keyword: 'province-mazandaran' })
+  $listingsApi.fetchListings({ page: 1, size: 12, keyword: 'province-mazandaran' })
 })
 
 const scrollToTop = () => {
