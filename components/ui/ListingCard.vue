@@ -10,11 +10,11 @@
           class="listing-swiper"
         >
           <swiper-slide v-for="(image, index) in getAllImages" :key="index">
-            <div class="relative overflow-hidden">
+            <div class="relative overflow-hidden group">
               <img 
                 :src="image" 
                 :alt="`${listing.title} - تصویر ${index + 1}`" 
-                class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110"
+                class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
               >
               <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
             </div>
