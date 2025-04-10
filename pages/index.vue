@@ -13,9 +13,9 @@
       description="مجموعه کامل ویلاهای لوکس در سراسر ایران" 
     />
     <FeaturedListings 
-      keyword="zone-north" 
-      title="اقامتگاه‌های شمال" 
-      description="بهترین اقامتگاه‌های شمال کشور با قیمت مناسب" 
+      keyword="zone-south" 
+      title="اقامتگاه‌های جنوب" 
+      description="بهترین اقامتگاه‌های جنوب کشور با قیمت مناسب" 
     />
   </div>
 </template>
