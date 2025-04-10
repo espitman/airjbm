@@ -3,7 +3,13 @@ import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  css: ['~/assets/css/main.css'],
+  css: [
+    '@/assets/css/main.css',
+    '@/assets/css/fonts.css',
+    'swiper/css',
+    'swiper/css/navigation',
+    'swiper/css/pagination'
+  ],
   modules: [
     '@nuxtjs/tailwindcss'
   ],

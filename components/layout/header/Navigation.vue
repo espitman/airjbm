@@ -4,7 +4,7 @@
       v-for="link in links" 
       :key="link.to" 
       :to="link.to"
-      class="text-gray-700 hover:text-blue-600 transition-colors"
+      class="text-gray-700 hover:text-blue-600 transition-colors font-vazir"
     >
       {{ link.text }}
     </NuxtLink>

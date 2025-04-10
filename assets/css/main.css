@@ -54,6 +54,9 @@
   body {
     @apply antialiased text-gray-800;
   }
+  html {
+    font-family: 'Vazirmatn', system-ui, sans-serif;
+  }
 }
 
 @layer components {

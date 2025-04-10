@@ -4,7 +4,7 @@
     <!-- Search Toggle -->
     <button 
       @click="toggleSearch"
-      class="text-gray-700 hover:text-blue-600 transition-colors"
+      class="text-gray-700 hover:text-blue-600 transition-colors font-vazir"
     >
       <i class="fas fa-search text-xl"></i>
     </button>

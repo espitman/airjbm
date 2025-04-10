@@ -11,18 +11,18 @@
       <form @submit.prevent="handleSearch" class="flex flex-wrap gap-4">
         <!-- City Selection -->
         <div class="w-[40%]">
-          <label for="city" class="block text-sm font-medium text-gray-700 mb-1">شهر</label>
+          <label for="city" class="block text-sm font-medium text-gray-700 mb-1 font-vazir">شهر</label>
           <select 
             id="city"
             v-model="searchParams.city" 
-            class="w-full px-4 py-2 border rounded-lg pl-6"
+            class="w-full px-4 py-2 border rounded-lg pl-6 font-vazir"
           >
-            <option value="">همه شهرها</option>
-            <option value="New York">نیویورک</option>
-            <option value="Los Angeles">لس آنجلس</option>
-            <option value="Chicago">شیکاگو</option>
-            <option value="Houston">هیوستون</option>
-            <option value="Miami">میامی</option>
+            <option value="" class="font-vazir">همه شهرها</option>
+            <option value="New York" class="font-vazir">نیویورک</option>
+            <option value="Los Angeles" class="font-vazir">لس آنجلس</option>
+            <option value="Chicago" class="font-vazir">شیکاگو</option>
+            <option value="Houston" class="font-vazir">هیوستون</option>
+            <option value="Miami" class="font-vazir">میامی</option>
           </select>
         </div>
 
@@ -30,37 +30,37 @@
         <div class="flex flex-1 gap-4 items-end">
           <!-- Guests -->
           <div class="w-24">
-            <label for="guests" class="block text-sm font-medium text-gray-700 mb-1">مسافر</label>
+            <label for="guests" class="block text-sm font-medium text-gray-700 mb-1 font-vazir">مسافر</label>
             <input 
               id="guests"
               type="number" 
               min="0" 
               v-model="searchParams.passengerCount"
-              class="w-full px-4 py-2 border rounded-lg"
+              class="w-full px-4 py-2 border rounded-lg font-vazir"
               placeholder="تعداد مسافران"
             >
           </div>
 
           <!-- Check-in -->
           <div class="flex-1">
-            <label for="checkIn" class="block text-sm font-medium text-gray-700 mb-1">ورود</label>
+            <label for="checkIn" class="block text-sm font-medium text-gray-700 mb-1 font-vazir">ورود</label>
             <input 
               id="checkIn"
               type="date" 
               v-model="searchParams.checkinDate"
-              class="w-full px-4 py-2 border rounded-lg"
+              class="w-full px-4 py-2 border rounded-lg font-vazir"
               placeholder="انتخاب تاریخ ورود"
             >
           </div>
 
           <!-- Check-out -->
           <div class="flex-1">
-            <label for="checkOut" class="block text-sm font-medium text-gray-700 mb-1">خروج</label>
+            <label for="checkOut" class="block text-sm font-medium text-gray-700 mb-1 font-vazir">خروج</label>
             <input 
               id="checkOut"
               type="date" 
               v-model="searchParams.checkoutDate"
-              class="w-full px-4 py-2 border rounded-lg"
+              class="w-full px-4 py-2 border rounded-lg font-vazir"
               placeholder="انتخاب تاریخ خروج"
             >
           </div>
@@ -68,7 +68,7 @@
           <!-- Search Button -->
           <button 
             type="submit"
-            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors h-[42px]"
+            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors h-[42px] font-vazir"
           >
             جستجو
           </button>
