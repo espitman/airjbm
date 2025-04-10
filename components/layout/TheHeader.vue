@@ -1,54 +1,57 @@
 <template>
-  <header 
-    :class="[
-      'bg-white shadow-md sticky top-0 z-50 transition-all duration-300',
-      { 'py-6': !isScrolled, 'py-2': isScrolled }
-    ]"
-  >
+  <header :class="['bg-white shadow-md sticky top-0 z-50 transition-all duration-300', isScrolled ? 'py-2' : 'py-4']">
     <div class="container mx-auto px-4">
-      <div class="flex items-center justify-between">
+      <div class="flex items-center" :class="isScrolled ? 'h-10' : 'h-16'">
         <!-- Logo -->
-        <Logo />
+        <div class="flex items-center">
+          <NuxtLink to="/" class="flex items-center gap-2">
+            <img src="~/public/logo.svg" alt="Jabama" class="h-8 w-8">
+            <span class="text-xl font-bold text-gray-900">Jabama</span>
+          </NuxtLink>
+          <!-- Navigation -->
+          <Navigation class="mr-16" />
+        </div>
 
-        <!-- Search Button (Mobile) -->
-        <button 
-          @click="showSearch = !showSearch"
-          class="lg:hidden p-2 rounded-full hover:bg-gray-100"
-        >
-          <i class="fas fa-search w-6 h-6"></i>
-        </button>
+        <!-- Right side content -->
+        <div class="ml-auto flex items-center">
 
-        <!-- Desktop Navigation -->
-        <Navigation />
-
-        <!-- User Actions -->
-        <UserActions @toggle-search="showSearch = !showSearch" />
+          <!-- User Actions -->
+          <UserActions />
+        </div>
       </div>
-    </div>
 
-    <!-- Search Panel -->
-    <SearchPanel v-model="showSearch" />
+      <!-- Search Panel -->
+      <SearchPanel :is-open="isSearchOpen" />
+    </div>
   </header>
 </template>
 
 <script setup>
-import Logo from './header/Logo.vue'
+import { ref, provide, onMounted, onUnmounted } from 'vue'
 import Navigation from './header/Navigation.vue'
 import UserActions from './header/UserActions.vue'
 import SearchPanel from './header/SearchPanel.vue'
 
-const showSearch = ref(false)
+const isSearchOpen = ref(false)
 const isScrolled = ref(false)
 
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 50
+}
+
 onMounted(() => {
-  window.addEventListener('scroll', () => {
-    isScrolled.value = window.scrollY > 50
-  })
+  window.addEventListener('scroll', handleScroll)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', () => {
-    isScrolled.value = window.scrollY > 50
-  })
+  window.removeEventListener('scroll', handleScroll)
 })
+
+const toggleSearch = () => {
+  isSearchOpen.value = !isSearchOpen.value
+}
+
+// Provide search state to child components
+provide('isSearchOpen', isSearchOpen)
+provide('toggleSearch', toggleSearch)
 </script> 

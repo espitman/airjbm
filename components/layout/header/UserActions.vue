@@ -1,16 +1,26 @@
 <template>
-  <div class="hidden lg:flex items-center space-x-4">
+  <div class="hidden lg:flex items-center space-x-4 space-x-reverse">
     <button 
-      @click="$emit('toggle-search')"
-      class="btn-outline flex items-center"
+      type="button"
+      @click="toggleSearch"
+      class="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+      :class="{ 'text-blue-600': isSearchOpen }"
     >
-      <i class="fas fa-search mr-2"></i>
-      Search
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
     </button>
     <button class="btn-outline">Sign In</button>
     <button class="btn-primary">Sign Up</button>
   </div>
 </template>
+
+<script setup>
+import { inject } from 'vue'
+
+const isSearchOpen = inject('isSearchOpen')
+const toggleSearch = inject('toggleSearch')
+</script>
 
 <style scoped>
 .btn-primary {

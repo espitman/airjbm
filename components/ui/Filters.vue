@@ -20,7 +20,7 @@
       <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
       <select 
         v-model="localFilters.city" 
-        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
       >
         <option value="">All Cities</option>
         <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
@@ -34,7 +34,7 @@
           <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
           <select 
             v-model="localFilters.type" 
-            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
           >
             <option value="">All Types</option>
             <option v-for="type in types" :key="type" :value="type">{{ type }}</option>
@@ -44,7 +44,7 @@
           <label class="block text-sm font-medium text-gray-700 mb-1">Location Type</label>
           <select 
             v-model="localFilters.locationType" 
-            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
           >
             <option value="">All Locations</option>
             <option v-for="type in locationTypes" :key="type" :value="type">{{ type }}</option>
@@ -148,7 +148,7 @@
       <label class="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
       <select 
         v-model="localFilters.sortBy" 
-        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
       >
         <option value="price-asc">Price: Low to High</option>
         <option value="price-desc">Price: High to Low</option>
