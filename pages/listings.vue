@@ -57,7 +57,7 @@
                 @click="goToPage(currentPage - 1)"
                 class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
               >
-                <i class="fas fa-chevron-right"></i>
+                <i class="fas fa-chevron-left"></i>
               </button>
               
               <!-- First Page -->
@@ -105,7 +105,7 @@
                 @click="goToPage(currentPage + 1)"
                 class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
               >
-                <i class="fas fa-chevron-left"></i>
+                <i class="fas fa-chevron-right"></i>
               </button>
             </div>
           </div>
