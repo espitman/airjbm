@@ -45,12 +45,9 @@
         </div>
         <div class="flex items-center ml-4">
           <i class="fas fa-user ml-2"></i>
-          {{ getCapacity }} مسافر
+          {{ getCapacity }} 
         </div>
-        <div class="flex items-center">
-          <i class="fas fa-comment ml-2"></i>
-          {{ listing.comments || listing.rate_count }} نظر
-        </div>
+        
       </div>
       <div class="flex justify-between items-center mt-4">
         <div class="flex items-center gap-4">
@@ -142,13 +139,41 @@ const getLocationDisplay = computed(() => {
 
 // Get capacity from different possible sources
 const getCapacity = computed(() => {
-  if (props.listing.capacity) {
-    if (typeof props.listing.capacity === 'number') {
-      return props.listing.capacity
-    } else if (props.listing.capacity.total) {
-      return props.listing.capacity.total
+  // If capacity is a number, return it directly
+  if (typeof props.listing.capacity === 'number') {
+    return `${props.listing.capacity} نفر`
+  }
+  
+  // If capacity is an object with total property
+  if (props.listing.capacity && props.listing.capacity.total) {
+    return `${props.listing.capacity.total} نفر`
+  }
+  
+  // If capacity is an object with base and extra properties
+  if (props.listing.capacity && props.listing.capacity.base) {
+    const base = props.listing.capacity.base
+    const extra = props.listing.capacity.extra || 0
+    
+    if (extra > 0) {
+      return `${base} نفر پایه + ${extra} نفر اضافه`
+    } else {
+      return `${base} نفر`
     }
   }
+  
+  // If we have capacity_base and capacity_extra
+  if (props.listing.capacity_base) {
+    const base = props.listing.capacity_base
+    const extra = props.listing.capacity_extra || 0
+    
+    if (extra > 0) {
+      return `${base} نفر پایه + ${extra} نفر اضافه`
+    } else {
+      return `${base} نفر`
+    }
+  }
+  
+  // Fallback
   return 'نامشخص'
 })
 </script>
