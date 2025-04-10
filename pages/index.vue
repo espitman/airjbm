@@ -2,7 +2,11 @@
   <div>
     <HeroSection />
     <PopularCategories  />
-    <FeaturedListings keyword="province-tehran" />
+    <FeaturedListings 
+      keyword="province-tehran" 
+      title="اقامتگاه‌های تهران" 
+      description="بهترین اقامتگاه‌های تهران را کشف کنید" 
+    />
   </div>
 </template>
 

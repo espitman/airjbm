@@ -3,8 +3,8 @@
     <div class="container mx-auto px-4">
       <div class="flex justify-between items-center mb-4">
         <div>
-          <h2 class="text-3xl font-bold mb-2 font-vazir">اقامتگاه‌های برتر</h2>
-          <p class="text-gray-600 font-vazir">بهترین اقامتگاه‌های ما را کشف کنید</p>
+          <h2 class="text-3xl font-bold mb-2 font-vazir">{{ title }}</h2>
+          <p class="text-gray-600 font-vazir">{{ description }}</p>
         </div>
         <div class="flex items-center gap-4">
           <button class="swiper-button-next-custom">
@@ -25,7 +25,7 @@
       <div v-else-if="$listingsApi.error.value" class="text-center py-12">
         <p class="text-red-600 font-vazir">{{ $listingsApi.error.value }}</p>
         <button 
-          @click="$listingsApi.fetchListings({ page: 1, size: 12, keyword: 'province-mazandaran' })" 
+          @click="$listingsApi.fetchListings({ page: 1, size: 12, keyword: keyword })" 
           class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-vazir"
         >
           تلاش مجدد
@@ -89,6 +89,14 @@ const props = defineProps({
   keyword: {
     type: String,
     default: 'province-mazandaran'
+  },
+  title: {
+    type: String,
+    default: 'اقامتگاه‌های برتر'
+  },
+  description: {
+    type: String,
+    default: 'بهترین اقامتگاه‌های ما را کشف کنید'
   }
 })
 
