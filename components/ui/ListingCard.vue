@@ -18,6 +18,20 @@
                   class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
                 >
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <!-- Rating Square -->
+                <div class="absolute bottom-4 right-4 flex items-center">
+                  <div class="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center shadow-md">
+                    <div class="text-sm font-bold text-white">{{ listing.rate_score || '0' }}</div>
+                  </div>
+                  <div class="flex flex-col items-start mr-2">
+                    <div class="text-xs text-white font-medium">{{ listing.rate_count || '0' }} نظر</div>
+                    <div class="flex mt-1">
+                      <i v-for="i in 5" :key="i" 
+                         class="fas fa-star text-xs" 
+                         :class="i <= Math.floor(listing.rate_score || 0) ? 'text-yellow-400' : 'text-gray-300'"></i>
+                    </div>
+                  </div>
+                </div>
               </div>
             </NuxtLink>
           </swiper-slide>
@@ -50,18 +64,6 @@
         <div class="flex items-center ml-4">
           <i class="fas fa-user ml-2"></i>
           {{ getCapacity }} 
-        </div>
-      </div>
-      <div class="flex justify-between items-center mt-4">
-        <div class="flex items-center gap-4">
-          <div class="flex items-center">
-            <i class="fas fa-star text-yellow-400 ml-1"></i>
-            <span class="font-semibold">{{ listing.rating || listing.rate_score }}</span>
-          </div>
-          <div class="flex items-center text-gray-500">
-            <i class="fas fa-comment-alt ml-1"></i>
-            <span>{{ listing.comments || listing.rate_count }}</span>
-          </div>
         </div>
       </div>
     </div>
@@ -198,6 +200,12 @@ const getCapacity = computed(() => {
 
 :deep(.swiper-pagination) {
   bottom: 0.5rem;
+  left: 0.5rem;
+  right: auto;
+  text-align: left;
+  width: auto;
+  display: flex;
+  justify-content: flex-start;
 }
 
 :deep(.swiper-pagination-bullet) {
@@ -205,6 +213,7 @@ const getCapacity = computed(() => {
   height: 0.5rem;
   background: white;
   opacity: 0.7;
+  margin: 0 0.25rem;
 }
 
 :deep(.swiper-pagination-bullet-active) {

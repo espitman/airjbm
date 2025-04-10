@@ -64,10 +64,10 @@
                 city_fa: listing.city_fa,
                 province_fa: listing.province_fa,
                 price: listing.price_not_checkin_based.min_price,
-                rating: listing.rate_score,
+                rate_score: listing.rate_score,
+                rate_count: listing.rate_count,
                 rooms: listing.rooms_count,
                 capacity: listing.capacity,
-                comments: listing.rate_count,
                 categories: listing.tags.slice(0, 2)
               }"
             />
