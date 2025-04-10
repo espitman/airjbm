@@ -60,6 +60,7 @@
                 title: listing.title,
                 image: listing.images[0],
                 location: listing.city_fa,
+                province: listing.province_fa,
                 price: listing.price_not_checkin_based.min_price,
                 rating: listing.rate_score,
                 rooms: listing.rooms_count,

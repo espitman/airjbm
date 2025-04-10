@@ -10,7 +10,7 @@
       <h3 class="text-lg font-semibold mb-2">{{ listing.title }}</h3>
       <div class="flex items-center text-gray-500 mb-2">
         <i class="fas fa-map-marker-alt ml-2"></i>
-        {{ listing.location || listing.city_fa }}
+        {{ getLocationDisplay }}
       </div>
       <div class="flex flex-wrap gap-2 mb-4">
         <span v-for="category in getCategories" :key="category" 
@@ -78,10 +78,17 @@ const getImageUrl = computed(() => {
 
 // Format price based on API response
 const formatPrice = computed(() => {
+  // Function to convert dollars to toman (1 USD = ~50,000 toman)
+  const convertToToman = (amount) => {
+    if (!amount) return 'N/A'
+    const tomanAmount = Math.round(amount / 10)
+    return tomanAmount.toLocaleString('fa-IR') + ' تومان'
+  }
+  
   if (typeof props.listing.price === 'number') {
-    return `$${props.listing.price}`
+    return convertToToman(props.listing.price)
   } else if (props.listing.price_not_checkin_based && props.listing.price_not_checkin_based.min_price) {
-    return `$${props.listing.price_not_checkin_based.min_price}`
+    return convertToToman(props.listing.price_not_checkin_based.min_price)
   } else {
     return 'N/A'
   }
@@ -102,9 +109,63 @@ const getCategories = computed(() => {
 const getCapacity = computed(() => {
   if (props.listing.capacity) {
     return props.listing.capacity.base + (props.listing.capacity.extra || 0)
+  } else if (props.listing.capacity_base) {
+    return props.listing.capacity_base + (props.listing.capacity_extra || 0)
   } else {
     return 'N/A'
   }
+})
+
+// Get location display with province before city
+const getLocationDisplay = computed(() => {
+  // Prioritize Persian names (province_fa and city_fa)
+  if (props.listing.province_fa && props.listing.city_fa) {
+    return `${props.listing.province_fa}، ${props.listing.city_fa}`
+  }
+  
+  // If we have province_fa but no city_fa, try to use city
+  if (props.listing.province_fa && props.listing.city) {
+    return `${props.listing.province_fa}، ${props.listing.city}`
+  }
+  
+  // If we have city_fa but no province_fa, try to use province
+  if (props.listing.city_fa && props.listing.province) {
+    return `${props.listing.province}، ${props.listing.city_fa}`
+  }
+  
+  // If we have province and city separately
+  if (props.listing.province && props.listing.city) {
+    return `${props.listing.province}، ${props.listing.city}`
+  }
+  
+  // If we have a location field that might contain both
+  if (props.listing.location) {
+    // Check if location contains a comma or separator
+    if (props.listing.location.includes('،') || props.listing.location.includes(',')) {
+      return props.listing.location
+    }
+    
+    // If it's just a city name, try to add province
+    if (props.listing.province_fa) {
+      return `${props.listing.province_fa}، ${props.listing.location}`
+    } else if (props.listing.province) {
+      return `${props.listing.province}، ${props.listing.location}`
+    }
+    
+    return props.listing.location
+  }
+  
+  // Fallback to city_fa if available
+  if (props.listing.city_fa) {
+    return props.listing.city_fa
+  }
+  
+  // Fallback to city if available
+  if (props.listing.city) {
+    return props.listing.city
+  }
+  
+  return 'Location not available'
 })
 </script>
 
