@@ -4,28 +4,26 @@
       <!-- Image Slideshow with Gradient Overlay -->
       <div class="relative">
         <swiper
-          :modules="[Pagination]"
-          :pagination="{ clickable: true }"
+          :modules="[Pagination, Navigation]"
+          :pagination="false"
+          :navigation="true"
           :slides-per-view="1"
+          :loop="true"
           class="listing-swiper"
         >
           <swiper-slide v-for="(image, index) in getAllImages" :key="index">
             <NuxtLink :to="`/listings/${listing.id}`" class="block">
               <div class="relative overflow-hidden group">
-                <img 
-                  :src="image" 
-                  :alt="`${listing.title} - تصویر ${index + 1}`" 
+                <img
+                  :src="image"
+                  :alt="`${listing.title} - تصویر ${index + 1}`"
                   class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
-                >
+                />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
               </div>
             </NuxtLink>
           </swiper-slide>
         </swiper>
-      </div>
-      
-      <div class="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-medium z-10">
-        {{ formatPrice }} / شب
       </div>
       
       <!-- Rating Square - Positioned at bottom right -->
@@ -74,9 +72,10 @@
 <script setup>
 import { computed } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import { Pagination } from 'swiper/modules'
+import { Pagination, Navigation } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
+import 'swiper/css/navigation'
 
 const props = defineProps({
   listing: {
@@ -197,6 +196,35 @@ const getCapacity = computed(() => {
 <style scoped>
 .listing-swiper {
   height: 12rem;
+}
+
+:deep(.swiper-button-next),
+:deep(.swiper-button-prev) {
+  color: white;
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  visibility: hidden;
+}
+
+.listing-swiper:hover :deep(.swiper-button-next),
+.listing-swiper:hover :deep(.swiper-button-prev) {
+  opacity: 1;
+  visibility: visible;
+}
+
+:deep(.swiper-button-next:after),
+:deep(.swiper-button-prev:after) {
+  font-size: 1rem;
+}
+
+:deep(.swiper-button-disabled) {
+  opacity: 0.35;
+  cursor: auto;
+  pointer-events: none;
 }
 
 :deep(.swiper-pagination) {
