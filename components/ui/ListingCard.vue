@@ -26,6 +26,13 @@
         </swiper>
       </div>
       
+      <!-- Price Badge - Positioned at top left -->
+      <div class="absolute top-4 left-4 z-20">
+        <div class="bg-blue-600 text-white px-3 py-1 rounded-lg shadow-md text-sm font-semibold">
+          {{ formatPrice }}
+        </div>
+      </div>
+      
       <!-- Rating Square - Positioned at bottom right -->
       <div class="absolute bottom-6 right-4 z-20 flex items-center">
         <div class="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center shadow-md">
@@ -115,13 +122,22 @@ const formatPrice = computed(() => {
     return tomanAmount.toLocaleString('fa-IR') + ' تومان'
   }
   
+  // First try to get the check-in based price
+  if (props.listing.price_checkin_based && props.listing.price_checkin_based.total_price) {
+    return convertToToman(props.listing.price_checkin_based.total_price)
+  }
+  
+  // Then try to get the not check-in based price
+  if (props.listing.price_not_checkin_based && props.listing.price_not_checkin_based.min_price) {
+    return convertToToman(props.listing.price_not_checkin_based.min_price)
+  }
+  
+  // Finally, try the direct price property
   if (typeof props.listing.price === 'number') {
     return convertToToman(props.listing.price)
-  } else if (props.listing.price_not_checkin_based && props.listing.price_not_checkin_based.min_price) {
-    return convertToToman(props.listing.price_not_checkin_based.min_price)
-  } else {
-    return 'N/A'
   }
+  
+  return 'N/A'
 })
 
 // Get categories from different possible sources
@@ -162,51 +178,23 @@ const getLocationDisplay = computed(() => {
 
 // Get capacity from different possible sources
 const getCapacity = computed(() => {
-  // If capacity is a number, return it directly
-  if (typeof props.listing.capacity === 'number') {
-    return `${props.listing.capacity} نفر`
-  }
-  
-  // If capacity is an object with total property
-  if (props.listing.capacity && props.listing.capacity.total) {
-    return `${props.listing.capacity.total} نفر`
-  }
-  
-  // If capacity is an object with base and extra properties
-  if (props.listing.capacity && props.listing.capacity.base) {
-    const base = props.listing.capacity.base
+  if (props.listing.capacity) {
+    const base = props.listing.capacity.base || 0
     const extra = props.listing.capacity.extra || 0
-    
-    if (extra > 0) {
-      return `${base} نفر پایه + ${extra} نفر اضافه`
-    } else {
-      return `${base} نفر`
-    }
+    return `${base + extra} نفر`
   }
-  
-  // If we have capacity_base and capacity_extra
-  if (props.listing.capacity_base) {
-    const base = props.listing.capacity_base
-    const extra = props.listing.capacity_extra || 0
-    
-    if (extra > 0) {
-      return `${base} نفر پایه + ${extra} نفر اضافه`
-    } else {
-      return `${base} نفر`
-    }
-  }
-  
-  // Fallback
-  return 'نامشخص'
+  return 'ظرفیت نامشخص'
 })
 
-// Get Persian name for the type using the plugin
+// Get type name from different possible sources
 const getTypeName = computed(() => {
-  return $persianTranslations.getPersianTypeName(
-    props.listing.type,
-    props.listing.categories,
-    props.listing.tags
-  )
+  if (props.listing.type_fa) {
+    return props.listing.type_fa
+  }
+  if (props.listing.type) {
+    return props.listing.type
+  }
+  return ''
 })
 </script>
 
