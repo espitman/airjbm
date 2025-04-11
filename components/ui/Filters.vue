@@ -40,7 +40,7 @@
             <option v-for="type in types" :key="type" :value="type">{{ getPersianTypeName(type) }}</option>
           </select>
         </div>
-        <div v-if="locationTypes.length > 0" class="w-1/2">
+        <div v-if="locationTypes.length > 1" class="w-1/2">
           <label class="block text-sm font-medium text-gray-700 mb-1">منطقه</label>
           <select 
             v-model="localFilters.locationType" 
