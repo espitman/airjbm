@@ -58,6 +58,7 @@ interface FetchListingsParams {
   check_out?: string
   min_price?: number
   max_price?: number
+  sort?: string
 }
 
 export default defineNuxtPlugin(() => {
@@ -86,13 +87,23 @@ export default defineNuxtPlugin(() => {
     check_in,
     check_out,
     min_price,
-    max_price
+    max_price,
+    sort
   }: FetchListingsParams) => {
     try {
       state.loading.value = true
       state.error.value = null
 
       const url = `https://jayaber.liara.run/search/${keyword}`
+
+      // Handle sort parameter
+      let sortParam = sort
+      let orderParam = 'desc'
+      if (sort?.includes('-')) {
+        const [sortValue, orderValue] = sort.split('-')
+        sortParam = sortValue
+        orderParam = orderValue || 'desc'
+      }
 
       const requestBody = {
         page,
@@ -106,7 +117,9 @@ export default defineNuxtPlugin(() => {
         ...(check_in && { check_in }),
         ...(check_out && { check_out }),
         ...(min_price && { min_price: min_price * 10 }),
-        ...(max_price && { max_price: max_price * 10 })
+        ...(max_price && { max_price: max_price * 10 }),
+        ...(sortParam && { sort: sortParam }),
+        ...(orderParam && { order: orderParam })
       }
 
       const response = await fetch(url, {

@@ -152,10 +152,11 @@
         v-model="props.filters.sortBy" 
         class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
       >
+        <option value="">پیشفرض</option>
         <option value="price-asc">قیمت: کم به زیاد</option>
         <option value="price-desc">قیمت: زیاد به کم</option>
-        <option value="rating-desc">امتیاز: زیاد به کم</option>
-        <option value="rating-asc">امتیاز: کم به زیاد</option>
+        <option value="score-desc">امتیاز: زیاد به کم</option>
+        <option value="score-asc">امتیاز: کم به زیاد</option>
       </select>
     </div>
 
@@ -272,7 +273,7 @@ const applyFilters = () => {
     check_out: props.filters.check_out || '',
     selectedRules: props.filters.rules || [],
     selectedAmenities: props.filters.amenities || [],
-    sortBy: props.filters.sortBy || 'price-asc'
+    sortBy: props.filters.sortBy || 'default'
   })
   
   // Close the modal if it's open

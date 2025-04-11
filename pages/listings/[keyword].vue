@@ -210,7 +210,8 @@ onMounted(() => {
     check_in: filters.value.check_in || undefined,
     check_out: filters.value.check_out || undefined,
     min_price: filters.value.minPrice ? parseInt(filters.value.minPrice) : undefined,
-    max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined
+    max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined,
+    sort: filters.value.sortBy
   })
 })
 
@@ -241,7 +242,7 @@ const filters = ref({
   check_out: '',
   selectedRules: [],
   selectedAmenities: [],
-  sortBy: 'price-asc'
+  sortBy: ''
 })
 
 // Remove the localListings array and use API results directly
@@ -260,7 +261,7 @@ const filteredListings = computed(() => {
     filters.value.check_out || 
     filters.value.selectedRules.length > 0 || 
     filters.value.selectedAmenities.length > 0 || 
-    filters.value.sortBy !== 'price-asc'
+    filters.value.sortBy !== ''
   
   // If no filters are applied, just return the API results
   if (!hasFilters) {
@@ -452,7 +453,8 @@ watch(() => route.query, (newQuery) => {
         check_in: filters.value.check_in || undefined,
         check_out: filters.value.check_out || undefined,
         min_price: filters.value.minPrice ? parseInt(filters.value.minPrice) : undefined,
-        max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined
+        max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined,
+        sort: filters.value.sortBy
       })
     }
   }
@@ -477,7 +479,8 @@ watch(() => route.params.keyword, (newKeyword) => {
       check_in: filters.value.check_in || undefined,
       check_out: filters.value.check_out || undefined,
       min_price: filters.value.minPrice ? parseInt(filters.value.minPrice) : undefined,
-      max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined
+      max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined,
+      sort: filters.value.sortBy
     })
   }
 })
@@ -500,7 +503,8 @@ const goToPage = (page) => {
       check_in: filters.value.check_in || undefined,
       check_out: filters.value.check_out || undefined,
       min_price: filters.value.minPrice ? parseInt(filters.value.minPrice) : undefined,
-      max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined
+      max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined,
+      sort: filters.value.sortBy
     })
     
     // Scroll to top when changing pages
@@ -575,7 +579,7 @@ const handleApplyFilters = (newFilters) => {
     query.selectedAmenities = filters.value.selectedAmenities.join(',')
   else delete query.selectedAmenities
   
-  if (filters.value.sortBy && filters.value.sortBy !== 'price-asc') 
+  if (filters.value.sortBy) 
     query.sortBy = filters.value.sortBy
   else delete query.sortBy
   
@@ -598,7 +602,8 @@ const handleApplyFilters = (newFilters) => {
     check_in: filters.value.check_in || undefined,
     check_out: filters.value.check_out || undefined,
     min_price: filters.value.minPrice ? parseInt(filters.value.minPrice) : undefined,
-    max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined
+    max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined,
+    sort: filters.value.sortBy
   })
   
   // Scroll to top when applying filters
