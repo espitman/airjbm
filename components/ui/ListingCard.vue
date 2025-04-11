@@ -43,7 +43,9 @@
     </div>
     <div class="p-4">
       <NuxtLink :to="`/listings/${listing.id}`" class="block">
-        <h3 class="text-lg font-semibold mb-2 hover:text-blue-600 transition-colors">{{ listing.title }}</h3>
+        <h3 class="text-lg font-semibold mb-2 hover:text-blue-600 transition-colors">
+          {{ getTypeName }} {{ listing.title }}
+        </h3>
       </NuxtLink>
       <div class="flex items-center text-gray-500 mb-2">
         <i class="fas fa-map-marker-alt ml-2"></i>
@@ -73,9 +75,12 @@
 import { computed } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination, Navigation } from 'swiper/modules'
+import { useNuxtApp } from '#app'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
+
+const { $persianTranslations } = useNuxtApp()
 
 const props = defineProps({
   listing: {
@@ -190,6 +195,15 @@ const getCapacity = computed(() => {
   
   // Fallback
   return 'نامشخص'
+})
+
+// Get Persian name for the type using the plugin
+const getTypeName = computed(() => {
+  return $persianTranslations.getPersianTypeName(
+    props.listing.type,
+    props.listing.categories,
+    props.listing.tags
+  )
 })
 </script>
 

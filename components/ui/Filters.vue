@@ -178,6 +178,9 @@
 import { ref, watch, onMounted } from 'vue'
 import RulesAmenitiesModal from './RulesAmenitiesModal.vue'
 import { useFilters } from '~/composables/useFilters'
+import { useNuxtApp } from '#app'
+
+const { $persianTranslations } = useNuxtApp()
 
 const props = defineProps({
   filters: {
@@ -268,36 +271,14 @@ const applyFilters = () => {
   }
 }
 
-// Function to get Persian name for type
+// Function to get Persian name for type using the plugin
 const getPersianTypeName = (type) => {
-  const typeMap = {
-    'apartment': 'آپارتمان',
-    'villa': 'ویلا',
-    'carvansara': 'کاروانسرا',
-    'cottage': 'کلبه',
-    'hostel': 'هاستل',
-    'complex': 'مجتمع اقامتگاهی',
-    'suite': 'سوئیت',
-    'traditional': 'سنتی',
-    'ecotourism': 'بوم گردی',
-    'inn': 'مسافرخانه'
-  }
-  return typeMap[type] || type
+  return $persianTranslations.getPersianTypeName(type)
 }
 
-// Function to get Persian name for region
+// Function to get Persian name for region using the plugin
 const getPersianRegionName = (region) => {
-  const regionMap = {
-    'coastal': 'ساحلی',
-    'rustic': 'روستایی',
-    'urban': 'شهری',
-    'forest': 'جنگلی',
-    'mountainous': 'کوهستانی',
-    'desert': 'بیابانی',
-    'jungle': 'جنگلی',
-    'city': 'شهری'
-  }
-  return regionMap[region] || region
+  return $persianTranslations.getPersianRegionName(region)
 }
 
 // Update the city selection handler
