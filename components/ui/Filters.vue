@@ -99,35 +99,37 @@
       </div>
     </div>
 
-    <!-- Price Range -->
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-1">محدوده قیمت</label>
-      <div class="px-2">
-        <div class="flex gap-4 mb-2">
-          <div class="w-1/2">
-            <label class="block text-xs text-gray-600 mb-1">حداقل قیمت</label>
-            <input 
-              type="range" 
-              v-model="props.filters.minPrice" 
-              :min="0" 
-              :max="1000" 
-              step="10"
-              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-            >
-            <div class="text-xs text-gray-600 mt-1">${{ props.filters.minPrice || 0 }}</div>
-          </div>
-          <div class="w-1/2">
-            <label class="block text-xs text-gray-600 mb-1">حداکثر قیمت</label>
-            <input 
-              type="range" 
-              v-model="props.filters.maxPrice" 
-              :min="0" 
-              :max="1000" 
-              step="10"
-              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-            >
-            <div class="text-xs text-gray-600 mt-1">${{ props.filters.maxPrice || 1000 }}</div>
-          </div>
+    <!-- Price Range Filter -->
+    <div class="mb-6">
+      <h3 class="text-lg font-semibold mb-4">محدوده قیمت</h3>
+      <div class="px-4">
+        <VueSlider
+          v-model="priceRange"
+          :min="0"
+          :max="1000000000"
+          :interval="1000000"
+          :tooltip="'none'"
+          :process="true"
+          :dot-size="16"
+          :height="4"
+          :tooltip-dir="'top'"
+          :rail-color="'#e5e7eb'"
+          :process-color="'#3b82f6'"
+          :dot-color="'#3b82f6'"
+          :dot-border="2"
+          :dot-border-color="'#ffffff'"
+          :dot-shadow="true"
+          :enable-cross="false"
+          :lazy="false"
+          :clickable="true"
+          :drag-on-click="true"
+          :multiple="true"
+          :reverse="true"
+          @change="updatePriceRange"
+        />
+        <div class="flex justify-between mt-2 text-sm text-gray-600">
+          <span>{{ formatPrice(priceRange[1]) }}</span>
+          <span>{{ formatPrice(priceRange[0]) }}</span>
         </div>
       </div>
     </div>
@@ -182,6 +184,7 @@ import RulesAmenitiesModal from './RulesAmenitiesModal.vue'
 import DateSelectionModal from './DateSelectionModal.vue'
 import { useFilters } from '~/composables/useFilters'
 import { useNuxtApp } from '#app'
+import VueSlider from 'vue-3-slider-component'
 
 const { $persianTranslations } = useNuxtApp()
 
@@ -211,6 +214,9 @@ const regions = ref(['coastal', 'rustic', 'urban', 'forest', 'mountainous', 'des
 
 // Separate display value for the city select
 const selectedCityDisplay = ref('')
+
+// Price range state
+const priceRange = ref([0, 1000000000])
 
 // Watch for changes in userFilters.cities and update cities
 watch(() => props.userFilters.cities, (newCities) => {
@@ -327,8 +333,27 @@ const handleRegionChange = (event) => {
   updateFilter('regions', select.value ? [select.value] : [])
 }
 
-// Initialize default values for types and regions
+// Format price in toman
+const formatPrice = (price) => {
+  return `${(price / 10).toLocaleString('fa-IR')} تومان`
+}
+
+// Update price range and filters
+const updatePriceRange = () => {
+  // Update filters - note the swapped indices due to reverse mode
+  props.filters.min_price = priceRange.value[1] / 10 // Convert toman to dollars
+  props.filters.max_price = priceRange.value[0] / 10
+}
+
+// Initialize price range from filters
 onMounted(() => {
+  if (props.filters.min_price) {
+    priceRange.value[1] = props.filters.min_price * 10 // Convert dollars to toman
+  }
+  if (props.filters.max_price) {
+    priceRange.value[0] = props.filters.max_price * 10
+  }
+  
   // Only set default types if not already set and API hasn't provided values
   if ((!types.value || types.value.length === 0) && 
       (!props.userFilters.types || !Array.isArray(props.userFilters.types) || props.userFilters.types.length === 0)) {
@@ -385,5 +410,22 @@ onMounted(() => {
 
 .vpd-popup {
   z-index: 1000 !important;
+}
+
+/* Vue Slider custom styles */
+.vue-slider {
+  margin: 1rem 0;
+}
+
+.vue-slider-dot {
+  cursor: pointer;
+}
+
+.vue-slider-process {
+  background-color: #3b82f6;
+}
+
+.vue-slider-rail {
+  background-color: #e5e7eb;
 }
 </style> 
