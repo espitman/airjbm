@@ -29,8 +29,8 @@
 
     <!-- Type and Location Type -->
     <div class="mb-4">
-      <div class="flex gap-2">
-        <div v-if="types.length > 1" class="w-1/2">
+      <div class="flex flex-col gap-4">
+        <div v-if="types.length > 1" class="w-full">
           <label class="block text-sm font-medium text-gray-700 mb-1">نوع</label>
           <select 
             v-model="localFilters.type" 
@@ -40,7 +40,7 @@
             <option v-for="type in types" :key="type" :value="type">{{ getPersianTypeName(type) }}</option>
           </select>
         </div>
-        <div v-if="locationTypes.length > 1" class="w-1/2">
+        <div v-if="locationTypes.length > 1" class="w-full">
           <label class="block text-sm font-medium text-gray-700 mb-1">منطقه</label>
           <select 
             v-model="localFilters.locationType" 
