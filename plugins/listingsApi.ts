@@ -52,6 +52,7 @@ interface FetchListingsParams {
   cities?: string[]
   types?: string[]
   regions?: string[]
+  passengerCount?: number
 }
 
 export default defineNuxtPlugin(() => {
@@ -68,12 +69,22 @@ export default defineNuxtPlugin(() => {
     })
   }
 
-  const fetchListings = async ({ page = 1, size = 10, keyword, cities = [], types = [], regions = [] }: FetchListingsParams) => {
+  const fetchListings = async ({ page = 1, size = 10, keyword, cities = [], types = [], regions = [], passengerCount }: FetchListingsParams) => {
     try {
       state.loading.value = true
       state.error.value = null
 
       const url = `https://jayaber.liara.run/search/${keyword}`
+
+      const requestBody = {
+        page,
+        size,
+        keyword,
+        cities,
+        types,
+        regions,
+        ...(passengerCount && { capacity: passengerCount })
+      }
 
       const response = await fetch(url, {
         method: 'POST',
@@ -81,7 +92,7 @@ export default defineNuxtPlugin(() => {
           'accept': 'application/json',
           'content-type': 'application/json'
         },
-        body: JSON.stringify({ page, size, cities, types, regions })
+        body: JSON.stringify(requestBody)
       })
 
       if (!response.ok) {

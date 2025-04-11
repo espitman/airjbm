@@ -60,6 +60,30 @@
       </select>
     </div>
 
+    <!-- Passenger Count and Rooms Count -->
+    <div class="mb-4">
+      <div class="flex gap-2">
+        <div class="w-1/2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">تعداد مسافر</label>
+          <input 
+            type="number" 
+            v-model="props.filters.passengerCount" 
+            placeholder="تعداد مسافران" 
+            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+          >
+        </div>
+        <div class="w-1/2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">تعداد اتاق</label>
+          <input 
+            type="number" 
+            v-model="props.filters.roomsCount" 
+            placeholder="تعداد اتاق‌ها" 
+            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+          >
+        </div>
+      </div>
+    </div>
+
     <!-- Price Range -->
     <div class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">محدوده قیمت</label>
@@ -89,30 +113,6 @@
             >
             <div class="text-xs text-gray-600 mt-1">${{ props.filters.maxPrice || 1000 }}</div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Passenger Count and Rooms Count -->
-    <div class="mb-4">
-      <div class="flex gap-2">
-        <div class="w-1/2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">تعداد مسافر</label>
-          <input 
-            type="number" 
-            v-model="props.filters.passengerCount" 
-            placeholder="تعداد مسافران" 
-            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-          >
-        </div>
-        <div class="w-1/2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">تعداد اتاق</label>
-          <input 
-            type="number" 
-            v-model="props.filters.roomsCount" 
-            placeholder="تعداد اتاق‌ها" 
-            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-          >
         </div>
       </div>
     </div>
