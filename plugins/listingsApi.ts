@@ -54,6 +54,8 @@ interface FetchListingsParams {
   regions?: string[]
   passengerCount?: number
   rooms?: number
+  check_in?: string
+  check_out?: string
 }
 
 export default defineNuxtPlugin(() => {
@@ -70,7 +72,18 @@ export default defineNuxtPlugin(() => {
     })
   }
 
-  const fetchListings = async ({ page = 1, size = 10, keyword, cities = [], types = [], regions = [], passengerCount, rooms }: FetchListingsParams) => {
+  const fetchListings = async ({ 
+    page = 1, 
+    size = 10, 
+    keyword, 
+    cities = [], 
+    types = [], 
+    regions = [], 
+    passengerCount, 
+    rooms,
+    check_in,
+    check_out 
+  }: FetchListingsParams) => {
     try {
       state.loading.value = true
       state.error.value = null
@@ -85,7 +98,9 @@ export default defineNuxtPlugin(() => {
         types,
         regions,
         ...(passengerCount && { capacity: passengerCount }),
-        ...(rooms && { rooms })
+        ...(rooms && { rooms }),
+        ...(check_in && { check_in }),
+        ...(check_out && { check_out })
       }
 
       const response = await fetch(url, {

@@ -67,8 +67,8 @@
         @click="showDateModal = true"
         class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-right flex justify-between items-center"
       >
-        <span v-if="props.filters.checkinDate && props.filters.checkoutDate">
-          {{ formatDate(props.filters.checkinDate) }} - {{ formatDate(props.filters.checkoutDate) }}
+        <span v-if="props.filters.check_in && props.filters.check_out">
+          {{ formatDate(props.filters.check_in) }} - {{ formatDate(props.filters.check_out) }}
         </span>
         <span v-else>انتخاب تاریخ ورود و خروج</span>
         <i class="fas fa-calendar-alt text-gray-400"></i>
@@ -168,8 +168,8 @@
     <!-- Date Selection Modal -->
     <DateSelectionModal
       :show="showDateModal"
-      :initial-checkin-date="props.filters.checkinDate"
-      :initial-checkout-date="props.filters.checkoutDate"
+      :initial-checkin-date="props.filters.check_in"
+      :initial-checkout-date="props.filters.check_out"
       @close="showDateModal = false"
       @update:dates="handleDateUpdate"
     />
@@ -262,8 +262,8 @@ const applyFilters = () => {
     maxPrice: props.filters.maxPrice || '',
     passengerCount: props.filters.passengerCount || '',
     roomsCount: props.filters.roomsCount || '',
-    checkinDate: props.filters.checkinDate || '',
-    checkoutDate: props.filters.checkoutDate || '',
+    check_in: props.filters.check_in || '',
+    check_out: props.filters.check_out || '',
     selectedRules: props.filters.rules || [],
     selectedAmenities: props.filters.amenities || [],
     sortBy: props.filters.sortBy || 'price-asc'
@@ -298,8 +298,8 @@ const formatDate = (dateString) => {
 
 // Function to handle date updates from the modal
 const handleDateUpdate = (dates) => {
-  props.filters.checkinDate = dates.checkinDate;
-  props.filters.checkoutDate = dates.checkoutDate;
+  props.filters.check_in = dates.check_in;
+  props.filters.check_out = dates.check_out;
 }
 
 // Update the city selection handler

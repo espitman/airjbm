@@ -191,8 +191,8 @@ onMounted(() => {
   if (query.passengerCount) filters.value.passengerCount = query.passengerCount
   if (query.roomsCount) filters.value.roomsCount = query.roomsCount
   if (query.region) filters.value.region = query.region
-  if (query.checkinDate) filters.value.checkinDate = query.checkinDate
-  if (query.checkoutDate) filters.value.checkoutDate = query.checkoutDate
+  if (query.check_in) filters.value.check_in = query.check_in
+  if (query.check_out) filters.value.check_out = query.check_out
   if (query.selectedRules) filters.value.selectedRules = query.selectedRules.split(',')
   if (query.selectedAmenities) filters.value.selectedAmenities = query.selectedAmenities.split(',')
   if (query.sortBy) filters.value.sortBy = query.sortBy
@@ -206,7 +206,9 @@ onMounted(() => {
     types: filters.value.type ? [filters.value.type] : [],
     regions: filters.value.region ? [filters.value.region] : [],
     passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
-    rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined
+    rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined,
+    check_in: filters.value.check_in || undefined,
+    check_out: filters.value.check_out || undefined
   })
 })
 
@@ -233,8 +235,8 @@ const filters = ref({
   passengerCount: '',
   roomsCount: '',
   region: '',
-  checkinDate: '',
-  checkoutDate: '',
+  check_in: '',
+  check_out: '',
   selectedRules: [],
   selectedAmenities: [],
   sortBy: 'price-asc'
@@ -252,8 +254,8 @@ const filteredListings = computed(() => {
     filters.value.passengerCount || 
     filters.value.roomsCount || 
     filters.value.region || 
-    filters.value.checkinDate || 
-    filters.value.checkoutDate || 
+    filters.value.check_in || 
+    filters.value.check_out || 
     filters.value.selectedRules.length > 0 || 
     filters.value.selectedAmenities.length > 0 || 
     filters.value.sortBy !== 'price-asc'
@@ -311,13 +313,13 @@ const filteredListings = computed(() => {
   }
 
   // Apply check-in date filter
-  if (filters.value.checkinDate) {
-    result = result.filter(listing => listing.checkinDate >= filters.value.checkinDate)
+  if (filters.value.check_in) {
+    result = result.filter(listing => listing.checkinDate >= filters.value.check_in)
   }
 
   // Apply check-out date filter
-  if (filters.value.checkoutDate) {
-    result = result.filter(listing => listing.checkoutDate <= filters.value.checkoutDate)
+  if (filters.value.check_out) {
+    result = result.filter(listing => listing.checkoutDate <= filters.value.check_out)
   }
 
   // Apply rules filter
@@ -425,8 +427,8 @@ watch(() => route.query, (newQuery) => {
   if (newQuery.passengerCount !== undefined) filters.value.passengerCount = newQuery.passengerCount
   if (newQuery.roomsCount !== undefined) filters.value.roomsCount = newQuery.roomsCount
   if (newQuery.region !== undefined) filters.value.region = newQuery.region
-  if (newQuery.checkinDate !== undefined) filters.value.checkinDate = newQuery.checkinDate
-  if (newQuery.checkoutDate !== undefined) filters.value.checkoutDate = newQuery.checkoutDate
+  if (newQuery.check_in !== undefined) filters.value.check_in = newQuery.check_in
+  if (newQuery.check_out !== undefined) filters.value.check_out = newQuery.check_out
   if (newQuery.selectedRules !== undefined) filters.value.selectedRules = newQuery.selectedRules.split(',')
   if (newQuery.selectedAmenities !== undefined) filters.value.selectedAmenities = newQuery.selectedAmenities.split(',')
   if (newQuery.sortBy !== undefined) filters.value.sortBy = newQuery.sortBy
@@ -444,7 +446,9 @@ watch(() => route.query, (newQuery) => {
         types: filters.value.type ? [filters.value.type] : [],
         regions: filters.value.region ? [filters.value.region] : [],
         passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
-        rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined
+        rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined,
+        check_in: filters.value.check_in || undefined,
+        check_out: filters.value.check_out || undefined
       })
     }
   }
@@ -465,7 +469,9 @@ watch(() => route.params.keyword, (newKeyword) => {
       types: filters.value.type ? [filters.value.type] : [],
       regions: filters.value.region ? [filters.value.region] : [],
       passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
-      rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined
+      rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined,
+      check_in: filters.value.check_in || undefined,
+      check_out: filters.value.check_out || undefined
     })
   }
 })
@@ -484,7 +490,9 @@ const goToPage = (page) => {
       types: filters.value.type ? [filters.value.type] : [],
       regions: filters.value.region ? [filters.value.region] : [],
       passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
-      rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined
+      rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined,
+      check_in: filters.value.check_in || undefined,
+      check_out: filters.value.check_out || undefined
     })
     
     // Scroll to top when changing pages
@@ -545,11 +553,11 @@ const handleApplyFilters = (newFilters) => {
   if (filters.value.roomsCount) query.roomsCount = filters.value.roomsCount
   else delete query.roomsCount
   
-  if (filters.value.checkinDate) query.checkinDate = filters.value.checkinDate
-  else delete query.checkinDate
+  if (filters.value.check_in) query.check_in = filters.value.check_in
+  else delete query.check_in
   
-  if (filters.value.checkoutDate) query.checkoutDate = filters.value.checkoutDate
-  else delete query.checkoutDate
+  if (filters.value.check_out) query.check_out = filters.value.check_out
+  else delete query.check_out
   
   if (filters.value.selectedRules && filters.value.selectedRules.length > 0) 
     query.selectedRules = filters.value.selectedRules.join(',')
@@ -578,7 +586,9 @@ const handleApplyFilters = (newFilters) => {
     types: filters.value.type ? [filters.value.type] : [],
     regions: filters.value.region ? [filters.value.region] : [],
     passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
-    rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined
+    rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined,
+    check_in: filters.value.check_in || undefined,
+    check_out: filters.value.check_out || undefined
   })
   
   // Scroll to top when applying filters

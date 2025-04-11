@@ -135,14 +135,14 @@ watch(() => props.initialCheckoutDate, (newValue) => {
 const updateUrlParams = (checkin, checkout) => {
   const query = { ...route.query }
   if (checkin) {
-    query.checkin = checkin
+    query.check_in = checkin
   } else {
-    delete query.checkin
+    delete query.check_in
   }
   if (checkout) {
-    query.checkout = checkout
+    query.check_out = checkout
   } else {
-    delete query.checkout
+    delete query.check_out
   }
   router.push({ query })
 }
@@ -161,10 +161,10 @@ const confirmDates = () => {
   // Update URL parameters
   updateUrlParams(formattedCheckinDate, formattedCheckoutDate);
   
-  // Emit the date update event
+  // Emit the date update event with the correct API format
   emit('update:dates', {
-    checkinDate: formattedCheckinDate,
-    checkoutDate: formattedCheckoutDate
+    check_in: formattedCheckinDate,
+    check_out: formattedCheckoutDate
   });
   closeModal();
 }
@@ -187,8 +187,11 @@ const formatDateForEmission = (dateString) => {
   try {
     const [year, month, day] = dateString.split('/').map(Number);
     if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
-      // This is a simplified conversion - in a real app, you'd use a proper conversion function
-      // For now, we'll just return the date as is, assuming it's already in the correct format
+      // Use the $persianTranslations.jalaliToGregorian function if available
+      if ($persianTranslations && typeof $persianTranslations.jalaliToGregorian === 'function') {
+        return $persianTranslations.jalaliToGregorian(year, month, day);
+      }
+      // Fallback to simple conversion
       return dateString.replace(/\//g, '-');
     }
   } catch (error) {
