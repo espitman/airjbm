@@ -208,7 +208,9 @@ onMounted(() => {
     passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
     rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined,
     check_in: filters.value.check_in || undefined,
-    check_out: filters.value.check_out || undefined
+    check_out: filters.value.check_out || undefined,
+    min_price: filters.value.minPrice ? parseInt(filters.value.minPrice) : undefined,
+    max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined
   })
 })
 
@@ -448,7 +450,9 @@ watch(() => route.query, (newQuery) => {
         passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
         rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined,
         check_in: filters.value.check_in || undefined,
-        check_out: filters.value.check_out || undefined
+        check_out: filters.value.check_out || undefined,
+        min_price: filters.value.minPrice ? parseInt(filters.value.minPrice) : undefined,
+        max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined
       })
     }
   }
@@ -471,7 +475,9 @@ watch(() => route.params.keyword, (newKeyword) => {
       passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
       rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined,
       check_in: filters.value.check_in || undefined,
-      check_out: filters.value.check_out || undefined
+      check_out: filters.value.check_out || undefined,
+      min_price: filters.value.minPrice ? parseInt(filters.value.minPrice) : undefined,
+      max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined
     })
   }
 })
@@ -492,7 +498,9 @@ const goToPage = (page) => {
       passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
       rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined,
       check_in: filters.value.check_in || undefined,
-      check_out: filters.value.check_out || undefined
+      check_out: filters.value.check_out || undefined,
+      min_price: filters.value.minPrice ? parseInt(filters.value.minPrice) : undefined,
+      max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined
     })
     
     // Scroll to top when changing pages
@@ -588,7 +596,9 @@ const handleApplyFilters = (newFilters) => {
     passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
     rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined,
     check_in: filters.value.check_in || undefined,
-    check_out: filters.value.check_out || undefined
+    check_out: filters.value.check_out || undefined,
+    min_price: filters.value.minPrice ? parseInt(filters.value.minPrice) : undefined,
+    max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined
   })
   
   // Scroll to top when applying filters

@@ -56,6 +56,8 @@ interface FetchListingsParams {
   rooms?: number
   check_in?: string
   check_out?: string
+  min_price?: number
+  max_price?: number
 }
 
 export default defineNuxtPlugin(() => {
@@ -82,7 +84,9 @@ export default defineNuxtPlugin(() => {
     passengerCount, 
     rooms,
     check_in,
-    check_out 
+    check_out,
+    min_price,
+    max_price
   }: FetchListingsParams) => {
     try {
       state.loading.value = true
@@ -100,7 +104,9 @@ export default defineNuxtPlugin(() => {
         ...(passengerCount && { capacity: passengerCount }),
         ...(rooms && { rooms }),
         ...(check_in && { check_in }),
-        ...(check_out && { check_out })
+        ...(check_out && { check_out }),
+        ...(min_price && { min_price }),
+        ...(max_price && { max_price })
       }
 
       const response = await fetch(url, {
