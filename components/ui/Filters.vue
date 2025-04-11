@@ -16,7 +16,7 @@
     </div>
     
     <!-- City -->
-    <div v-if="cities && cities.length > 0" class="mb-4">
+    <div v-if="cities && cities.length > 1" class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">شهر</label>
       <select 
         v-model="selectedCityDisplay" 
@@ -31,7 +31,7 @@
     </div>
 
     <!-- Type -->
-    <div v-if="types && types.length > 0" class="mb-4">
+    <div v-if="types && types.length > 1" class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">نوع اقامتگاه</label>
       <select 
         v-model="localFilters.type" 
@@ -46,7 +46,7 @@
     </div>
 
     <!-- Region -->
-    <div v-if="regions && regions.length > 0" class="mb-4">
+    <div v-if="regions && regions.length > 1" class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">منطقه</label>
       <select 
         v-model="localFilters.region" 
