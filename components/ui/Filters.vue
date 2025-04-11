@@ -237,10 +237,6 @@ watch(() => props.filters, (newFilters) => {
   } else {
     selectedCityDisplay.value = ''
   }
-  
-  // Log the region and type values from filters
-  console.log('Region from filters:', localFilters.value.region)
-  console.log('Type from filters:', localFilters.value.type)
 }, { deep: true, immediate: true })
 
 // Watch for changes in userFilters.cities and update cities
@@ -262,7 +258,6 @@ watch(() => props.userFilters.cities, (newCities) => {
 
 // Watch for changes in userFilters.types and update types
 watch(() => props.userFilters.types, (newTypes) => {
-  console.log('Types changed:', newTypes)
   if (newTypes && Array.isArray(newTypes) && newTypes.length > 0) {
     types.value = newTypes
   }
@@ -270,7 +265,6 @@ watch(() => props.userFilters.types, (newTypes) => {
 
 // Watch for changes in userFilters.regions and update regions
 watch(() => props.userFilters.regions, (newRegions) => {
-  console.log('Regions changed:', newRegions)
   if (newRegions && Array.isArray(newRegions) && newRegions.length > 0) {
     regions.value = newRegions
   }
@@ -298,8 +292,6 @@ const closeFilters = () => {
 
 // Function to apply filters
 const applyFilters = () => {
-  console.log('Applying filters:', localFilters.value)
-  
   // Emit the updated filters to the parent
   emit('update:filters', { ...localFilters.value })
   
@@ -385,12 +377,6 @@ const handleRegionChange = (event) => {
 
 // Initialize default values for types and regions
 onMounted(() => {
-  console.log('Filters component mounted')
-  console.log('Initial types:', types.value)
-  console.log('Initial regions:', regions.value)
-  console.log('userFilters:', props.userFilters)
-  console.log('Initial filters:', props.filters)
-  
   // Only set default types if not already set and API hasn't provided values
   if ((!types.value || types.value.length === 0) && 
       (!props.userFilters.types || !Array.isArray(props.userFilters.types) || props.userFilters.types.length === 0)) {
@@ -406,21 +392,17 @@ onMounted(() => {
   // Set the region from URL query if available
   if (props.filters && props.filters.region) {
     localFilters.value.region = props.filters.region
-    console.log('Setting region from URL query:', props.filters.region)
   } else {
     // Default to empty string (which will show "همه مناطق")
     localFilters.value.region = ''
-    console.log('Setting region to default (empty string)')
   }
   
   // Set the type from URL query if available
   if (props.filters && props.filters.type) {
     localFilters.value.type = props.filters.type
-    console.log('Setting type from URL query:', props.filters.type)
   } else {
     // Default to empty string (which will show "همه انواع")
     localFilters.value.type = ''
-    console.log('Setting type to default (empty string)')
   }
 })
 </script> 
