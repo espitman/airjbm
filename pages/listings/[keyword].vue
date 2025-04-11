@@ -25,9 +25,6 @@
             @open-rules-modal="showRulesModal = true"
             @open-amenities-modal="showAmenitiesModal = true"
             @show-modal="showModal = true"
-            @city-selected="handleCitySelected"
-            @type-selected="handleTypeSelected"
-            @region-selected="handleRegionSelected"
           />
         </div>
 
@@ -508,96 +505,6 @@ const updateSelectedAmenities = (amenities) => {
   filters.value.selectedAmenities = amenities
 }
 
-// Add handler for city selection
-const handleCitySelected = async (city) => {
-  console.log('City selected in parent:', city)
-  
-  // Update the filters object
-  filters.value.city = city
-  
-  // Update the URL with the English city name
-  const query = { ...route.query }
-  if (city) {
-    query.city = city
-  } else {
-    delete query.city
-  }
-  
-  // Keep existing filters
-  if (filters.value.type) query.type = filters.value.type
-  if (filters.value.region) query.region = filters.value.region
-  
-  console.log('New query after city selection:', query)
-  await router.push({ query })
-  
-  // Fetch new listings with all current filters
-  $listingsApi.fetchListings({ 
-    page: 1, 
-    size: itemsPerPage, 
-    keyword: keyword.value,
-    cities: city ? [city] : [],
-    types: filters.value.type ? [filters.value.type] : [],
-    regions: filters.value.region ? [filters.value.region] : []
-  })
-}
-
-// Add handler for type selection
-const handleTypeSelected = async (type) => {
-  console.log('Type selected in parent:', type)
-  
-  // Update the filters object
-  filters.value.type = type
-  
-  // Update the URL with the type
-  const query = { ...route.query }
-  if (type) {
-    query.type = type
-  } else {
-    delete query.type
-  }
-  
-  // Keep existing filters
-  if (filters.value.city) query.city = filters.value.city
-  if (filters.value.region) query.region = filters.value.region
-  
-  console.log('New query after type selection:', query)
-  await router.push({ query })
-  
-  // Fetch new listings with all current filters
-  $listingsApi.fetchListings({ 
-    page: 1, 
-    size: itemsPerPage, 
-    keyword: keyword.value,
-    cities: filters.value.city ? [filters.value.city] : [],
-    types: type ? [type] : [],
-    regions: filters.value.region ? [filters.value.region] : []
-  })
-}
-
-// Add handler for region selection
-const handleRegionSelected = async (region) => {
-  console.log('Region selected in parent:', region)
-  
-  // Update the filters object
-  filters.value.region = region
-  
-  // Update the URL with the region
-  const query = { ...route.query }
-  if (region) {
-    query.region = region
-  } else {
-    delete query.region
-  }
-  
-  // Keep existing filters
-  if (filters.value.city) query.city = filters.value.city
-  if (filters.value.type) query.type = filters.value.type
-  
-  console.log('New query after region selection:', query)
-  await router.push({ query })
-  
-  // Remove the direct API call - the route query watcher will handle it
-}
 
 // Add a new function to handle the apply-filters event
 const handleApplyFilters = (newFilters) => {
