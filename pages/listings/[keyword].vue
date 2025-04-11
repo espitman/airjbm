@@ -204,7 +204,8 @@ onMounted(() => {
     keyword: keyword.value,
     cities: filters.value.city ? [filters.value.city] : [],
     types: filters.value.type ? [filters.value.type] : [],
-    regions: filters.value.region ? [filters.value.region] : []
+    regions: filters.value.region ? [filters.value.region] : [],
+    passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined
   })
 })
 
@@ -440,7 +441,8 @@ watch(() => route.query, (newQuery) => {
         keyword: keyword.value,
         cities: filters.value.city ? [filters.value.city] : [],
         types: filters.value.type ? [filters.value.type] : [],
-        regions: filters.value.region ? [filters.value.region] : []
+        regions: filters.value.region ? [filters.value.region] : [],
+        passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined
       })
     }
   }
@@ -459,7 +461,8 @@ watch(() => route.params.keyword, (newKeyword) => {
       keyword: newKeyword,
       cities: filters.value.city ? [filters.value.city] : [],
       types: filters.value.type ? [filters.value.type] : [],
-      regions: filters.value.region ? [filters.value.region] : []
+      regions: filters.value.region ? [filters.value.region] : [],
+      passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined
     })
   }
 })
@@ -476,7 +479,8 @@ const goToPage = (page) => {
       keyword: keyword.value,
       cities: filters.value.city ? [filters.value.city] : [],
       types: filters.value.type ? [filters.value.type] : [],
-      regions: filters.value.region ? [filters.value.region] : []
+      regions: filters.value.region ? [filters.value.region] : [],
+      passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined
     })
     
     // Scroll to top when changing pages
@@ -568,7 +572,8 @@ const handleApplyFilters = (newFilters) => {
     keyword: keyword.value,
     cities: filters.value.city ? [filters.value.city] : [],
     types: filters.value.type ? [filters.value.type] : [],
-    regions: filters.value.region ? [filters.value.region] : []
+    regions: filters.value.region ? [filters.value.region] : [],
+    passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined
   })
   
   // Scroll to top when applying filters
