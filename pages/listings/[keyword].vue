@@ -26,6 +26,8 @@
             @open-amenities-modal="showAmenitiesModal = true"
             @show-modal="showModal = true"
             @city-selected="handleCitySelected"
+            @type-selected="handleTypeSelected"
+            @region-selected="handleRegionSelected"
           />
         </div>
 
@@ -187,7 +189,9 @@ onMounted(() => {
     page, 
     size: itemsPerPage, 
     keyword: keyword.value,
-    cities: filters.value.city ? [filters.value.city] : []
+    cities: filters.value.city ? [filters.value.city] : [],
+    type: filters.value.type,
+    region: filters.value.region
   })
 })
 
@@ -421,7 +425,9 @@ watch(() => route.query, (newQuery) => {
         page, 
         size: itemsPerPage, 
         keyword: keyword.value,
-        cities: filters.value.city ? [filters.value.city] : []
+        cities: filters.value.city ? [filters.value.city] : [],
+        type: filters.value.type,
+        region: filters.value.region
       })
     }
   }
@@ -438,7 +444,9 @@ watch(() => route.params.keyword, (newKeyword) => {
       page: 1, 
       size: itemsPerPage, 
       keyword: newKeyword,
-      cities: filters.value.city ? [filters.value.city] : []
+      cities: filters.value.city ? [filters.value.city] : [],
+      type: filters.value.type,
+      region: filters.value.region
     })
   }
 })
@@ -453,7 +461,9 @@ const goToPage = (page) => {
       page, 
       size: itemsPerPage, 
       keyword: keyword.value,
-      cities: filters.value.city ? [filters.value.city] : []
+      cities: filters.value.city ? [filters.value.city] : [],
+      type: filters.value.type,
+      region: filters.value.region
     })
     
     // Scroll to top when changing pages
@@ -463,6 +473,8 @@ const goToPage = (page) => {
 
 // Function to update filters in URL
 const updateFiltersInUrl = () => {
+  console.log('Updating filters in URL:', filters.value)
+  
   const query = { ...route.query }
   
   // Only include non-empty filters in the URL
@@ -508,7 +520,18 @@ const updateFiltersInUrl = () => {
   // Reset to first page when filters change
   query.page = undefined
   
+  console.log('New query:', query)
   router.push({ query })
+  
+  // Fetch listings with all current filters
+  $listingsApi.fetchListings({ 
+    page: 1, 
+    size: itemsPerPage, 
+    keyword: keyword.value,
+    cities: filters.value.city ? [filters.value.city] : [],
+    type: filters.value.type,
+    region: filters.value.region
+  })
 }
 
 // Function to handle modal filters
@@ -552,18 +575,100 @@ onMounted(() => {
 
 // Add handler for city selection
 const handleCitySelected = async (city) => {
+  console.log('City selected in parent:', city)
+  
+  // Update the filters object
+  filters.value.city = city
+  
+  // Update the URL with the English city name
+  const query = { ...route.query }
   if (city) {
-    // Update the URL with the English city name
-    const query = { ...route.query, city }
-    await router.push({ query })
-    
-    // Fetch new listings with the English city name
-    $listingsApi.fetchListings({ 
-      page: 1, 
-      size: itemsPerPage, 
-      keyword: keyword.value,
-      cities: [city]
-    })
+    query.city = city
+  } else {
+    delete query.city
   }
+  
+  // Keep existing filters
+  if (filters.value.type) query.type = filters.value.type
+  if (filters.value.region) query.region = filters.value.region
+  
+  console.log('New query after city selection:', query)
+  await router.push({ query })
+  
+  // Fetch new listings with all current filters
+  $listingsApi.fetchListings({ 
+    page: 1, 
+    size: itemsPerPage, 
+    keyword: keyword.value,
+    cities: city ? [city] : [],
+    type: filters.value.type,
+    region: filters.value.region
+  })
+}
+
+// Add handler for type selection
+const handleTypeSelected = async (type) => {
+  console.log('Type selected in parent:', type)
+  
+  // Update the filters object
+  filters.value.type = type
+  
+  // Update the URL with the type
+  const query = { ...route.query }
+  if (type) {
+    query.type = type
+  } else {
+    delete query.type
+  }
+  
+  // Keep existing filters
+  if (filters.value.city) query.city = filters.value.city
+  if (filters.value.region) query.region = filters.value.region
+  
+  console.log('New query after type selection:', query)
+  await router.push({ query })
+  
+  // Fetch new listings with all current filters
+  $listingsApi.fetchListings({ 
+    page: 1, 
+    size: itemsPerPage, 
+    keyword: keyword.value,
+    cities: filters.value.city ? [filters.value.city] : [],
+    type: type,
+    region: filters.value.region
+  })
+}
+
+// Add handler for region selection
+const handleRegionSelected = async (region) => {
+  console.log('Region selected in parent:', region)
+  
+  // Update the filters object
+  filters.value.region = region
+  
+  // Update the URL with the region
+  const query = { ...route.query }
+  if (region) {
+    query.region = region
+  } else {
+    delete query.region
+  }
+  
+  // Keep existing filters
+  if (filters.value.city) query.city = filters.value.city
+  if (filters.value.type) query.type = filters.value.type
+  
+  console.log('New query after region selection:', query)
+  await router.push({ query })
+  
+  // Fetch new listings with all current filters
+  $listingsApi.fetchListings({ 
+    page: 1, 
+    size: itemsPerPage, 
+    keyword: keyword.value,
+    cities: filters.value.city ? [filters.value.city] : [],
+    type: filters.value.type,
+    region: region
+  })
 }
 </script> 
