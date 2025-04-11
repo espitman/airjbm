@@ -40,14 +40,14 @@
             <option v-for="type in types" :key="type" :value="type">{{ getPersianTypeName(type) }}</option>
           </select>
         </div>
-        <div v-if="locationTypes.length > 1" class="w-full">
+        <div v-if="regions.length > 1" class="w-full">
           <label class="block text-sm font-medium text-gray-700 mb-1">منطقه</label>
           <select 
-            v-model="localFilters.locationType" 
+            v-model="localFilters.region" 
             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
           >
             <option value="">همه مناطق</option>
-            <option v-for="type in locationTypes" :key="type" :value="type">{{ getPersianLocationTypeName(type) }}</option>
+            <option v-for="region in regions" :key="region" :value="region">{{ getPersianRegionName(region) }}</option>
           </select>
         </div>
       </div>
@@ -189,7 +189,7 @@ const showModal = ref(false)
 // Use cities from userFilters
 const cities = ref(null)
 const types = ref([])
-const locationTypes = ref([])
+const regions = ref([])
 
 // Create a local copy of filters that won't affect the parent until Apply is clicked
 const localFilters = ref({
@@ -200,7 +200,7 @@ const localFilters = ref({
   maxPrice: '',
   passengerCount: '',
   roomsCount: '',
-  locationType: '',
+  region: '',
   checkinDate: '',
   checkoutDate: '',
   sortBy: 'price-asc',
@@ -230,17 +230,17 @@ watch(() => props.userFilters.types, (newTypes) => {
     types.value = newTypes
   } else {
     // Fallback to default types if userFilters.types is not available
-    types.value = ['hotel', 'apartment', 'house', 'villa', 'resort']
+    types.value = ['apartment', 'villa', 'carvansara', 'cottage', 'hostel']
   }
 }, { immediate: true })
 
-// Watch for changes in userFilters.regions and update locationTypes
+// Watch for changes in userFilters.regions and update regions
 watch(() => props.userFilters.regions, (newRegions) => {
   if (newRegions && Array.isArray(newRegions) && newRegions.length > 0) {
-    locationTypes.value = newRegions
+    regions.value = newRegions
   } else {
-    // Fallback to default location types if userFilters.regions is not available
-    locationTypes.value = ['coastal', 'rural', 'urban', 'forest', 'mountain', 'desert']
+    // Fallback to default regions if userFilters.regions is not available
+    regions.value = ['coastal', 'rustic', 'urban', 'forest', 'mountainous', 'desert', 'jungle', 'city']
   }
 }, { immediate: true })
 
@@ -267,14 +267,14 @@ const getPersianTypeName = (type) => {
     'suite': 'سوئیت',
     'traditional': 'سنتی',
     'ecotourism': 'بوم گردی',
-    'inn': 'مسافرخانه',
+    'inn': 'مسافرخانه'
   }
   return typeMap[type] || type
 }
 
-// Function to get Persian name for location type
-const getPersianLocationTypeName = (type) => {
-  const locationTypeMap = {
+// Function to get Persian name for region
+const getPersianRegionName = (region) => {
+  const regionMap = {
     'coastal': 'ساحلی',
     'rustic': 'روستایی',
     'urban': 'شهری',
@@ -282,8 +282,8 @@ const getPersianLocationTypeName = (type) => {
     'mountainous': 'کوهستانی',
     'desert': 'بیابانی',
     'jungle': 'جنگلی',
-    'city': 'شهری',
+    'city': 'شهری'
   }
-  return locationTypeMap[type] || type
+  return regionMap[region] || region
 }
 </script> 

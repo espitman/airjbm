@@ -207,7 +207,7 @@ const filters = ref({
   maxPrice: '',
   passengerCount: '',
   roomsCount: '',
-  locationType: '',
+  region: '',
   checkinDate: '',
   checkoutDate: '',
   selectedRules: [],
@@ -226,7 +226,7 @@ const filteredListings = computed(() => {
     filters.value.maxPrice || 
     filters.value.passengerCount || 
     filters.value.roomsCount || 
-    filters.value.locationType || 
+    filters.value.region || 
     filters.value.checkinDate || 
     filters.value.checkoutDate || 
     filters.value.selectedRules.length > 0 || 
@@ -280,9 +280,9 @@ const filteredListings = computed(() => {
     result = result.filter(listing => listing.rooms >= Number(filters.value.roomsCount))
   }
 
-  // Apply location type filter
-  if (filters.value.locationType) {
-    result = result.filter(listing => listing.locationType === filters.value.locationType)
+  // Apply region filter
+  if (filters.value.region) {
+    result = result.filter(listing => listing.region === filters.value.region)
   }
 
   // Apply check-in date filter
@@ -396,7 +396,7 @@ watch(() => route.query, (newQuery) => {
   if (newQuery.maxPrice !== undefined) filters.value.maxPrice = newQuery.maxPrice
   if (newQuery.passengerCount !== undefined) filters.value.passengerCount = newQuery.passengerCount
   if (newQuery.roomsCount !== undefined) filters.value.roomsCount = newQuery.roomsCount
-  if (newQuery.locationType !== undefined) filters.value.locationType = newQuery.locationType
+  if (newQuery.region !== undefined) filters.value.region = newQuery.region
   if (newQuery.checkinDate !== undefined) filters.value.checkinDate = newQuery.checkinDate
   if (newQuery.checkoutDate !== undefined) filters.value.checkoutDate = newQuery.checkoutDate
   if (newQuery.selectedRules !== undefined) filters.value.selectedRules = newQuery.selectedRules.split(',')
@@ -475,8 +475,8 @@ const updateFiltersInUrl = () => {
   if (filters.value.roomsCount) query.roomsCount = filters.value.roomsCount
   else delete query.roomsCount
   
-  if (filters.value.locationType) query.locationType = filters.value.locationType
-  else delete query.locationType
+  if (filters.value.region) query.region = filters.value.region
+  else delete query.region
   
   if (filters.value.checkinDate) query.checkinDate = filters.value.checkinDate
   else delete query.checkinDate
