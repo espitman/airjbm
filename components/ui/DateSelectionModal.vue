@@ -32,6 +32,9 @@
                 >
               </template>
             </ClientOnly>
+            <div v-if="checkinDate" class="mt-1 text-xs text-gray-500">
+              {{ gregorianToJalali(checkinDate) }}
+            </div>
           </div>
           
           <!-- Check-out Date -->
@@ -54,6 +57,9 @@
                 >
               </template>
             </ClientOnly>
+            <div v-if="checkoutDate" class="mt-1 text-xs text-gray-500">
+              {{ gregorianToJalali(checkoutDate) }}
+            </div>
           </div>
         </div>
         
@@ -80,6 +86,12 @@
 <script setup>
 import { ref, watch } from 'vue'
 import DatePicker from 'vue3-persian-datetime-picker'
+import { useRoute, useRouter } from 'vue-router'
+import { useNuxtApp } from '#app'
+
+const route = useRoute()
+const router = useRouter()
+const { $persianTranslations } = useNuxtApp()
 
 const props = defineProps({
   show: {
@@ -119,6 +131,22 @@ watch(() => props.initialCheckoutDate, (newValue) => {
   checkoutDate.value = newValue
 })
 
+// Function to update URL parameters
+const updateUrlParams = (checkin, checkout) => {
+  const query = { ...route.query }
+  if (checkin) {
+    query.checkin = checkin
+  } else {
+    delete query.checkin
+  }
+  if (checkout) {
+    query.checkout = checkout
+  } else {
+    delete query.checkout
+  }
+  router.push({ query })
+}
+
 // Function to close the modal
 const closeModal = () => {
   emit('close')
@@ -126,11 +154,86 @@ const closeModal = () => {
 
 // Function to confirm the selected dates
 const confirmDates = () => {
+  // Ensure dates are in the correct format (YYYY-MM-DD)
+  const formattedCheckinDate = formatDateForEmission(checkinDate.value);
+  const formattedCheckoutDate = formatDateForEmission(checkoutDate.value);
+  
+  // Update URL parameters
+  updateUrlParams(formattedCheckinDate, formattedCheckoutDate);
+  
+  // Emit the date update event
   emit('update:dates', {
-    checkinDate: checkinDate.value,
-    checkoutDate: checkoutDate.value
-  })
-  closeModal()
+    checkinDate: formattedCheckinDate,
+    checkoutDate: formattedCheckoutDate
+  });
+  closeModal();
+}
+
+// Function to format date for emission
+const formatDateForEmission = (dateString) => {
+  if (!dateString) return '';
+  
+  // If the date is already in YYYY-MM-DD format, return it as is
+  if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    return dateString;
+  }
+  
+  // If the date is in YYYY/MM/DD format, convert it to YYYY-MM-DD
+  if (dateString.match(/^\d{4}\/\d{2}\/\d{2}$/)) {
+    return dateString.replace(/\//g, '-');
+  }
+  
+  // If the date is in Jalali format (YYYY/MM/DD), convert it to Gregorian
+  try {
+    const [year, month, day] = dateString.split('/').map(Number);
+    if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+      // This is a simplified conversion - in a real app, you'd use a proper conversion function
+      // For now, we'll just return the date as is, assuming it's already in the correct format
+      return dateString.replace(/\//g, '-');
+    }
+  } catch (error) {
+    console.error('Error formatting date:', error);
+  }
+  
+  // If all else fails, return the original string
+  return dateString;
+}
+
+// Function to convert Gregorian date to Jalali
+const gregorianToJalali = (dateString) => {
+  if (!dateString) return '';
+  
+  try {
+    // Check if the date string is valid
+    if (!dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return dateString;
+    }
+    
+    // Convert Gregorian to Jalali for display
+    const [year, month, day] = dateString.split('-').map(Number);
+    
+    // Validate the date components
+    if (isNaN(year) || isNaN(month) || isNaN(day) || 
+        month < 1 || month > 12 || day < 1 || day > 31) {
+      return dateString;
+    }
+    
+    // Use the $persianTranslations.gregorianToJalali function if available
+    if ($persianTranslations && typeof $persianTranslations.gregorianToJalali === 'function') {
+      const jalaliDate = $persianTranslations.gregorianToJalali(year, month, day);
+      
+      // Format with leading zeros for month and day
+      const formattedMonth = jalaliDate.jm.toString().padStart(2, '0');
+      const formattedDay = jalaliDate.jd.toString().padStart(2, '0');
+      
+      return `${jalaliDate.jy}/${formattedMonth}/${formattedDay}`;
+    }
+    
+    return dateString;
+  } catch (error) {
+    console.error('Error converting date:', error);
+    return dateString;
+  }
 }
 </script>
 

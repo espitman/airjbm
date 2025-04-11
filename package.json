@@ -16,6 +16,8 @@
     "tailwindcss": "^3.4.1"
   },
   "dependencies": {
+    "@types/moment-jalaali": "^0.7.9",
+    "moment-jalaali": "^0.10.4",
     "swiper": "^11.2.6",
     "vue3-persian-datetime-picker": "^1.2.2"
   }

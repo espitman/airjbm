@@ -1,4 +1,5 @@
 import { defineNuxtPlugin } from 'nuxt/app'
+import moment from 'moment-jalaali'
 
 // Map of English type names to Persian
 const typeMap = {
@@ -83,6 +84,54 @@ export default defineNuxtPlugin(() => {
             value,
             label
           }))
+        },
+
+        // Convert Gregorian date to Jalali using moment-jalaali
+        gregorianToJalali: (gy: number, gm: number, gd: number) => {
+          const m = moment(`${gy}-${String(gm).padStart(2, '0')}-${String(gd).padStart(2, '0')}`, 'YYYY-MM-DD');
+          return {
+            jy: m.jYear(),
+            jm: m.jMonth() + 1, // moment-jalaali months are 0-based
+            jd: m.jDate()
+          };
+        },
+
+        // Format a date string from Gregorian to Jalali
+        formatDateToJalali: (dateString: string): string => {
+          if (!dateString) return '';
+          
+          try {
+            // Check if the date string is valid
+            if (!dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+              return dateString;
+            }
+            
+            const m = moment(dateString, 'YYYY-MM-DD');
+            if (!m.isValid()) {
+              return dateString;
+            }
+            
+            // Format with leading zeros for month and day
+            const jYear = m.jYear();
+            const jMonth = (m.jMonth() + 1).toString().padStart(2, '0');
+            const jDay = m.jDate().toString().padStart(2, '0');
+            
+            return `${jYear}/${jMonth}/${jDay}`;
+          } catch (error) {
+            console.error('Error converting date:', error);
+            return dateString;
+          }
+        },
+
+        // Convert Jalali to Gregorian
+        jalaliToGregorian: (jy: number, jm: number, jd: number): string => {
+          try {
+            const m = moment(`${jy}/${jm}/${jd}`, 'jYYYY/jM/jD');
+            return m.format('YYYY-MM-DD');
+          } catch (error) {
+            console.error('Error converting Jalali to Gregorian:', error);
+            return '';
+          }
         }
       }
     }
