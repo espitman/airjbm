@@ -30,30 +30,34 @@
       </select>
     </div>
 
-    <!-- Type and Location Type -->
-    <div class="mb-4">
-      <div class="flex flex-col gap-4">
-        <div v-if="types.length > 1" class="w-full">
-          <label class="block text-sm font-medium text-gray-700 mb-1">نوع</label>
-          <select 
-            v-model="localFilters.type" 
-            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
-          >
-            <option value="">همه انواع</option>
-            <option v-for="type in types" :key="type" :value="type">{{ getPersianTypeName(type) }}</option>
-          </select>
-        </div>
-        <div v-if="regions.length > 1" class="w-full">
-          <label class="block text-sm font-medium text-gray-700 mb-1">منطقه</label>
-          <select 
-            v-model="localFilters.region" 
-            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
-          >
-            <option value="">همه مناطق</option>
-            <option v-for="region in regions" :key="region" :value="region">{{ getPersianRegionName(region) }}</option>
-          </select>
-        </div>
-      </div>
+    <!-- Type -->
+    <div v-if="types && types.length > 0" class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-1">نوع اقامتگاه</label>
+      <select 
+        v-model="localFilters.type" 
+        @change="handleTypeChange"
+        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
+      >
+        <option value="">همه انواع</option>
+        <option v-for="type in types" :key="type" :value="type">
+          {{ getPersianTypeName(type) }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Region -->
+    <div v-if="regions && regions.length > 0" class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-1">منطقه</label>
+      <select 
+        v-model="localFilters.region" 
+        @change="handleRegionChange"
+        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
+      >
+        <option value="">همه مناطق</option>
+        <option v-for="region in regions" :key="region" :value="region">
+          {{ getPersianRegionName(region) }}
+        </option>
+      </select>
     </div>
 
     <!-- Price Range -->
@@ -171,7 +175,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import RulesAmenitiesModal from './RulesAmenitiesModal.vue'
 
 const props = defineProps({
@@ -189,14 +193,14 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:filters', 'close', 'apply-filters', 'show-modal', 'city-selected'])
+const emit = defineEmits(['update:filters', 'close', 'apply-filters', 'show-modal', 'city-selected', 'type-selected', 'region-selected'])
 
 const showModal = ref(false)
 
 // Use cities from userFilters
 const cities = ref(null)
-const types = ref([])
-const regions = ref([])
+const types = ref(['apartment', 'villa', 'carvansara', 'cottage', 'hostel'])
+const regions = ref(['coastal', 'rustic', 'urban', 'forest', 'mountainous', 'desert', 'jungle', 'city'])
 
 // Create a local copy of filters that won't affect the parent until Apply is clicked
 const localFilters = ref({
@@ -233,6 +237,10 @@ watch(() => props.filters, (newFilters) => {
   } else {
     selectedCityDisplay.value = ''
   }
+  
+  // Log the region and type values from filters
+  console.log('Region from filters:', localFilters.value.region)
+  console.log('Type from filters:', localFilters.value.type)
 }, { deep: true, immediate: true })
 
 // Watch for changes in userFilters.cities and update cities
@@ -254,21 +262,17 @@ watch(() => props.userFilters.cities, (newCities) => {
 
 // Watch for changes in userFilters.types and update types
 watch(() => props.userFilters.types, (newTypes) => {
+  console.log('Types changed:', newTypes)
   if (newTypes && Array.isArray(newTypes) && newTypes.length > 0) {
     types.value = newTypes
-  } else {
-    // Fallback to default types if userFilters.types is not available
-    types.value = ['apartment', 'villa', 'carvansara', 'cottage', 'hostel']
   }
 }, { immediate: true })
 
 // Watch for changes in userFilters.regions and update regions
 watch(() => props.userFilters.regions, (newRegions) => {
+  console.log('Regions changed:', newRegions)
   if (newRegions && Array.isArray(newRegions) && newRegions.length > 0) {
     regions.value = newRegions
-  } else {
-    // Fallback to default regions if userFilters.regions is not available
-    regions.value = ['coastal', 'rustic', 'urban', 'forest', 'mountainous', 'desert', 'jungle', 'city']
   }
 }, { immediate: true })
 
@@ -294,14 +298,25 @@ const closeFilters = () => {
 
 // Function to apply filters
 const applyFilters = () => {
-  // Emit the city-selected event when Apply Filters is clicked
+  console.log('Applying filters:', localFilters.value)
+  
+  // Emit the updated filters to the parent
+  emit('update:filters', { ...localFilters.value })
+  
+  // Emit individual filter events
   if (localFilters.value.city) {
     emit('city-selected', localFilters.value.city)
-  } else {
-    emit('city-selected', '')
   }
   
-  emit('update:filters', { ...localFilters.value })
+  if (localFilters.value.type) {
+    emit('type-selected', localFilters.value.type)
+  }
+  
+  if (localFilters.value.region) {
+    emit('region-selected', localFilters.value.region)
+  }
+  
+  // Emit the apply-filters event to trigger URL update
   emit('apply-filters')
 }
 
@@ -351,4 +366,61 @@ const handleCityChange = (event) => {
     // Don't emit city-selected event here, wait for Apply Filters button
   }
 }
+
+// Update the type selection handler
+const handleTypeChange = (event) => {
+  const select = event.target
+  localFilters.value.type = select.value
+  console.log('Type selected:', select.value)
+  // Don't emit type-selected event here, wait for Apply Filters button
+}
+
+// Update the region selection handler
+const handleRegionChange = (event) => {
+  const select = event.target
+  localFilters.value.region = select.value
+  console.log('Region selected:', select.value)
+  // Don't emit region-selected event here, wait for Apply Filters button
+}
+
+// Initialize default values for types and regions
+onMounted(() => {
+  console.log('Filters component mounted')
+  console.log('Initial types:', types.value)
+  console.log('Initial regions:', regions.value)
+  console.log('userFilters:', props.userFilters)
+  console.log('Initial filters:', props.filters)
+  
+  // Only set default types if not already set and API hasn't provided values
+  if ((!types.value || types.value.length === 0) && 
+      (!props.userFilters.types || !Array.isArray(props.userFilters.types) || props.userFilters.types.length === 0)) {
+    types.value = ['apartment', 'villa', 'carvansara', 'cottage', 'hostel']
+  }
+  
+  // Only set default regions if not already set and API hasn't provided values
+  if ((!regions.value || regions.value.length === 0) && 
+      (!props.userFilters.regions || !Array.isArray(props.userFilters.regions) || props.userFilters.regions.length === 0)) {
+    regions.value = ['coastal', 'rustic', 'urban', 'forest', 'mountainous', 'desert', 'jungle', 'city']
+  }
+  
+  // Set the region from URL query if available
+  if (props.filters && props.filters.region) {
+    localFilters.value.region = props.filters.region
+    console.log('Setting region from URL query:', props.filters.region)
+  } else {
+    // Default to empty string (which will show "همه مناطق")
+    localFilters.value.region = ''
+    console.log('Setting region to default (empty string)')
+  }
+  
+  // Set the type from URL query if available
+  if (props.filters && props.filters.type) {
+    localFilters.value.type = props.filters.type
+    console.log('Setting type from URL query:', props.filters.type)
+  } else {
+    // Default to empty string (which will show "همه انواع")
+    localFilters.value.type = ''
+    console.log('Setting type to default (empty string)')
+  }
+})
 </script> 
