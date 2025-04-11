@@ -3,7 +3,7 @@
     <div class="container mx-auto px-4">
       <div class="flex justify-between items-center mb-4">
         <div>
-          <NuxtLink :to="`/listings?keyword=${keyword}`" class="block">
+          <NuxtLink :to="`/listings/${keyword}`" class="block">
             <h2 class="text-3xl font-bold mb-2 font-vazir hover:text-blue-600 transition-colors">{{ title }}</h2>
           </NuxtLink>
           <p class="text-gray-600 font-vazir">{{ description }}</p>
