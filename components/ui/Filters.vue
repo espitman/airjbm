@@ -175,7 +175,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import RulesAmenitiesModal from './RulesAmenitiesModal.vue'
 import { useFilters } from '~/composables/useFilters'
 
@@ -185,10 +185,6 @@ const props = defineProps({
     required: true
   },
   userFilters: {
-    type: Object,
-    default: () => ({})
-  },
-  modelValue: {
     type: Object,
     default: () => ({})
   }
@@ -205,23 +201,6 @@ const { filters, updateFilter, applyFilters: applyFiltersToUrl } = useFilters()
 const cities = ref(null)
 const types = ref(['apartment', 'villa', 'carvansara', 'cottage', 'hostel'])
 const regions = ref(['coastal', 'rustic', 'urban', 'forest', 'mountainous', 'desert', 'jungle', 'city'])
-
-// Create a local copy of filters that won't affect the parent until Apply is clicked
-const localFilters = ref({
-  search: '',
-  city: '',
-  type: '',
-  minPrice: '',
-  maxPrice: '',
-  passengerCount: '',
-  roomsCount: '',
-  region: '',
-  checkinDate: '',
-  checkoutDate: '',
-  sortBy: 'price-asc',
-  rules: [],
-  amenities: []
-})
 
 // Separate display value for the city select
 const selectedCityDisplay = ref('')
