@@ -105,8 +105,8 @@ export default defineNuxtPlugin(() => {
         ...(rooms && { rooms }),
         ...(check_in && { check_in }),
         ...(check_out && { check_out }),
-        ...(min_price && { min_price }),
-        ...(max_price && { max_price })
+        ...(min_price && { min_price: min_price * 10 }),
+        ...(max_price && { max_price: max_price * 10 })
       }
 
       const response = await fetch(url, {
