@@ -17,7 +17,7 @@
                 <img
                   :src="image"
                   :alt="`${listing.title} - تصویر ${index + 1}`"
-                  class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+                  class="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
               </div>
@@ -209,7 +209,7 @@ const getTypeName = computed(() => {
 
 <style scoped>
 .listing-swiper {
-  height: 12rem;
+  height: 14rem;
 }
 
 :deep(.swiper-button-next),
