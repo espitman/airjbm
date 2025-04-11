@@ -28,7 +28,7 @@
       
       <!-- Price Badge - Positioned at top left -->
       <div class="absolute top-4 left-4 z-20">
-        <div class="bg-blue-600 text-white px-3 py-1 rounded-lg shadow-md text-sm font-semibold">
+        <div class="bg-blue-600/60 text-white px-3 py-1 rounded-lg shadow-md text-sm font-semibold">
           {{ formatPrice }}
         </div>
       </div>
