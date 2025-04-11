@@ -30,7 +30,7 @@
     <!-- Type and Location Type -->
     <div class="mb-4">
       <div class="flex gap-2">
-        <div v-if="types.length > 0" class="w-1/2">
+        <div v-if="types.length > 1" class="w-1/2">
           <label class="block text-sm font-medium text-gray-700 mb-1">نوع</label>
           <select 
             v-model="localFilters.type" 
