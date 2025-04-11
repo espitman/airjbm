@@ -12,7 +12,7 @@
 
         <!-- Filters Sidebar -->
         <div 
-          v-if="showFilters || windowWidth >= 1024"
+          v-if="(showFilters || windowWidth >= 1024) && !$listingsApi.loading.value"
           class="lg:w-1/4 transition-all duration-300 lg:sticky lg:top-36 lg:self-start"
         >
           <Filters 
@@ -31,7 +31,7 @@
         <!-- Listings Grid -->
         <div :class="['lg:w-3/4', {'w-full': !showFilters && windowWidth < 1024}]">
           <!-- Loading State -->
-          <div v-if="$listingsApi.loading.value" class="flex justify-center items-center min-h-[400px]">
+          <div v-if="$listingsApi.loading.value" class="fixed inset-0 flex justify-center items-center bg-white/80 z-50">
             <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
           </div>
 
