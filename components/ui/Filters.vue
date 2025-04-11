@@ -16,14 +16,17 @@
     </div>
     
     <!-- City -->
-    <div v-if="cities && cities.length > 1" class="mb-4">
+    <div v-if="cities && cities.length > 0" class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">شهر</label>
       <select 
-        v-model="localFilters.city" 
+        v-model="selectedCityDisplay" 
+        @change="handleCityChange"
         class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
       >
         <option value="">همه شهرها</option>
-        <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
+        <option v-for="city in cities" :key="city.city_name_en" :value="city.city_name_fa">
+          {{ city.city_name_fa }}
+        </option>
       </select>
     </div>
 
@@ -179,10 +182,14 @@ const props = defineProps({
   userFilters: {
     type: Object,
     default: () => ({})
+  },
+  modelValue: {
+    type: Object,
+    default: () => ({})
   }
 })
 
-const emit = defineEmits(['update:filters', 'close', 'apply-filters', 'show-modal'])
+const emit = defineEmits(['update:filters', 'close', 'apply-filters', 'show-modal', 'city-selected'])
 
 const showModal = ref(false)
 
@@ -208,18 +215,39 @@ const localFilters = ref({
   amenities: []
 })
 
+// Separate display value for the city select
+const selectedCityDisplay = ref('')
+
 // Watch for changes in props.filters and update localFilters
 watch(() => props.filters, (newFilters) => {
   localFilters.value = { ...newFilters }
+  
+  // Update the display value when filters change
+  if (localFilters.value.city && cities.value) {
+    const cityObj = cities.value.find(city => city.city_name_en === localFilters.value.city)
+    if (cityObj) {
+      selectedCityDisplay.value = cityObj.city_name_fa
+    } else {
+      selectedCityDisplay.value = ''
+    }
+  } else {
+    selectedCityDisplay.value = ''
+  }
 }, { deep: true, immediate: true })
 
 // Watch for changes in userFilters.cities and update cities
 watch(() => props.userFilters.cities, (newCities) => {
   if (newCities && Array.isArray(newCities) && newCities.length > 0) {
-    // Extract city names from the city objects
-    cities.value = newCities.map(city => city.city_name_fa)
+    cities.value = newCities
+    
+    // Update the display value when cities are loaded
+    if (localFilters.value.city) {
+      const cityObj = newCities.find(city => city.city_name_en === localFilters.value.city)
+      if (cityObj) {
+        selectedCityDisplay.value = cityObj.city_name_fa
+      }
+    }
   } else {
-    // Set to null if userFilters.cities is not available
     cities.value = null
   }
 }, { immediate: true })
@@ -244,6 +272,21 @@ watch(() => props.userFilters.regions, (newRegions) => {
   }
 }, { immediate: true })
 
+// Watch for changes in the modelValue to update localFilters
+watch(() => props.modelValue, (newValue) => {
+  if (newValue) {
+    localFilters.value = { ...newValue }
+    
+    // If we have a city and cities are loaded, find its Persian name
+    if (localFilters.value.city && cities.value) {
+      const cityObj = cities.value.find(city => city.city_name_en === localFilters.value.city)
+      if (cityObj) {
+        localFilters.value.cityDisplay = cityObj.city_name_fa
+      }
+    }
+  }
+}, { immediate: true, deep: true })
+
 // Function to close filters
 const closeFilters = () => {
   emit('close')
@@ -251,6 +294,13 @@ const closeFilters = () => {
 
 // Function to apply filters
 const applyFilters = () => {
+  // Emit the city-selected event when Apply Filters is clicked
+  if (localFilters.value.city) {
+    emit('city-selected', localFilters.value.city)
+  } else {
+    emit('city-selected', '')
+  }
+  
   emit('update:filters', { ...localFilters.value })
   emit('apply-filters')
 }
@@ -285,5 +335,20 @@ const getPersianRegionName = (region) => {
     'city': 'شهری'
   }
   return regionMap[region] || region
+}
+
+// Update the city selection handler
+const handleCityChange = (event) => {
+  const select = event.target
+  const selectedCity = cities.value.find(city => city.city_name_fa === select.value)
+  if (selectedCity) {
+    localFilters.value.city = selectedCity.city_name_en
+    selectedCityDisplay.value = selectedCity.city_name_fa
+    // Don't emit city-selected event here, wait for Apply Filters button
+  } else {
+    localFilters.value.city = ''
+    selectedCityDisplay.value = ''
+    // Don't emit city-selected event here, wait for Apply Filters button
+  }
 }
 </script> 

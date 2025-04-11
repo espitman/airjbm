@@ -49,6 +49,7 @@ interface FetchListingsParams {
   page: number
   size: number
   keyword: string
+  cities?: string[]
 }
 
 export default defineNuxtPlugin(() => {
@@ -65,7 +66,7 @@ export default defineNuxtPlugin(() => {
     })
   }
 
-  const fetchListings = async ({ page, size, keyword }: FetchListingsParams) => {
+  const fetchListings = async ({ page, size, keyword, cities = [] }: FetchListingsParams) => {
     try {
       state.loading.value = true
       state.error.value = null
@@ -78,7 +79,7 @@ export default defineNuxtPlugin(() => {
           'accept': 'application/json',
           'content-type': 'application/json'
         },
-        body: JSON.stringify({ page, size })
+        body: JSON.stringify({ page, size, cities })
       })
 
       if (!response.ok) {

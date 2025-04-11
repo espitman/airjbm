@@ -25,6 +25,7 @@
             @open-rules-modal="showRulesModal = true"
             @open-amenities-modal="showAmenitiesModal = true"
             @show-modal="showModal = true"
+            @city-selected="handleCitySelected"
           />
         </div>
 
@@ -182,7 +183,12 @@ onMounted(() => {
   const page = pageFromQuery > 0 ? pageFromQuery : 1
   
   // Fetch listings with the page from URL and keyword from route params
-  $listingsApi.fetchListings({ page, size: itemsPerPage, keyword: keyword.value })
+  $listingsApi.fetchListings({ 
+    page, 
+    size: itemsPerPage, 
+    keyword: keyword.value,
+    cities: filters.value.city ? [filters.value.city] : []
+  })
 })
 
 onUnmounted(() => {
@@ -390,7 +396,10 @@ const updatePageQuery = (page) => {
 watch(() => route.query, (newQuery) => {
   // Update filters from query parameters
   if (newQuery.search !== undefined) filters.value.search = newQuery.search
-  if (newQuery.city !== undefined) filters.value.city = newQuery.city
+  if (newQuery.city !== undefined) {
+    // Use the English city name directly from the URL
+    filters.value.city = newQuery.city
+  }
   if (newQuery.type !== undefined) filters.value.type = newQuery.type
   if (newQuery.minPrice !== undefined) filters.value.minPrice = newQuery.minPrice
   if (newQuery.maxPrice !== undefined) filters.value.maxPrice = newQuery.maxPrice
@@ -411,7 +420,8 @@ watch(() => route.query, (newQuery) => {
       $listingsApi.fetchListings({ 
         page, 
         size: itemsPerPage, 
-        keyword: keyword.value 
+        keyword: keyword.value,
+        cities: filters.value.city ? [filters.value.city] : []
       })
     }
   }
@@ -427,7 +437,8 @@ watch(() => route.params.keyword, (newKeyword) => {
     $listingsApi.fetchListings({ 
       page: 1, 
       size: itemsPerPage, 
-      keyword: newKeyword 
+      keyword: newKeyword,
+      cities: filters.value.city ? [filters.value.city] : []
     })
   }
 })
@@ -441,7 +452,8 @@ const goToPage = (page) => {
     $listingsApi.fetchListings({ 
       page, 
       size: itemsPerPage, 
-      keyword: keyword.value 
+      keyword: keyword.value,
+      cities: filters.value.city ? [filters.value.city] : []
     })
     
     // Scroll to top when changing pages
@@ -537,4 +549,21 @@ onMounted(() => {
   if (query.selectedAmenities) filters.value.selectedAmenities = query.selectedAmenities.split(',')
   if (query.sortBy) filters.value.sortBy = query.sortBy
 })
+
+// Add handler for city selection
+const handleCitySelected = async (city) => {
+  if (city) {
+    // Update the URL with the English city name
+    const query = { ...route.query, city }
+    await router.push({ query })
+    
+    // Fetch new listings with the English city name
+    $listingsApi.fetchListings({ 
+      page: 1, 
+      size: itemsPerPage, 
+      keyword: keyword.value,
+      cities: [city]
+    })
+  }
+}
 </script> 
