@@ -188,13 +188,11 @@ const getCapacity = computed(() => {
 
 // Get type name from different possible sources
 const getTypeName = computed(() => {
-  if (props.listing.type_fa) {
-    return props.listing.type_fa
-  }
-  if (props.listing.type) {
-    return props.listing.type
-  }
-  return ''
+  return $persianTranslations.getPersianTypeName(
+    props.listing.type,
+    props.listing.categories,
+    props.listing.tags
+  )
 })
 </script>
 
