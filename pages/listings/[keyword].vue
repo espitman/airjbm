@@ -206,8 +206,8 @@ onMounted(() => {
     size: itemsPerPage, 
     keyword: keyword.value,
     cities: filters.value.city ? [filters.value.city] : [],
-    type: filters.value.type,
-    region: filters.value.region
+    types: filters.value.type ? [filters.value.type] : [],
+    regions: filters.value.region ? [filters.value.region] : []
   })
 })
 
@@ -442,8 +442,8 @@ watch(() => route.query, (newQuery) => {
         size: itemsPerPage, 
         keyword: keyword.value,
         cities: filters.value.city ? [filters.value.city] : [],
-        type: filters.value.type,
-        region: filters.value.region
+        types: filters.value.type ? [filters.value.type] : [],
+        regions: filters.value.region ? [filters.value.region] : []
       })
     }
   }
@@ -461,8 +461,8 @@ watch(() => route.params.keyword, (newKeyword) => {
       size: itemsPerPage, 
       keyword: newKeyword,
       cities: filters.value.city ? [filters.value.city] : [],
-      type: filters.value.type,
-      region: filters.value.region
+      types: filters.value.type ? [filters.value.type] : [],
+      regions: filters.value.region ? [filters.value.region] : []
     })
   }
 })
@@ -478,8 +478,8 @@ const goToPage = (page) => {
       size: itemsPerPage, 
       keyword: keyword.value,
       cities: filters.value.city ? [filters.value.city] : [],
-      type: filters.value.type,
-      region: filters.value.region
+      types: filters.value.type ? [filters.value.type] : [],
+      regions: filters.value.region ? [filters.value.region] : []
     })
     
     // Scroll to top when changing pages
@@ -536,8 +536,8 @@ const handleCitySelected = async (city) => {
     size: itemsPerPage, 
     keyword: keyword.value,
     cities: city ? [city] : [],
-    type: filters.value.type,
-    region: filters.value.region
+    types: filters.value.type ? [filters.value.type] : [],
+    regions: filters.value.region ? [filters.value.region] : []
   })
 }
 
@@ -569,8 +569,8 @@ const handleTypeSelected = async (type) => {
     size: itemsPerPage, 
     keyword: keyword.value,
     cities: filters.value.city ? [filters.value.city] : [],
-    type: type,
-    region: filters.value.region
+    types: type ? [type] : [],
+    regions: filters.value.region ? [filters.value.region] : []
   })
 }
 
@@ -661,8 +661,8 @@ const handleApplyFilters = (newFilters) => {
     size: itemsPerPage, 
     keyword: keyword.value,
     cities: filters.value.city ? [filters.value.city] : [],
-    type: filters.value.type ? [filters.value.type] : [],
-    region: filters.value.region ? [filters.value.region] : []
+    types: filters.value.type ? [filters.value.type] : [],
+    regions: filters.value.region ? [filters.value.region] : []
   })
 }
 </script> 
