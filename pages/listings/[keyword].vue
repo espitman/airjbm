@@ -205,7 +205,8 @@ onMounted(() => {
     cities: filters.value.city ? [filters.value.city] : [],
     types: filters.value.type ? [filters.value.type] : [],
     regions: filters.value.region ? [filters.value.region] : [],
-    passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined
+    passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
+    rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined
   })
 })
 
@@ -442,7 +443,8 @@ watch(() => route.query, (newQuery) => {
         cities: filters.value.city ? [filters.value.city] : [],
         types: filters.value.type ? [filters.value.type] : [],
         regions: filters.value.region ? [filters.value.region] : [],
-        passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined
+        passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
+        rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined
       })
     }
   }
@@ -462,7 +464,8 @@ watch(() => route.params.keyword, (newKeyword) => {
       cities: filters.value.city ? [filters.value.city] : [],
       types: filters.value.type ? [filters.value.type] : [],
       regions: filters.value.region ? [filters.value.region] : [],
-      passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined
+      passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
+      rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined
     })
   }
 })
@@ -480,7 +483,8 @@ const goToPage = (page) => {
       cities: filters.value.city ? [filters.value.city] : [],
       types: filters.value.type ? [filters.value.type] : [],
       regions: filters.value.region ? [filters.value.region] : [],
-      passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined
+      passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
+      rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined
     })
     
     // Scroll to top when changing pages
@@ -573,7 +577,8 @@ const handleApplyFilters = (newFilters) => {
     cities: filters.value.city ? [filters.value.city] : [],
     types: filters.value.type ? [filters.value.type] : [],
     regions: filters.value.region ? [filters.value.region] : [],
-    passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined
+    passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
+    rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined
   })
   
   // Scroll to top when applying filters

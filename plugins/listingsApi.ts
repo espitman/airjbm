@@ -46,13 +46,14 @@ interface ListingsResponse {
 }
 
 interface FetchListingsParams {
-  page: number
-  size: number
-  keyword: string
+  page?: number
+  size?: number
+  keyword?: string
   cities?: string[]
   types?: string[]
   regions?: string[]
   passengerCount?: number
+  rooms?: number
 }
 
 export default defineNuxtPlugin(() => {
@@ -69,7 +70,7 @@ export default defineNuxtPlugin(() => {
     })
   }
 
-  const fetchListings = async ({ page = 1, size = 10, keyword, cities = [], types = [], regions = [], passengerCount }: FetchListingsParams) => {
+  const fetchListings = async ({ page = 1, size = 10, keyword, cities = [], types = [], regions = [], passengerCount, rooms }: FetchListingsParams) => {
     try {
       state.loading.value = true
       state.error.value = null
@@ -83,7 +84,8 @@ export default defineNuxtPlugin(() => {
         cities,
         types,
         regions,
-        ...(passengerCount && { capacity: passengerCount })
+        ...(passengerCount && { capacity: passengerCount }),
+        ...(rooms && { rooms })
       }
 
       const response = await fetch(url, {
