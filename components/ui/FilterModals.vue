@@ -125,4 +125,27 @@ const applyAmenities = () => {
   emit('apply-filters', { selectedAmenities: localSelectedAmenities.value })
   emit('close-amenities-modal')
 }
+
+const applyFilters = () => {
+  console.log('Applying filters in modal:', filters.value)
+  
+  // Emit all filters at once
+  emit('apply-filters', {
+    city: filters.value.city,
+    type: filters.value.type,
+    region: filters.value.region,
+    minPrice: filters.value.minPrice,
+    maxPrice: filters.value.maxPrice,
+    passengerCount: filters.value.passengerCount,
+    roomsCount: filters.value.roomsCount,
+    checkinDate: filters.value.checkinDate,
+    checkoutDate: filters.value.checkoutDate,
+    selectedRules: filters.value.selectedRules,
+    selectedAmenities: filters.value.selectedAmenities,
+    sortBy: filters.value.sortBy
+  })
+  
+  // Close the modal
+  showModal.value = false
+}
 </script> 

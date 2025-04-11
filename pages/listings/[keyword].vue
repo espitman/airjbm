@@ -21,7 +21,7 @@
             :show-rules-modal="showRulesModal"
             :show-amenities-modal="showAmenitiesModal"
             @close="hideFilters"
-            @apply-filters="updateFiltersInUrl"
+            @apply-filters="handleApplyFilters"
             @open-rules-modal="showRulesModal = true"
             @open-amenities-modal="showAmenitiesModal = true"
             @show-modal="showModal = true"
@@ -487,69 +487,6 @@ const goToPage = (page) => {
   }
 }
 
-// Function to update filters in URL
-const updateFiltersInUrl = () => {
-  console.log('Updating filters in URL:', filters.value)
-  
-  const query = { ...route.query }
-  
-  // Only include non-empty filters in the URL
-  if (filters.value.search) query.search = filters.value.search
-  else delete query.search
-  
-  if (filters.value.city) query.city = filters.value.city
-  else delete query.city
-  
-  if (filters.value.type) query.type = filters.value.type
-  else delete query.type
-  
-  if (filters.value.minPrice) query.minPrice = filters.value.minPrice
-  else delete query.minPrice
-  
-  if (filters.value.maxPrice) query.maxPrice = filters.value.maxPrice
-  else delete query.maxPrice
-  
-  if (filters.value.passengerCount) query.passengerCount = filters.value.passengerCount
-  else delete query.passengerCount
-  
-  if (filters.value.roomsCount) query.roomsCount = filters.value.roomsCount
-  else delete query.roomsCount
-  
-  if (filters.value.region) query.region = filters.value.region
-  else delete query.region
-  
-  if (filters.value.checkinDate) query.checkinDate = filters.value.checkinDate
-  else delete query.checkinDate
-  
-  if (filters.value.checkoutDate) query.checkoutDate = filters.value.checkoutDate
-  else delete query.checkoutDate
-  
-  if (filters.value.selectedRules.length > 0) query.selectedRules = filters.value.selectedRules.join(',')
-  else delete query.selectedRules
-  
-  if (filters.value.selectedAmenities.length > 0) query.selectedAmenities = filters.value.selectedAmenities.join(',')
-  else delete query.selectedAmenities
-  
-  if (filters.value.sortBy !== 'price-asc') query.sortBy = filters.value.sortBy
-  else delete query.sortBy
-  
-  // Reset to first page when filters change
-  query.page = undefined
-  
-  console.log('New query:', query)
-  router.push({ query })
-  
-  // Fetch listings with all current filters
-  $listingsApi.fetchListings({ 
-    page: 1, 
-    size: itemsPerPage, 
-    keyword: keyword.value,
-    cities: filters.value.city ? [filters.value.city] : [],
-    type: filters.value.type,
-    region: filters.value.region
-  })
-}
-
 // Function to handle modal filters
 const handleModalFilters = (newFilters) => {
   filters.value = { ...newFilters }
@@ -659,14 +596,73 @@ const handleRegionSelected = async (region) => {
   console.log('New query after region selection:', query)
   await router.push({ query })
   
-  // Fetch new listings with all current filters
+  // Remove the direct API call - the route query watcher will handle it
+}
+
+// Add a new function to handle the apply-filters event
+const handleApplyFilters = (newFilters) => {
+  console.log('Applying filters:', newFilters)
+  
+  // Update the filters object
+  filters.value = { ...newFilters }
+  
+  // Update the URL with all filters
+  const query = { ...route.query }
+  
+  // Only include non-empty filters in the URL
+  if (filters.value.city) query.city = filters.value.city
+  else delete query.city
+  
+  if (filters.value.type) query.type = filters.value.type
+  else delete query.type
+  
+  if (filters.value.region) query.region = filters.value.region
+  else delete query.region
+  
+  if (filters.value.minPrice) query.minPrice = filters.value.minPrice
+  else delete query.minPrice
+  
+  if (filters.value.maxPrice) query.maxPrice = filters.value.maxPrice
+  else delete query.maxPrice
+  
+  if (filters.value.passengerCount) query.passengerCount = filters.value.passengerCount
+  else delete query.passengerCount
+  
+  if (filters.value.roomsCount) query.roomsCount = filters.value.roomsCount
+  else delete query.roomsCount
+  
+  if (filters.value.checkinDate) query.checkinDate = filters.value.checkinDate
+  else delete query.checkinDate
+  
+  if (filters.value.checkoutDate) query.checkoutDate = filters.value.checkoutDate
+  else delete query.checkoutDate
+  
+  if (filters.value.selectedRules && filters.value.selectedRules.length > 0) 
+    query.selectedRules = filters.value.selectedRules.join(',')
+  else delete query.selectedRules
+  
+  if (filters.value.selectedAmenities && filters.value.selectedAmenities.length > 0) 
+    query.selectedAmenities = filters.value.selectedAmenities.join(',')
+  else delete query.selectedAmenities
+  
+  if (filters.value.sortBy && filters.value.sortBy !== 'price-asc') 
+    query.sortBy = filters.value.sortBy
+  else delete query.sortBy
+  
+  // Reset to first page when filters change
+  query.page = undefined
+  
+  console.log('New query:', query)
+  router.push({ query })
+  
+  // Fetch listings with all current filters
   $listingsApi.fetchListings({ 
     page: 1, 
     size: itemsPerPage, 
     keyword: keyword.value,
     cities: filters.value.city ? [filters.value.city] : [],
-    type: filters.value.type,
-    region: region
+    type: filters.value.type ? [filters.value.type] : [],
+    region: filters.value.region ? [filters.value.region] : []
   })
 }
 </script> 

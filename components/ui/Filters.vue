@@ -292,24 +292,28 @@ const closeFilters = () => {
 
 // Function to apply filters
 const applyFilters = () => {
-  // Emit the updated filters to the parent
-  emit('update:filters', { ...localFilters.value })
+  console.log('Applying filters:', localFilters.value)
   
-  // Emit individual filter events
-  if (localFilters.value.city) {
-    emit('city-selected', localFilters.value.city)
+  // Emit all filters at once
+  emit('apply-filters', {
+    city: localFilters.value.city,
+    type: localFilters.value.type,
+    region: localFilters.value.region,
+    minPrice: localFilters.value.minPrice,
+    maxPrice: localFilters.value.maxPrice,
+    passengerCount: localFilters.value.passengerCount,
+    roomsCount: localFilters.value.roomsCount,
+    checkinDate: localFilters.value.checkinDate,
+    checkoutDate: localFilters.value.checkoutDate,
+    selectedRules: localFilters.value.rules,
+    selectedAmenities: localFilters.value.amenities,
+    sortBy: localFilters.value.sortBy
+  })
+  
+  // Close the modal if it's open
+  if (showModal.value) {
+    showModal.value = false
   }
-  
-  if (localFilters.value.type) {
-    emit('type-selected', localFilters.value.type)
-  }
-  
-  if (localFilters.value.region) {
-    emit('region-selected', localFilters.value.region)
-  }
-  
-  // Emit the apply-filters event to trigger URL update
-  emit('apply-filters')
 }
 
 // Function to get Persian name for type
