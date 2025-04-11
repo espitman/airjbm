@@ -184,6 +184,22 @@ onMounted(() => {
   const pageFromQuery = parseInt(route.query.page) || 1
   const page = pageFromQuery > 0 ? pageFromQuery : 1
   
+  // Initialize filters from URL query parameters
+  const query = route.query
+  if (query.search) filters.value.search = query.search
+  if (query.city) filters.value.city = query.city
+  if (query.type) filters.value.type = query.type
+  if (query.minPrice) filters.value.minPrice = query.minPrice
+  if (query.maxPrice) filters.value.maxPrice = query.maxPrice
+  if (query.passengerCount) filters.value.passengerCount = query.passengerCount
+  if (query.roomsCount) filters.value.roomsCount = query.roomsCount
+  if (query.region) filters.value.region = query.region
+  if (query.checkinDate) filters.value.checkinDate = query.checkinDate
+  if (query.checkoutDate) filters.value.checkoutDate = query.checkoutDate
+  if (query.selectedRules) filters.value.selectedRules = query.selectedRules.split(',')
+  if (query.selectedAmenities) filters.value.selectedAmenities = query.selectedAmenities.split(',')
+  if (query.sortBy) filters.value.sortBy = query.sortBy
+  
   // Fetch listings with the page from URL and keyword from route params
   $listingsApi.fetchListings({ 
     page, 
@@ -554,24 +570,6 @@ const updateSelectedRules = (rules) => {
 const updateSelectedAmenities = (amenities) => {
   filters.value.selectedAmenities = amenities
 }
-
-// Initialize filters from URL query parameters
-onMounted(() => {
-  const query = route.query
-  if (query.search) filters.value.search = query.search
-  if (query.city) filters.value.city = query.city
-  if (query.type) filters.value.type = query.type
-  if (query.minPrice) filters.value.minPrice = query.minPrice
-  if (query.maxPrice) filters.value.maxPrice = query.maxPrice
-  if (query.passengerCount) filters.value.passengerCount = query.passengerCount
-  if (query.roomsCount) filters.value.roomsCount = query.roomsCount
-  if (query.locationType) filters.value.locationType = query.locationType
-  if (query.checkinDate) filters.value.checkinDate = query.checkinDate
-  if (query.checkoutDate) filters.value.checkoutDate = query.checkoutDate
-  if (query.selectedRules) filters.value.selectedRules = query.selectedRules.split(',')
-  if (query.selectedAmenities) filters.value.selectedAmenities = query.selectedAmenities.split(',')
-  if (query.sortBy) filters.value.sortBy = query.sortBy
-})
 
 // Add handler for city selection
 const handleCitySelected = async (city) => {
