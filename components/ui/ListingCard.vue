@@ -27,7 +27,7 @@
       </div>
       
       <!-- Rating Square - Positioned at bottom right -->
-      <div class="absolute bottom-4 right-4 z-20 flex items-center">
+      <div class="absolute bottom-6 right-4 z-20 flex items-center">
         <div class="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center shadow-md">
           <div class="text-sm font-bold text-white">{{ listing.rate_score || '0' }}</div>
         </div>
@@ -40,6 +40,9 @@
           </div>
         </div>
       </div>
+
+      <!-- Red Div at Bottom of Image -->
+      <div class="absolute bottom-0 left-0 w-full h-4 bg-white z-10 rounded-t-[64px]"></div>
     </div>
     <div class="p-4">
       <NuxtLink :to="`/listings/${listing.id}`" class="block">
