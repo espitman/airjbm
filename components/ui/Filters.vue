@@ -62,24 +62,17 @@
 
     <!-- Check-in and Check-out Dates -->
     <div class="mb-4">
-      <div class="flex gap-2">
-        <div class="w-1/2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">تاریخ ورود</label>
-          <input 
-            type="date" 
-            v-model="props.filters.checkinDate" 
-            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-          >
-        </div>
-        <div class="w-1/2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">تاریخ خروج</label>
-          <input 
-            type="date" 
-            v-model="props.filters.checkoutDate" 
-            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-          >
-        </div>
-      </div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">تاریخ اقامت</label>
+      <button 
+        @click="showDateModal = true"
+        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-right flex justify-between items-center"
+      >
+        <span v-if="props.filters.checkinDate && props.filters.checkoutDate">
+          {{ formatDate(props.filters.checkinDate) }} - {{ formatDate(props.filters.checkoutDate) }}
+        </span>
+        <span v-else>انتخاب تاریخ ورود و خروج</span>
+        <i class="fas fa-calendar-alt text-gray-400"></i>
+      </button>
     </div>
 
     <!-- Passenger Count and Rooms Count -->
@@ -171,12 +164,22 @@
     >
       اعمال فیلترها
     </button>
+    
+    <!-- Date Selection Modal -->
+    <DateSelectionModal
+      :show="showDateModal"
+      :initial-checkin-date="props.filters.checkinDate"
+      :initial-checkout-date="props.filters.checkoutDate"
+      @close="showDateModal = false"
+      @update:dates="handleDateUpdate"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import RulesAmenitiesModal from './RulesAmenitiesModal.vue'
+import DateSelectionModal from './DateSelectionModal.vue'
 import { useFilters } from '~/composables/useFilters'
 import { useNuxtApp } from '#app'
 
@@ -196,6 +199,7 @@ const props = defineProps({
 const emit = defineEmits(['update:filters', 'close', 'apply-filters', 'show-modal'])
 
 const showModal = ref(false)
+const showDateModal = ref(false)
 
 // Use the filters composable
 const { filters, updateFilter, applyFilters: applyFiltersToUrl } = useFilters()
@@ -281,6 +285,23 @@ const getPersianRegionName = (region) => {
   return $persianTranslations.getPersianRegionName(region)
 }
 
+// Function to format date for display
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  
+  // Convert Gregorian to Jalali for display
+  const [year, month, day] = dateString.split('-').map(Number);
+  const jalaliDate = $persianTranslations.gregorianToJalali(year, month, day);
+  
+  return `${jalaliDate.jy}/${jalaliDate.jm}/${jalaliDate.jd}`;
+}
+
+// Function to handle date updates from the modal
+const handleDateUpdate = (dates) => {
+  props.filters.checkinDate = dates.checkinDate;
+  props.filters.checkoutDate = dates.checkoutDate;
+}
+
 // Update the city selection handler
 const handleCityChange = (event) => {
   const select = event.target
@@ -346,4 +367,23 @@ onMounted(() => {
     }
   }
 })
-</script> 
+</script>
+
+<style>
+/* Custom styles for the Jalali date picker */
+.vpd-wrapper {
+  z-index: 100;
+}
+
+.vpd-controls {
+  z-index: 100;
+}
+
+.vpd-actions {
+  z-index: 100;
+}
+
+.vpd-popup {
+  z-index: 1000 !important;
+}
+</style> 
