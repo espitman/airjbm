@@ -505,7 +505,6 @@ const updateSelectedAmenities = (amenities) => {
   filters.value.selectedAmenities = amenities
 }
 
-
 // Add a new function to handle the apply-filters event
 const handleApplyFilters = (newFilters) => {
   console.log('Applying filters:', newFilters)
@@ -571,5 +570,8 @@ const handleApplyFilters = (newFilters) => {
     types: filters.value.type ? [filters.value.type] : [],
     regions: filters.value.region ? [filters.value.region] : []
   })
+  
+  // Scroll to top when applying filters
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script> 
