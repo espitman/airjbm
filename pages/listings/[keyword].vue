@@ -13,7 +13,7 @@
         <!-- Filters Sidebar -->
         <div 
           v-if="(showFilters || windowWidth >= 1024) && !$listingsApi.loading.value"
-          class="lg:w-1/4 transition-all duration-300 lg:sticky lg:top-36 lg:self-start"
+          class="lg:w-1/4 transition-all duration-300 lg:sticky lg:top-24 lg:self-start"
         >
           <Filters 
             v-model:filters="filters"
