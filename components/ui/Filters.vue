@@ -60,6 +60,28 @@
       </select>
     </div>
 
+    <!-- Check-in and Check-out Dates -->
+    <div class="mb-4">
+      <div class="flex gap-2">
+        <div class="w-1/2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">تاریخ ورود</label>
+          <input 
+            type="date" 
+            v-model="props.filters.checkinDate" 
+            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+          >
+        </div>
+        <div class="w-1/2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">تاریخ خروج</label>
+          <input 
+            type="date" 
+            v-model="props.filters.checkoutDate" 
+            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+          >
+        </div>
+      </div>
+    </div>
+
     <!-- Passenger Count and Rooms Count -->
     <div class="mb-4">
       <div class="flex gap-2">
@@ -113,28 +135,6 @@
             >
             <div class="text-xs text-gray-600 mt-1">${{ props.filters.maxPrice || 1000 }}</div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Check-in and Check-out Dates -->
-    <div class="mb-4">
-      <div class="flex gap-2">
-        <div class="w-1/2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">تاریخ ورود</label>
-          <input 
-            type="date" 
-            v-model="props.filters.checkinDate" 
-            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-          >
-        </div>
-        <div class="w-1/2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">تاریخ خروج</label>
-          <input 
-            type="date" 
-            v-model="props.filters.checkoutDate" 
-            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-          >
         </div>
       </div>
     </div>
