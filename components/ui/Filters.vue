@@ -125,7 +125,7 @@
           :drag-on-click="true"
           :multiple="true"
           :reverse="true"
-          @change="updatePriceRange"
+          @change="handlePriceChange"
         />
         <div class="flex justify-between mt-2 text-sm text-gray-600">
           <span>{{ formatPrice(priceRange[1]) }}</span>
@@ -339,30 +339,39 @@ const formatPrice = (price) => {
 }
 
 // Update price range and filters
-const updatePriceRange = () => {
-  // Update filters - note the swapped indices due to reverse mode
-  props.filters.min_price = priceRange.value[1] / 10 // Convert toman to dollars
-  props.filters.max_price = priceRange.value[0] / 10
+const handlePriceChange = (newValue) => {
+  priceRange.value = newValue
+  // Convert toman to dollars for the API
+  const minPrice = Math.floor(newValue[0] / 10)
+  const maxPrice = Math.floor(newValue[1] / 10)
+  
+  // Emit the price changes to update the URL
+  emit('update:filters', {
+    ...props.filters,
+    minPrice: minPrice.toString(),
+    maxPrice: maxPrice.toString()
+  })
 }
 
 // Initialize price range from filters
 onMounted(() => {
-  if (props.filters.min_price) {
-    priceRange.value[1] = props.filters.min_price * 10 // Convert dollars to toman
+  // Initialize price range from URL parameters
+  if (props.filters.minPrice) {
+    priceRange.value[1] = parseInt(props.filters.minPrice) * 10 // Convert dollars to toman
   }
-  if (props.filters.max_price) {
-    priceRange.value[0] = props.filters.max_price * 10
+  if (props.filters.maxPrice) {
+    priceRange.value[0] = parseInt(props.filters.maxPrice) * 10
   }
   
   // Only set default types if not already set and API hasn't provided values
   if ((!types.value || types.value.length === 0) && 
-      (!props.userFilters.types || !Array.isArray(props.userFilters.types) || props.userFilters.types.length === 0)) {
+      (!props.userFilters?.types || !Array.isArray(props.userFilters.types) || props.userFilters.types.length === 0)) {
     types.value = ['apartment', 'villa', 'carvansara', 'cottage', 'hostel']
   }
   
   // Only set default regions if not already set and API hasn't provided values
   if ((!regions.value || regions.value.length === 0) && 
-      (!props.userFilters.regions || !Array.isArray(props.userFilters.regions) || props.userFilters.regions.length === 0)) {
+      (!props.userFilters?.regions || !Array.isArray(props.userFilters.regions) || props.userFilters.regions.length === 0)) {
     regions.value = ['coastal', 'rustic', 'urban', 'forest', 'mountainous', 'desert', 'jungle', 'city']
   }
   
