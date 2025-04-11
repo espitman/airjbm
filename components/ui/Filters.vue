@@ -30,24 +30,24 @@
     <!-- Type and Location Type -->
     <div class="mb-4">
       <div class="flex gap-2">
-        <div class="w-1/2">
+        <div v-if="types.length > 0" class="w-1/2">
           <label class="block text-sm font-medium text-gray-700 mb-1">نوع</label>
           <select 
             v-model="localFilters.type" 
             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
           >
             <option value="">همه انواع</option>
-            <option v-for="type in types" :key="type" :value="type">{{ type }}</option>
+            <option v-for="type in types" :key="type" :value="type">{{ getPersianTypeName(type) }}</option>
           </select>
         </div>
-        <div class="w-1/2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">نوع مکان</label>
+        <div v-if="locationTypes.length > 0" class="w-1/2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">منطقه</label>
           <select 
             v-model="localFilters.locationType" 
             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
           >
-            <option value="">همه مکان‌ها</option>
-            <option v-for="type in locationTypes" :key="type" :value="type">{{ type }}</option>
+            <option value="">همه مناطق</option>
+            <option v-for="type in locationTypes" :key="type" :value="type">{{ getPersianLocationTypeName(type) }}</option>
           </select>
         </div>
       </div>
@@ -188,8 +188,8 @@ const showModal = ref(false)
 
 // Use cities from userFilters
 const cities = ref(null)
-const types = ['هتل', 'آپارتمان', 'خانه', 'ویلا', 'اقامتگاه']
-const locationTypes = ['مرکز شهر', 'حومه', 'ساحل', 'کوهستان', 'روستا']
+const types = ref([])
+const locationTypes = ref([])
 
 // Create a local copy of filters that won't affect the parent until Apply is clicked
 const localFilters = ref({
@@ -224,6 +224,26 @@ watch(() => props.userFilters.cities, (newCities) => {
   }
 }, { immediate: true })
 
+// Watch for changes in userFilters.types and update types
+watch(() => props.userFilters.types, (newTypes) => {
+  if (newTypes && Array.isArray(newTypes) && newTypes.length > 0) {
+    types.value = newTypes
+  } else {
+    // Fallback to default types if userFilters.types is not available
+    types.value = ['hotel', 'apartment', 'house', 'villa', 'resort']
+  }
+}, { immediate: true })
+
+// Watch for changes in userFilters.regions and update locationTypes
+watch(() => props.userFilters.regions, (newRegions) => {
+  if (newRegions && Array.isArray(newRegions) && newRegions.length > 0) {
+    locationTypes.value = newRegions
+  } else {
+    // Fallback to default location types if userFilters.regions is not available
+    locationTypes.value = ['coastal', 'rural', 'urban', 'forest', 'mountain', 'desert']
+  }
+}, { immediate: true })
+
 // Function to close filters
 const closeFilters = () => {
   emit('close')
@@ -233,5 +253,37 @@ const closeFilters = () => {
 const applyFilters = () => {
   emit('update:filters', { ...localFilters.value })
   emit('apply-filters')
+}
+
+// Function to get Persian name for type
+const getPersianTypeName = (type) => {
+  const typeMap = {
+    'apartment': 'آپارتمان',
+    'villa': 'ویلا',
+    'carvansara': 'کاروانسرا',
+    'cottage': 'کلبه',
+    'hostel': 'هاستل',
+    'complex': 'مجتمع اقامتگاهی',
+    'suite': 'سوئیت',
+    'traditional': 'سنتی',
+    'ecotourism': 'بوم گردی',
+    'inn': 'مسافرخانه',
+  }
+  return typeMap[type] || type
+}
+
+// Function to get Persian name for location type
+const getPersianLocationTypeName = (type) => {
+  const locationTypeMap = {
+    'coastal': 'ساحلی',
+    'rustic': 'روستایی',
+    'urban': 'شهری',
+    'forest': 'جنگلی',
+    'mountainous': 'کوهستانی',
+    'desert': 'بیابانی',
+    'jungle': 'جنگلی',
+    'city': 'شهری',
+  }
+  return locationTypeMap[type] || type
 }
 </script> 
