@@ -17,6 +17,7 @@
         >
           <Filters 
             v-model:filters="filters"
+            :user-filters="$listingsApi.userFilters.value"
             :show-rules-modal="showRulesModal"
             :show-amenities-modal="showAmenitiesModal"
             @close="hideFilters"

@@ -24,9 +24,25 @@ export interface Listing {
   checkoutDate: string
 }
 
+interface City {
+  city_name_fa: string
+  city_name_en: string
+  province_name_fa: string
+  province_name_en: string
+  count: number
+}
+
+interface UserFilters {
+  cities: City[]
+  provinces: string[]
+  regions: string[]
+  types: string[]
+}
+
 interface ListingsResponse {
   items: Listing[]
   total: number
+  userFilters: UserFilters
 }
 
 interface FetchListingsParams {
@@ -40,7 +56,13 @@ export default defineNuxtPlugin(() => {
     listings: ref<Listing[]>([]),
     loading: ref(true),
     error: ref<string | null>(null),
-    total: ref(0)
+    total: ref(0),
+    userFilters: ref<UserFilters>({
+      cities: [],
+      provinces: [],
+      regions: [],
+      types: []
+    })
   }
 
   const fetchListings = async ({ page, size, keyword }: FetchListingsParams) => {
@@ -71,6 +93,11 @@ export default defineNuxtPlugin(() => {
 
       state.listings.value = data.items
       state.total.value = data.total
+      
+      // Set userFilters from the API response
+      if (data.userFilters) {
+        state.userFilters.value = data.userFilters
+      }
     } catch (err) {
       console.error('Error fetching listings:', err)
       state.error.value = err instanceof Error ? err.message : 'An error occurred while fetching listings'

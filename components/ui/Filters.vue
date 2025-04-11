@@ -16,7 +16,7 @@
     </div>
     
     <!-- City -->
-    <div class="mb-4">
+    <div v-if="cities && cities.length > 1" class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">شهر</label>
       <select 
         v-model="localFilters.city" 
@@ -168,13 +168,17 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import RulesAmenitiesModal from './RulesAmenitiesModal.vue'
 
 const props = defineProps({
   filters: {
     type: Object,
     required: true
+  },
+  userFilters: {
+    type: Object,
+    default: () => ({})
   }
 })
 
@@ -182,7 +186,8 @@ const emit = defineEmits(['update:filters', 'close', 'apply-filters', 'show-moda
 
 const showModal = ref(false)
 
-const cities = ['نیویورک', 'لس آنجلس', 'شیکاگو', 'هیوستون', 'میامی']
+// Use cities from userFilters
+const cities = ref(null)
 const types = ['هتل', 'آپارتمان', 'خانه', 'ویلا', 'اقامتگاه']
 const locationTypes = ['مرکز شهر', 'حومه', 'ساحل', 'کوهستان', 'روستا']
 
@@ -198,44 +203,35 @@ const localFilters = ref({
   locationType: '',
   checkinDate: '',
   checkoutDate: '',
-  selectedRules: [],
-  selectedAmenities: [],
-  sortBy: 'price-asc'
+  sortBy: 'price-asc',
+  rules: [],
+  amenities: []
 })
 
-// Initialize local filters from props
+// Watch for changes in props.filters and update localFilters
 watch(() => props.filters, (newFilters) => {
-  localFilters.value = JSON.parse(JSON.stringify(newFilters))
-}, { immediate: true, deep: true })
+  localFilters.value = { ...newFilters }
+}, { deep: true, immediate: true })
 
-const applyFilters = () => {
-  // Create a deep copy of the local filters to ensure all values are included
-  const filtersToApply = {
-    search: localFilters.value.search || '',
-    city: localFilters.value.city || '',
-    type: localFilters.value.type || '',
-    minPrice: localFilters.value.minPrice || '',
-    maxPrice: localFilters.value.maxPrice || '',
-    passengerCount: localFilters.value.passengerCount || '',
-    roomsCount: localFilters.value.roomsCount || '',
-    locationType: localFilters.value.locationType || '',
-    checkinDate: localFilters.value.checkinDate || '',
-    checkoutDate: localFilters.value.checkoutDate || '',
-    selectedRules: localFilters.value.selectedRules || [],
-    selectedAmenities: localFilters.value.selectedAmenities || [],
-    sortBy: localFilters.value.sortBy || 'price-asc'
+// Watch for changes in userFilters.cities and update cities
+watch(() => props.userFilters.cities, (newCities) => {
+  if (newCities && Array.isArray(newCities) && newCities.length > 0) {
+    // Extract city names from the city objects
+    cities.value = newCities.map(city => city.city_name_fa)
+  } else {
+    // Set to null if userFilters.cities is not available
+    cities.value = null
   }
-  
-  // Log the filters being applied for debugging
-  console.log('Applying filters:', filtersToApply)
-  
-  // Only emit the update when Apply is clicked
-  emit('update:filters', filtersToApply)
-  emit('apply-filters', filtersToApply)
+}, { immediate: true })
+
+// Function to close filters
+const closeFilters = () => {
   emit('close')
 }
 
-const closeFilters = () => {
-  emit('close')
+// Function to apply filters
+const applyFilters = () => {
+  emit('update:filters', { ...localFilters.value })
+  emit('apply-filters')
 }
 </script> 
