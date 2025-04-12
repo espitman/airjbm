@@ -18,16 +18,36 @@
     <!-- City -->
     <div v-if="cities && cities.length > 1" class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">شهر</label>
-      <select 
-        v-model="selectedCityDisplay" 
-        @change="handleCityChange"
-        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
-      >
-        <option value="">همه شهرها</option>
-        <option v-for="city in cities" :key="city.city_name_en" :value="city.city_name_fa">
-          {{ city.city_name_fa }}
-        </option>
-      </select>
+      <div class="relative">
+        <input
+          type="text"
+          v-model="citySearch"
+          @focus="showCityDropdown = true"
+          @blur="handleCityBlur"
+          @keydown.down.prevent="navigateDropdown('down')"
+          @keydown.up.prevent="navigateDropdown('up')"
+          @keydown.enter.prevent="selectHighlightedCity"
+          @keydown.esc="closeDropdown"
+          placeholder="جستجوی شهر..."
+          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
+        />
+        <div 
+          v-if="showCityDropdown && filteredCities.length > 0"
+          class="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto"
+        >
+          <div
+            v-for="(city, index) in filteredCities"
+            :key="city.city_name_en"
+            @mousedown="selectCity(city)"
+            :class="[
+              'px-3 py-2 cursor-pointer text-sm',
+              highlightedIndex === index ? 'bg-blue-100' : 'hover:bg-gray-100'
+            ]"
+          >
+            {{ city.city_name_fa }}
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Type -->
@@ -165,7 +185,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import RulesAmenitiesModal from './RulesAmenitiesModal.vue'
 import DateSelectionModal from './DateSelectionModal.vue'
 import { useFilters } from '~/composables/useFilters'
@@ -194,8 +214,23 @@ const cities = ref(null)
 const types = ref(['apartment', 'villa', 'carvansara', 'cottage', 'hostel'])
 const regions = ref(['coastal', 'rustic', 'urban', 'forest', 'mountainous', 'desert', 'jungle', 'city'])
 
-// Separate display value for the city select
-const selectedCityDisplay = ref('')
+// City search state
+const citySearch = ref('')
+const showCityDropdown = ref(false)
+
+// Add highlightedIndex for keyboard navigation
+const highlightedIndex = ref(-1)
+
+// Filtered cities based on search
+const filteredCities = computed(() => {
+  if (!cities.value) return []
+  if (!citySearch.value) return cities.value
+  
+  return cities.value.filter(city => 
+    city.city_name_fa.includes(citySearch.value) ||
+    city.city_name_en.toLowerCase().includes(citySearch.value.toLowerCase())
+  )
+})
 
 // Price range state
 const priceRange = ref([0, 1000000000])
@@ -204,14 +239,6 @@ const priceRange = ref([0, 1000000000])
 watch(() => props.userFilters.cities, (newCities) => {
   if (newCities && Array.isArray(newCities) && newCities.length > 0) {
     cities.value = newCities
-    
-    // Update the display value when cities are loaded
-    if (filters.value.cities.length > 0) {
-      const cityObj = newCities.find(city => city.city_name_en === filters.value.cities[0])
-      if (cityObj) {
-        selectedCityDisplay.value = cityObj.city_name_fa
-      }
-    }
   } else {
     cities.value = null
   }
@@ -241,18 +268,65 @@ watch(() => filters.value, (newFilters) => {
   }
 }, { deep: true })
 
-// Handle city change
-const handleCityChange = (event) => {
-  const selectedCity = event.target.value
-  if (selectedCity) {
-    const cityObj = cities.value.find(city => city.city_name_fa === selectedCity)
-    if (cityObj) {
-      updateFilter('cities', [cityObj.city_name_en])
-    }
+// Handle city selection
+const selectCity = (city) => {
+  citySearch.value = city.city_name_fa
+  updateFilter('cities', [city.city_name_en])
+  showCityDropdown.value = false
+}
+
+// Navigate dropdown with keyboard
+const navigateDropdown = (direction) => {
+  if (!showCityDropdown.value || filteredCities.value.length === 0) return
+  
+  if (direction === 'down') {
+    highlightedIndex.value = highlightedIndex.value < filteredCities.value.length - 1 
+      ? highlightedIndex.value + 1 
+      : 0
   } else {
-    updateFilter('cities', [])
+    highlightedIndex.value = highlightedIndex.value > 0 
+      ? highlightedIndex.value - 1 
+      : filteredCities.value.length - 1
   }
 }
+
+// Select highlighted city with Enter key
+const selectHighlightedCity = () => {
+  if (highlightedIndex.value >= 0 && highlightedIndex.value < filteredCities.value.length) {
+    selectCity(filteredCities.value[highlightedIndex.value])
+  }
+}
+
+// Close dropdown with Escape key
+const closeDropdown = () => {
+  showCityDropdown.value = false
+  highlightedIndex.value = -1
+}
+
+// Reset highlighted index when search changes
+watch(citySearch, () => {
+  highlightedIndex.value = -1
+})
+
+// Update handleCityBlur to also reset highlighted index
+const handleCityBlur = () => {
+  setTimeout(() => {
+    showCityDropdown.value = false
+    highlightedIndex.value = -1
+  }, 200)
+}
+
+// Watch for changes in filters.cities and update citySearch
+watch(() => filters.value.cities, (newCities) => {
+  if (newCities && newCities.length > 0 && cities.value) {
+    const cityObj = cities.value.find(city => city.city_name_en === newCities[0])
+    if (cityObj) {
+      citySearch.value = cityObj.city_name_fa
+    }
+  } else {
+    citySearch.value = ''
+  }
+}, { immediate: true })
 
 // Handle type change
 const handleTypeChange = (event) => {
