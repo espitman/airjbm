@@ -73,16 +73,50 @@
     <!-- Type -->
     <div v-if="types && types.length > 1" class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">نوع اقامتگاه</label>
-      <select 
-        :value="filters.types[0] || ''"
-        @change="handleTypeChange"
-        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
-      >
-        <option value="">همه انواع</option>
-        <option v-for="type in types" :key="type" :value="type">
-          {{ $persianTranslations.getPersianTypeName(type) }}
-        </option>
-      </select>
+      <div class="relative" ref="typeDropdownRef">
+        <div 
+          @click="showTypeDropdown = !showTypeDropdown"
+          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6 cursor-pointer flex justify-between items-center"
+        >
+          <span>{{ selectedTypes.length > 0 ? 'انتخاب نوع' : 'انتخاب نوع' }}</span>
+          <i class="fas fa-chevron-down text-gray-400"></i>
+        </div>
+        
+        <div 
+          v-if="showTypeDropdown"
+          class="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto"
+        >
+          <div
+            v-for="type in types"
+            :key="type"
+            @click="toggleType(type)"
+            :class="[
+              'px-3 py-2 cursor-pointer text-sm',
+              isTypeSelected(type) ? 'bg-blue-100' : 'hover:bg-gray-100'
+            ]"
+          >
+            {{ $persianTranslations.getPersianTypeName(type) }}
+            <span v-if="isTypeSelected(type)" class="float-left text-xs text-gray-500">(انتخاب شده)</span>
+          </div>
+        </div>
+        
+        <!-- Selected Types Tags -->
+        <div v-if="selectedTypes.length > 0" class="flex flex-wrap gap-1 mt-2">
+          <div 
+            v-for="type in selectedTypes" 
+            :key="type"
+            class="flex items-center gap-1 px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded text-xs"
+          >
+            <span>{{ $persianTranslations.getPersianTypeName(type) }}</span>
+            <button 
+              @click="removeType(type)"
+              class="text-blue-600 hover:text-blue-800"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Region Filter -->
@@ -276,9 +310,11 @@ const {
   filters,
   selectedCities,
   selectedRegions,
+  selectedTypes,
   priceRange,
   showCityDropdown,
   showRegionDropdown,
+  showTypeDropdown,
   citySearch,
   highlightedIndex,
   validatePassengerCount,
@@ -292,6 +328,9 @@ const {
   isRegionSelected,
   toggleRegion,
   removeRegion,
+  isTypeSelected,
+  toggleType,
+  removeType,
   handlePriceChange,
   handleDateUpdate,
   applyFilters,

@@ -60,9 +60,11 @@ export function useFilters() {
   // Filter state
   const selectedCities = ref([])
   const selectedRegions = ref([])
+  const selectedTypes = ref([])
   const priceRange = ref([0, 1000000000])
   const showCityDropdown = ref(false)
   const showRegionDropdown = ref(false)
+  const showTypeDropdown = ref(false)
   const citySearch = ref('')
   const highlightedIndex = ref(-1)
   const showDateModal = ref(false)
@@ -177,6 +179,26 @@ export function useFilters() {
   const removeRegion = (region) => {
     selectedRegions.value = selectedRegions.value.filter(r => r !== region)
     filters.value.regions = [...selectedRegions.value]
+  }
+
+  // Type selection
+  const isTypeSelected = (type) => {
+    return selectedTypes.value.includes(type)
+  }
+
+  const toggleType = (type) => {
+    const index = selectedTypes.value.indexOf(type)
+    if (index === -1) {
+      selectedTypes.value.push(type)
+    } else {
+      selectedTypes.value.splice(index, 1)
+    }
+    filters.value.types = [...selectedTypes.value]
+  }
+
+  const removeType = (type) => {
+    selectedTypes.value = selectedTypes.value.filter(t => t !== type)
+    filters.value.types = [...selectedTypes.value]
   }
 
   // Price range handling
@@ -448,15 +470,26 @@ export function useFilters() {
     }
   }, { immediate: true })
 
+  // Watch for changes in filters.types and update selectedTypes
+  watch(() => filters.value.types, (newTypes) => {
+    if (newTypes && Array.isArray(newTypes) && newTypes.length > 0) {
+      selectedTypes.value = newTypes
+    } else {
+      selectedTypes.value = []
+    }
+  }, { immediate: true })
+
   return {
     filters,
     isApplyingFilters,
     currentPage,
     selectedCities,
     selectedRegions,
+    selectedTypes,
     priceRange,
     showCityDropdown,
     showRegionDropdown,
+    showTypeDropdown,
     citySearch,
     highlightedIndex,
     showDateModal,
@@ -477,6 +510,9 @@ export function useFilters() {
     isRegionSelected,
     toggleRegion,
     removeRegion,
+    isTypeSelected,
+    toggleType,
+    removeType,
     handlePriceChange,
     handleDateUpdate
   }
