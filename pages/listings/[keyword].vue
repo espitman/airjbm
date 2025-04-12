@@ -174,6 +174,42 @@ const handleApplyFilters = async (updatedFilters = filters.value) => {
   // Fetch listings with the updated filters and page 1
   await fetchListings(1, appliedFilters)
   
+  // Scroll to top of the page
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+  
+  // Reset the flag after a short delay
+  setTimeout(() => {
+    isApplyingFilters.value = false
+  }, 100)
+}
+
+const handleClearFilters = async () => {
+  // Set the flag to indicate we're applying filters
+  isApplyingFilters.value = true
+  
+  // Clear all filters
+  filters.value = {
+    priceRange: [0, 1000000],
+    bedrooms: [],
+    bathrooms: [],
+    propertyTypes: [],
+    amenities: [],
+    moreFilters: {}
+  }
+  
+  // Clear URL parameters except keyword
+  const query = { keyword: route.query.keyword }
+  await router.replace({ query })
+  
+  // Reset to page 1
+  currentPage.value = 1
+  
+  // Fetch listings with cleared filters
+  await fetchListings(1)
+  
+  // Scroll to top of the page
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+  
   // Reset the flag after a short delay
   setTimeout(() => {
     isApplyingFilters.value = false
