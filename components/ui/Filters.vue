@@ -19,23 +19,6 @@
     <div v-if="cities && cities.length > 1" class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">شهر</label>
       <div class="relative" ref="cityDropdownRef">
-        <!-- Selected Cities Tags -->
-        <div v-if="selectedCities.length > 0" class="flex flex-wrap gap-2 mb-2">
-          <div 
-            v-for="city in selectedCities" 
-            :key="city.city_name_en"
-            class="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-lg text-sm"
-          >
-            <span>{{ city.city_name_fa }}</span>
-            <button 
-              @click="removeCity(city)"
-              class="text-blue-600 hover:text-blue-800"
-            >
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-        </div>
-        
         <input
           type="text"
           v-model="citySearch"
@@ -67,6 +50,23 @@
             <span v-if="isCitySelected(city)" class="float-left text-xs text-gray-500">(انتخاب شده)</span>
           </div>
         </div>
+        
+        <!-- Selected Cities Tags -->
+        <div v-if="selectedCities.length > 0" class="flex flex-wrap gap-1 mt-2">
+          <div 
+            v-for="city in selectedCities" 
+            :key="city.city_name_en"
+            class="flex items-center gap-1 px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded text-xs"
+          >
+            <span>{{ city.city_name_fa }}</span>
+            <button 
+              @click="removeCity(city)"
+              class="text-blue-600 hover:text-blue-800"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -85,19 +85,53 @@
       </select>
     </div>
 
-    <!-- Region -->
-    <div v-if="regions && regions.length > 1" class="mb-4">
+    <!-- Region Filter -->
+    <div v-if="regions && regions.length > 0" class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">منطقه</label>
-      <select 
-        :value="filters.regions[0] || ''"
-        @change="handleRegionChange"
-        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
-      >
-        <option value="">همه مناطق</option>
-        <option v-for="region in regions" :key="region" :value="region">
-          {{ getPersianRegionName(region) }}
-        </option>
-      </select>
+      <div class="relative" ref="regionDropdownRef">
+        <div 
+          @click="toggleRegionDropdown"
+          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6 cursor-pointer flex justify-between items-center"
+        >
+          <span>{{ selectedRegions.length > 0 ? 'انتخاب منطقه' : 'انتخاب منطقه' }}</span>
+          <i class="fas fa-chevron-down text-gray-400"></i>
+        </div>
+        
+        <div 
+          v-if="showRegionDropdown"
+          class="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto"
+        >
+          <div
+            v-for="region in regions"
+            :key="region"
+            @click="toggleRegion(region)"
+            :class="[
+              'px-3 py-2 cursor-pointer text-sm',
+              isRegionSelected(region) ? 'bg-blue-100' : 'hover:bg-gray-100'
+            ]"
+          >
+            {{ getPersianRegionName(region) }}
+            <span v-if="isRegionSelected(region)" class="float-left text-xs text-gray-500">(انتخاب شده)</span>
+          </div>
+        </div>
+        
+        <!-- Selected Regions Tags - Moved below the select box and made smaller -->
+        <div v-if="selectedRegions.length > 0" class="flex flex-wrap gap-1 mt-2">
+          <div 
+            v-for="region in selectedRegions" 
+            :key="region"
+            class="flex items-center gap-1 px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded text-xs"
+          >
+            <span>{{ getPersianRegionName(region) }}</span>
+            <button 
+              @click="removeRegion(region)"
+              class="text-blue-600 hover:text-blue-800"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Check-in and Check-out Dates -->
@@ -248,6 +282,9 @@ const highlightedIndex = ref(-1)
 // Add selectedCities ref to track selected cities
 const selectedCities = ref([])
 
+// Add selectedRegions ref
+const selectedRegions = ref([])
+
 // Check if a city is already selected
 const isCitySelected = (city) => {
   return selectedCities.value.some(selected => selected.city_name_en === city.city_name_en)
@@ -381,9 +418,13 @@ const handleTypeChange = (event) => {
 }
 
 // Handle region change
-const handleRegionChange = (event) => {
-  const selectedRegion = event.target.value
-  updateFilter('regions', selectedRegion ? [selectedRegion] : [])
+const handleRegionSelect = (region) => {
+  const index = selectedRegions.value.indexOf(region)
+  if (index === -1) {
+    selectedRegions.value.push(region)
+  } else {
+    selectedRegions.value.splice(index, 1)
+  }
 }
 
 // Handle price change
@@ -404,8 +445,13 @@ const handleApplyFilters = async () => {
   const cityNames = selectedCities.value.map(c => c.city_name_en)
   updateFilter('cities', cityNames)
   
+  // Update regions filter with selected regions
+  updateFilter('regions', selectedRegions.value)
+  
   // Apply filters to URL
   await applyFiltersToUrl()
+  
+  // Emit the apply-filters event
   emit('apply-filters')
 }
 
@@ -443,6 +489,9 @@ const handleClickOutside = (event) => {
   if (cityDropdownRef.value && !cityDropdownRef.value.contains(event.target)) {
     closeDropdown()
   }
+  if (regionDropdownRef.value && !regionDropdownRef.value.contains(event.target)) {
+    showRegionDropdown.value = false
+  }
 }
 
 // Add and remove event listener
@@ -465,6 +514,35 @@ const validateRoomCount = () => {
   if (filters.value.roomsCount && parseInt(filters.value.roomsCount) < 0) {
     filters.value.roomsCount = '0'
   }
+}
+
+// Add region dropdown state
+const showRegionDropdown = ref(false)
+const regionDropdownRef = ref(null)
+
+// Add function to toggle region dropdown
+const toggleRegionDropdown = () => {
+  showRegionDropdown.value = !showRegionDropdown.value
+}
+
+// Add function to check if a region is selected
+const isRegionSelected = (region) => {
+  return selectedRegions.value.includes(region)
+}
+
+// Add function to toggle region selection
+const toggleRegion = (region) => {
+  const index = selectedRegions.value.indexOf(region)
+  if (index === -1) {
+    selectedRegions.value.push(region)
+  } else {
+    selectedRegions.value.splice(index, 1)
+  }
+}
+
+// Add function to remove a region without applying to URL
+const removeRegion = (region) => {
+  selectedRegions.value = selectedRegions.value.filter(r => r !== region)
 }
 </script>
 
@@ -502,4 +580,4 @@ const validateRoomCount = () => {
 .vue-slider-rail {
   background-color: #e5e7eb;
 }
-</style> 
+</style>
