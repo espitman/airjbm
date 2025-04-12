@@ -158,7 +158,13 @@ const hideFilters = () => {
   showFilters.value = false
 }
 
-const handleApplyFilters = async () => {
+// Add a flag to track if we're applying filters
+const isApplyingFilters = ref(false)
+
+const handleApplyFilters = async (updatedFilters = filters.value) => {
+  // Set the flag to indicate we're applying filters
+  isApplyingFilters.value = true
+  
   // Apply filters to URL and get the updated filters
   const appliedFilters = await applyFilters()
   
@@ -167,6 +173,11 @@ const handleApplyFilters = async () => {
   
   // Fetch listings with the updated filters and page 1
   await fetchListings(1, appliedFilters)
+  
+  // Reset the flag after a short delay
+  setTimeout(() => {
+    isApplyingFilters.value = false
+  }, 100)
 }
 
 const fetchListings = async (page, currentFilters = filters.value) => {
@@ -207,8 +218,10 @@ const updatePageQuery = async (page) => {
   // Update URL without triggering navigation
   await router.replace({ query })
   
-  // Fetch listings with the updated page
-  await fetchListings(page)
+  // Only fetch listings if we're not applying filters
+  if (!isApplyingFilters.value) {
+    await fetchListings(page)
+  }
 }
 
 const goToPage = async (page) => {

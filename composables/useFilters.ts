@@ -42,6 +42,9 @@ export function useFilters() {
   const route = useRoute()
   const router = useRouter()
   
+  // Add a flag to skip the route watcher
+  const skipRouteWatcher = ref(false)
+  
   // Initialize filters from URL or empty values
   const filters = ref<Filters>({
     cities: queryToArray(route.query.cities),
@@ -81,6 +84,9 @@ export function useFilters() {
 
   // Function to apply all filters (update URL and return filters for API)
   const applyFilters = async () => {
+    // Set the flag to skip the route watcher
+    skipRouteWatcher.value = true
+    
     // Update URL with current filters
     const query = { ...route.query }
     
@@ -162,12 +168,20 @@ export function useFilters() {
     // Update URL without triggering navigation and wait for it to complete
     await router.replace({ query })
     
+    // Reset the flag after a short delay
+    setTimeout(() => {
+      skipRouteWatcher.value = false
+    }, 100)
+    
     // Return filters for API call
     return filters.value
   }
 
   // Watch for URL changes to update filters
   watch(() => route.query, (newQuery) => {
+    // Skip if the flag is set
+    if (skipRouteWatcher.value) return
+    
     // Create a new filters object with all existing values
     const updatedFilters = { ...filters.value }
     
