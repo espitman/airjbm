@@ -18,7 +18,7 @@
     <!-- City -->
     <div v-if="cities && cities.length > 1" class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">شهر</label>
-      <div class="relative">
+      <div class="relative" ref="cityDropdownRef">
         <!-- Selected Cities Tags -->
         <div v-if="selectedCities.length > 0" class="flex flex-wrap gap-2 mb-2">
           <div 
@@ -205,7 +205,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed } from 'vue'
+import { ref, watch, onMounted, computed, onBeforeUnmount } from 'vue'
 import RulesAmenitiesModal from './RulesAmenitiesModal.vue'
 import DateSelectionModal from './DateSelectionModal.vue'
 import { useFilters } from '~/composables/useFilters'
@@ -252,12 +252,16 @@ const isCitySelected = (city) => {
 // Filtered cities based on search
 const filteredCities = computed(() => {
   if (!cities.value) return []
-  if (!citySearch.value) return cities.value
   
-  return cities.value.filter(city => 
-    city.city_name_fa.includes(citySearch.value) ||
-    city.city_name_en.toLowerCase().includes(citySearch.value.toLowerCase())
-  )
+  // Filter based on search text if it exists
+  const searchFiltered = citySearch.value
+    ? cities.value.filter(city => 
+        city.city_name_fa.includes(citySearch.value) ||
+        city.city_name_en.toLowerCase().includes(citySearch.value.toLowerCase())
+      )
+    : cities.value
+  
+  return searchFiltered
 })
 
 // Price range state
@@ -315,7 +319,6 @@ const selectCity = (city) => {
     updateFilter('cities', cityNames)
   }
   citySearch.value = ''
-  showCityDropdown.value = false
   highlightedIndex.value = -1
 }
 
@@ -359,12 +362,9 @@ watch(citySearch, () => {
   highlightedIndex.value = -1
 })
 
-// Update handleCityBlur to also reset highlighted index
+// Update handleCityBlur to not close the dropdown immediately
 const handleCityBlur = () => {
-  setTimeout(() => {
-    showCityDropdown.value = false
-    highlightedIndex.value = -1
-  }, 200)
+  // Don't close the dropdown immediately to allow for selection
 }
 
 // Handle type change
@@ -427,6 +427,25 @@ const getPersianTypeName = (type) => {
 const getPersianRegionName = (region) => {
   return $persianTranslations?.getPersianRegionName(region) || region
 }
+
+// Add ref for the city dropdown container
+const cityDropdownRef = ref(null)
+
+// Add click outside handler
+const handleClickOutside = (event) => {
+  if (cityDropdownRef.value && !cityDropdownRef.value.contains(event.target)) {
+    closeDropdown()
+  }
+}
+
+// Add and remove event listener
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <style>
