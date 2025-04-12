@@ -80,7 +80,7 @@
       >
         <option value="">همه انواع</option>
         <option v-for="type in types" :key="type" :value="type">
-          {{ getPersianTypeName(type) }}
+          {{ $persianTranslations.getPersianTypeName(type) }}
         </option>
       </select>
     </div>
@@ -110,7 +110,7 @@
               isRegionSelected(region) ? 'bg-blue-100' : 'hover:bg-gray-100'
             ]"
           >
-            {{ getPersianRegionName(region) }}
+            {{ $persianTranslations.getPersianRegionName(region) }}
             <span v-if="isRegionSelected(region)" class="float-left text-xs text-gray-500">(انتخاب شده)</span>
           </div>
         </div>
@@ -122,7 +122,7 @@
             :key="region"
             class="flex items-center gap-1 px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded text-xs"
           >
-            <span>{{ getPersianRegionName(region) }}</span>
+            <span>{{ $persianTranslations.getPersianRegionName(region) }}</span>
             <button 
               @click="removeRegion(region)"
               class="text-blue-600 hover:text-blue-800"
@@ -156,8 +156,12 @@
           <label class="block text-sm font-medium text-gray-700 mb-1">تعداد مسافر</label>
           <input 
             type="number" 
-            v-model="filters.passengerCount" 
-            @input="validatePassengerCount"
+            :value="filters.passengerCount"
+            @input="(e) => {
+              const value = e.target.value;
+              validatePassengerCount(value);
+              updateFilter('passengerCount', value);
+            }"
             min="1"
             placeholder="تعداد مسافران" 
             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
@@ -167,8 +171,12 @@
           <label class="block text-sm font-medium text-gray-700 mb-1">تعداد اتاق</label>
           <input 
             type="number" 
-            v-model="filters.roomsCount" 
-            @input="validateRoomCount"
+            :value="filters.roomsCount"
+            @input="(e) => {
+              const value = e.target.value;
+              validateRoomCount(value);
+              updateFilter('roomsCount', value);
+            }"
             min="0"
             placeholder="تعداد اتاق‌ها" 
             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
@@ -264,52 +272,101 @@ const emit = defineEmits(['close', 'apply-filters', 'show-modal'])
 const showModal = ref(false)
 const showDateModal = ref(false)
 
-// Use the filters composable
-const { filters, updateFilter, applyFilters: applyFiltersToUrl } = useFilters()
+const {
+  filters,
+  selectedCities,
+  selectedRegions,
+  priceRange,
+  showCityDropdown,
+  showRegionDropdown,
+  citySearch,
+  highlightedIndex,
+  validatePassengerCount,
+  validateRoomCount,
+  formatPrice,
+  formatDate,
+  filteredCities,
+  isCitySelected,
+  selectCity,
+  removeCity,
+  isRegionSelected,
+  toggleRegion,
+  removeRegion,
+  handlePriceChange,
+  handleDateUpdate,
+  applyFilters,
+  updateFilter
+} = useFilters()
 
 // Use cities from userFilters
 const cities = ref(null)
 const types = ref(['apartment', 'villa', 'carvansara', 'cottage', 'hostel'])
 const regions = ref(['coastal', 'rustic', 'urban', 'forest', 'mountainous', 'desert', 'jungle', 'city'])
 
-// City search state
-const citySearch = ref('')
-const showCityDropdown = ref(false)
-
-// Add highlightedIndex for keyboard navigation
-const highlightedIndex = ref(-1)
-
-// Add selectedCities ref to track selected cities
-const selectedCities = ref([])
-
-// Add selectedRegions ref
-const selectedRegions = ref([])
-
-// Check if a city is already selected
-const isCitySelected = (city) => {
-  return selectedCities.value.some(selected => selected.city_name_en === city.city_name_en)
+// Navigate dropdown with keyboard
+const navigateDropdown = (direction) => {
+  if (!showCityDropdown.value || filteredCities.value.length === 0) return
+  
+  if (direction === 'down') {
+    highlightedIndex.value = highlightedIndex.value < filteredCities.value.length - 1 
+      ? highlightedIndex.value + 1 
+      : 0
+  } else {
+    highlightedIndex.value = highlightedIndex.value > 0 
+      ? highlightedIndex.value - 1 
+      : filteredCities.value.length - 1
+  }
 }
 
-// Filtered cities based on search
-const filteredCities = computed(() => {
-  if (!cities.value) return []
-  
-  // Filter based on search text if it exists
-  const searchFiltered = citySearch.value
-    ? cities.value.filter(city => 
-        city.city_name_fa.includes(citySearch.value) ||
-        city.city_name_en.toLowerCase().includes(citySearch.value.toLowerCase())
-      )
-    : cities.value
-  
-  // Sort cities by Persian name
-  return searchFiltered.sort((a, b) => {
-    return a.city_name_fa.localeCompare(b.city_name_fa, 'fa')
-  })
+// Select highlighted city with Enter key
+const selectHighlightedCity = () => {
+  if (highlightedIndex.value >= 0 && highlightedIndex.value < filteredCities.value.length) {
+    selectCity(filteredCities.value[highlightedIndex.value])
+  }
+}
+
+// Close dropdown with Escape key
+const closeDropdown = () => {
+  showCityDropdown.value = false
+  highlightedIndex.value = -1
+}
+
+// Reset highlighted index when search changes
+watch(citySearch, () => {
+  highlightedIndex.value = -1
 })
 
-// Price range state
-const priceRange = ref([0, 1000000000])
+// Update handleCityBlur to not close the dropdown immediately
+const handleCityBlur = () => {
+  // Don't close the dropdown immediately to allow for selection
+}
+
+// Handle type change
+const handleTypeChange = (event) => {
+  const selectedType = event.target.value
+  filters.value.types = selectedType ? [selectedType] : []
+}
+
+// Apply filters - this will be called when the Apply Filters button is clicked
+const handleApplyFilters = async () => {
+  // Make sure the cities are properly set in the filters
+  const cityNames = selectedCities.value.map(c => c.city_name_en)
+  filters.value.cities = cityNames
+  
+  // Update regions filter with selected regions
+  filters.value.regions = selectedRegions.value
+  
+  // Apply filters to URL
+  await applyFilters()
+  
+  // Emit the apply-filters event
+  emit('apply-filters')
+}
+
+// Close filters
+const closeFilters = () => {
+  emit('close')
+}
 
 // Watch for changes in userFilters.cities and update cities
 watch(() => props.userFilters.cities, (newCities) => {
@@ -355,131 +412,14 @@ watch(() => filters.value.cities, (newCities) => {
   }
 }, { immediate: true })
 
-// Update selectCity to handle multiple selection without applying to URL
-const selectCity = (city) => {
-  if (!isCitySelected(city)) {
-    selectedCities.value.push(city)
-    const cityNames = selectedCities.value.map(c => c.city_name_en)
-    updateFilter('cities', cityNames)
-  }
-  citySearch.value = ''
-  highlightedIndex.value = -1
-}
-
-// Add function to remove a city without applying to URL
-const removeCity = (city) => {
-  selectedCities.value = selectedCities.value.filter(c => c.city_name_en !== city.city_name_en)
-  const cityNames = selectedCities.value.map(c => c.city_name_en)
-  updateFilter('cities', cityNames)
-}
-
-// Navigate dropdown with keyboard
-const navigateDropdown = (direction) => {
-  if (!showCityDropdown.value || filteredCities.value.length === 0) return
-  
-  if (direction === 'down') {
-    highlightedIndex.value = highlightedIndex.value < filteredCities.value.length - 1 
-      ? highlightedIndex.value + 1 
-      : 0
+// Watch for changes in filters.regions and update selectedRegions
+watch(() => filters.value.regions, (newRegions) => {
+  if (newRegions && Array.isArray(newRegions) && newRegions.length > 0) {
+    selectedRegions.value = newRegions
   } else {
-    highlightedIndex.value = highlightedIndex.value > 0 
-      ? highlightedIndex.value - 1 
-      : filteredCities.value.length - 1
+    selectedRegions.value = []
   }
-}
-
-// Select highlighted city with Enter key
-const selectHighlightedCity = () => {
-  if (highlightedIndex.value >= 0 && highlightedIndex.value < filteredCities.value.length) {
-    selectCity(filteredCities.value[highlightedIndex.value])
-  }
-}
-
-// Close dropdown with Escape key
-const closeDropdown = () => {
-  showCityDropdown.value = false
-  highlightedIndex.value = -1
-}
-
-// Reset highlighted index when search changes
-watch(citySearch, () => {
-  highlightedIndex.value = -1
-})
-
-// Update handleCityBlur to not close the dropdown immediately
-const handleCityBlur = () => {
-  // Don't close the dropdown immediately to allow for selection
-}
-
-// Handle type change
-const handleTypeChange = (event) => {
-  const selectedType = event.target.value
-  updateFilter('types', selectedType ? [selectedType] : [])
-}
-
-// Handle region change
-const handleRegionSelect = (region) => {
-  const index = selectedRegions.value.indexOf(region)
-  if (index === -1) {
-    selectedRegions.value.push(region)
-  } else {
-    selectedRegions.value.splice(index, 1)
-  }
-}
-
-// Handle price change
-const handlePriceChange = (values) => {
-  updateFilter('minPrice', values[0].toString())
-  updateFilter('maxPrice', values[1].toString())
-}
-
-// Handle date update
-const handleDateUpdate = (dates) => {
-  updateFilter('check_in', dates.checkin)
-  updateFilter('check_out', dates.checkout)
-}
-
-// Apply filters - this will be called when the Apply Filters button is clicked
-const handleApplyFilters = async () => {
-  // Make sure the cities are properly set in the filters
-  const cityNames = selectedCities.value.map(c => c.city_name_en)
-  updateFilter('cities', cityNames)
-  
-  // Update regions filter with selected regions
-  updateFilter('regions', selectedRegions.value)
-  
-  // Apply filters to URL
-  await applyFiltersToUrl()
-  
-  // Emit the apply-filters event
-  emit('apply-filters')
-}
-
-// Close filters
-const closeFilters = () => {
-  emit('close')
-}
-
-// Format price
-const formatPrice = (price) => {
-  return new Intl.NumberFormat('fa-IR').format(price) + ' تومان'
-}
-
-// Format date
-const formatDate = (date) => {
-  if (!date) return ''
-  return new Date(date).toLocaleDateString('fa-IR')
-}
-
-// Get Persian type name
-const getPersianTypeName = (type) => {
-  return $persianTranslations?.getPersianTypeName(type) || type
-}
-
-// Get Persian region name
-const getPersianRegionName = (region) => {
-  return $persianTranslations?.getPersianRegionName(region) || region
-}
+}, { immediate: true })
 
 // Add ref for the city dropdown container
 const cityDropdownRef = ref(null)
@@ -503,56 +443,13 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 
-// Add validation functions
-const validatePassengerCount = () => {
-  if (filters.value.passengerCount && parseInt(filters.value.passengerCount) < 1) {
-    filters.value.passengerCount = '1'
-  }
-}
-
-const validateRoomCount = () => {
-  if (filters.value.roomsCount && parseInt(filters.value.roomsCount) < 0) {
-    filters.value.roomsCount = '0'
-  }
-}
-
 // Add region dropdown state
-const showRegionDropdown = ref(false)
 const regionDropdownRef = ref(null)
 
 // Add function to toggle region dropdown
 const toggleRegionDropdown = () => {
   showRegionDropdown.value = !showRegionDropdown.value
 }
-
-// Add function to check if a region is selected
-const isRegionSelected = (region) => {
-  return selectedRegions.value.includes(region)
-}
-
-// Add function to toggle region selection
-const toggleRegion = (region) => {
-  const index = selectedRegions.value.indexOf(region)
-  if (index === -1) {
-    selectedRegions.value.push(region)
-  } else {
-    selectedRegions.value.splice(index, 1)
-  }
-}
-
-// Add function to remove a region without applying to URL
-const removeRegion = (region) => {
-  selectedRegions.value = selectedRegions.value.filter(r => r !== region)
-}
-
-// Watch for changes in filters.regions and update selectedRegions
-watch(() => filters.value.regions, (newRegions) => {
-  if (newRegions && Array.isArray(newRegions) && newRegions.length > 0) {
-    selectedRegions.value = newRegions
-  } else {
-    selectedRegions.value = []
-  }
-}, { immediate: true })
 </script>
 
 <style>

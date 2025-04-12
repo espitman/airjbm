@@ -57,6 +57,16 @@ export function useFilters() {
   // Pagination state
   const currentPage = ref(parseInt(route.query.page) || 1)
 
+  // Filter state
+  const selectedCities = ref([])
+  const selectedRegions = ref([])
+  const priceRange = ref([0, 1000000000])
+  const showCityDropdown = ref(false)
+  const showRegionDropdown = ref(false)
+  const citySearch = ref('')
+  const highlightedIndex = ref(-1)
+  const showDateModal = ref(false)
+
   // Initialize filters from URL or defaults
   const filters = ref<Filters>({
     cities: queryToArray(route.query.cities),
@@ -90,6 +100,97 @@ export function useFilters() {
       ? JSON.parse(route.query.moreFilters as string)
       : {}
   })
+
+  // Filter validation
+  const validatePassengerCount = (value) => {
+    const num = parseInt(value)
+    if (isNaN(num) || num < 1) {
+      filters.value.passengerCount = '1'
+    }
+  }
+
+  const validateRoomCount = (value) => {
+    const num = parseInt(value)
+    if (isNaN(num) || num < 0) {
+      filters.value.roomsCount = '0'
+    }
+  }
+
+  // Filter formatting
+  const formatPrice = (value) => {
+    return new Intl.NumberFormat('fa-IR').format(value) + ' تومان'
+  }
+
+  const formatDate = (dateString) => {
+    if (!dateString) return ''
+    const date = new Date(dateString)
+    return new Intl.DateTimeFormat('fa-IR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }).format(date)
+  }
+
+  // City selection
+  const filteredCities = computed(() => {
+    if (!citySearch.value) return []
+    return $listingsApi.userFilters.value.cities.filter(city => 
+      city.city_name_fa.includes(citySearch.value) ||
+      city.city_name_en.toLowerCase().includes(citySearch.value.toLowerCase())
+    )
+  })
+
+  const isCitySelected = (city) => {
+    return selectedCities.value.some(c => c.city_name_en === city.city_name_en)
+  }
+
+  const selectCity = (city) => {
+    if (!isCitySelected(city)) {
+      selectedCities.value.push(city)
+      filters.value.cities = selectedCities.value.map(c => c.city_name_en)
+    }
+    citySearch.value = ''
+    showCityDropdown.value = false
+    highlightedIndex.value = -1
+  }
+
+  const removeCity = (city) => {
+    selectedCities.value = selectedCities.value.filter(c => c.city_name_en !== city.city_name_en)
+    filters.value.cities = selectedCities.value.map(c => c.city_name_en)
+  }
+
+  // Region selection
+  const isRegionSelected = (region) => {
+    return selectedRegions.value.includes(region)
+  }
+
+  const toggleRegion = (region) => {
+    const index = selectedRegions.value.indexOf(region)
+    if (index === -1) {
+      selectedRegions.value.push(region)
+    } else {
+      selectedRegions.value.splice(index, 1)
+    }
+    filters.value.regions = [...selectedRegions.value]
+  }
+
+  const removeRegion = (region) => {
+    selectedRegions.value = selectedRegions.value.filter(r => r !== region)
+    filters.value.regions = [...selectedRegions.value]
+  }
+
+  // Price range handling
+  const handlePriceChange = (values) => {
+    priceRange.value = values
+    filters.value.minPrice = values[0].toString()
+    filters.value.maxPrice = values[1].toString()
+  }
+
+  // Date handling
+  const handleDateUpdate = (dates) => {
+    filters.value.check_in = dates.checkin
+    filters.value.check_out = dates.checkout
+  }
 
   // Function to update a single filter
   const updateFilter = (key: keyof Filters, value: string | string[]) => {
@@ -347,11 +448,32 @@ export function useFilters() {
     filters,
     isApplyingFilters,
     currentPage,
+    selectedCities,
+    selectedRegions,
+    priceRange,
+    showCityDropdown,
+    showRegionDropdown,
+    citySearch,
+    highlightedIndex,
+    showDateModal,
     updateFilter,
     applyFilters,
     handleApplyFilters,
     handleClearFilters,
     fetchListings,
-    goToPage
+    goToPage,
+    validatePassengerCount,
+    validateRoomCount,
+    formatPrice,
+    formatDate,
+    filteredCities,
+    isCitySelected,
+    selectCity,
+    removeCity,
+    isRegionSelected,
+    toggleRegion,
+    removeRegion,
+    handlePriceChange,
+    handleDateUpdate
   }
 } 
