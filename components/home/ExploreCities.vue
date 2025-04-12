@@ -8,29 +8,44 @@
       <div>
         <!-- First row -->
         <div class="grid grid-cols-3 gap-4 mb-4">
-          <NuxtLink :to="`/listings/city-${cities[0].name_en}`" class="bg-red-400 h-64 rounded-lg p-4 flex flex-col justify-end items-center text-white hover:opacity-90 transition-opacity">
-            <h3 class="text-xl font-semibold">{{ cities[0].name_fa }}</h3>
-            <p class="text-sm mb-2">تهران</p>
+          <NuxtLink :to="`/listings/city-${cities[0].name_en}`" class="relative h-64 rounded-lg overflow-hidden group">
+            <img :src="`/images/cities/${cities[0].name_en}.jpg`" :alt="cities[0].name_fa" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end items-center p-4">
+              <h3 class="text-xl font-semibold text-white uppercase">{{ cities[0].name_en }}</h3>
+              <p class="text-sm text-white">{{ cities[0].name_fa }}</p>
+            </div>
           </NuxtLink>
-          <NuxtLink :to="`/listings/city-${cities[1].name_en}`" class="bg-teal-400 h-64 rounded-lg p-4 flex flex-col justify-end items-center text-white hover:opacity-90 transition-opacity">
-            <h3 class="text-xl font-semibold">{{ cities[1].name_fa }}</h3>
-            <p class="text-sm mb-2">رامسر</p>
+          <NuxtLink :to="`/listings/city-${cities[1].name_en}`" class="relative h-64 rounded-lg overflow-hidden group">
+            <img :src="`/images/cities/${cities[1].name_en}.jpg`" :alt="cities[1].name_fa" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end items-center p-4">
+              <h3 class="text-xl font-semibold text-white uppercase">{{ cities[1].name_en }}</h3>
+              <p class="text-sm text-white">{{ cities[0].name_fa }}</p>
+            </div>
           </NuxtLink>
-          <NuxtLink :to="`/listings/city-${cities[2].name_en}`" class="bg-blue-400 h-64 rounded-lg p-4 flex flex-col justify-end items-center text-white hover:opacity-90 transition-opacity">
-            <h3 class="text-xl font-semibold">{{ cities[2].name_fa }}</h3>
-            <p class="text-sm mb-2">مشهد</p>
+          <NuxtLink :to="`/listings/city-${cities[2].name_en}`" class="relative h-64 rounded-lg overflow-hidden group">
+            <img :src="`/images/cities/${cities[2].name_en}.jpg`" :alt="cities[2].name_fa" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end items-center p-4">
+              <h3 class="text-xl font-semibold text-white uppercase">{{ cities[2].name_en }}</h3>
+              <p class="text-sm text-white">{{ cities[0].name_fa }}</p>
+            </div>
           </NuxtLink>
         </div>
         
         <!-- Second row -->
         <div class="grid grid-cols-3 gap-4">
-          <NuxtLink :to="`/listings/city-${cities[3].name_en}`" class="bg-green-400 h-64 rounded-lg p-4 flex flex-col justify-end items-center text-white hover:opacity-90 transition-opacity">
-            <h3 class="text-xl font-semibold">{{ cities[3].name_fa }}</h3>
-            <p class="text-sm mb-2">اصفهان</p>
+          <NuxtLink :to="`/listings/city-${cities[3].name_en}`" class="relative h-64 rounded-lg overflow-hidden group">
+            <img :src="`/images/cities/${cities[3].name_en}.jpg`" :alt="cities[3].name_fa" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end items-center p-4">
+              <h3 class="text-xl font-semibold text-white uppercase">{{ cities[3].name_en }}</h3>
+              <p class="text-sm text-white">{{ cities[0].name_fa }}</p>
+            </div>
           </NuxtLink>
-          <NuxtLink :to="`/listings/city-${cities[4].name_en}`" class="col-span-2 bg-yellow-300 h-64 rounded-lg p-4 flex flex-col justify-end items-center text-gray-800 hover:opacity-90 transition-opacity">
-            <h3 class="text-xl font-semibold">{{ cities[4].name_fa }}</h3>
-            <p class="text-sm mb-2">شیراز</p>
+          <NuxtLink :to="`/listings/city-${cities[4].name_en}`" class="relative h-64 rounded-lg overflow-hidden group col-span-2">
+            <img :src="`/images/cities/${cities[4].name_en}.jpg`" :alt="cities[4].name_fa" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end items-center p-4">
+              <h3 class="text-xl font-semibold text-white uppercase">{{ cities[4].name_en }}</h3>
+              <p class="text-sm text-white">{{ cities[0].name_fa }}</p>
+            </div>
           </NuxtLink>
         </div>
       </div>
@@ -41,23 +56,23 @@
 <script setup>
 const cities = [
   {
-    name_fa: "Tehran",
+    name_fa: "تهران",
     name_en: "tehran"
   },
   {
-    name_fa: "Ramsar",
+    name_fa: "رامسر",
     name_en: "ramsar"
   },
   {
-    name_fa: "Mashhad",
+    name_fa: "مشهد",
     name_en: "mashhad"
   },
   {
-    name_fa: "Isfahan",
+    name_fa: "اصفهان",
     name_en: "isfahan"
   },
   {
-    name_fa: "Shiraz",
+    name_fa: "شیراز",
     name_en: "shiraz"
   }
 ];
