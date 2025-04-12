@@ -3,6 +3,7 @@ import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
+
   css: [
     '@/assets/css/main.css',
     '@/assets/css/fonts.css',
@@ -10,9 +11,11 @@ export default defineNuxtConfig({
     'swiper/css/navigation',
     'swiper/css/pagination'
   ],
+
   modules: [
     '@nuxtjs/tailwindcss'
   ],
+
   app: {
     head: {
       title: 'جاباما - رزرو اقامتگاه',
@@ -31,5 +34,7 @@ export default defineNuxtConfig({
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap' }
       ]
     }
-  }
-}) 
+  },
+
+  compatibilityDate: '2025-04-12'
+})

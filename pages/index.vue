@@ -2,6 +2,7 @@
   <div>
     <HeroSection />
     <PopularCategories  />
+    <ExploreCities />
     <FeaturedListings 
       keyword="city-tehran" 
       title="اقامتگاه‌های تهران" 
@@ -24,7 +25,6 @@
 import HeroSection from '~/components/home/HeroSection.vue'
 import PopularCategories from '~/components/home/PopularCategories.vue'
 import FeaturedListings from '~/components/home/FeaturedListings.vue'
-
-
+import ExploreCities from '~/components/home/ExploreCities.vue'
 </script>
 
