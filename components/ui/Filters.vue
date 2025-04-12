@@ -19,6 +19,23 @@
     <div v-if="cities && cities.length > 1" class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">شهر</label>
       <div class="relative">
+        <!-- Selected Cities Tags -->
+        <div v-if="selectedCities.length > 0" class="flex flex-wrap gap-2 mb-2">
+          <div 
+            v-for="city in selectedCities" 
+            :key="city.city_name_en"
+            class="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-lg text-sm"
+          >
+            <span>{{ city.city_name_fa }}</span>
+            <button 
+              @click="removeCity(city)"
+              class="text-blue-600 hover:text-blue-800"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        
         <input
           type="text"
           v-model="citySearch"
@@ -41,10 +58,13 @@
             @mousedown="selectCity(city)"
             :class="[
               'px-3 py-2 cursor-pointer text-sm',
-              highlightedIndex === index ? 'bg-blue-100' : 'hover:bg-gray-100'
+              highlightedIndex === index ? 'bg-blue-100' : 'hover:bg-gray-100',
+              isCitySelected(city) ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''
             ]"
+            :style="isCitySelected(city) ? 'pointer-events: none;' : ''"
           >
             {{ city.city_name_fa }}
+            <span v-if="isCitySelected(city)" class="float-left text-xs text-gray-500">(انتخاب شده)</span>
           </div>
         </div>
       </div>
@@ -221,6 +241,14 @@ const showCityDropdown = ref(false)
 // Add highlightedIndex for keyboard navigation
 const highlightedIndex = ref(-1)
 
+// Add selectedCities ref to track selected cities
+const selectedCities = ref([])
+
+// Check if a city is already selected
+const isCitySelected = (city) => {
+  return selectedCities.value.some(selected => selected.city_name_en === city.city_name_en)
+}
+
 // Filtered cities based on search
 const filteredCities = computed(() => {
   if (!cities.value) return []
@@ -268,11 +296,34 @@ watch(() => filters.value, (newFilters) => {
   }
 }, { deep: true })
 
-// Handle city selection
+// Update the watch for filters.cities to handle multiple cities
+watch(() => filters.value.cities, (newCities) => {
+  if (newCities && Array.isArray(newCities) && newCities.length > 0 && cities.value) {
+    selectedCities.value = newCities.map(cityName => {
+      return cities.value.find(city => city.city_name_en === cityName)
+    }).filter(Boolean)
+  } else {
+    selectedCities.value = []
+  }
+}, { immediate: true })
+
+// Update selectCity to handle multiple selection without applying to URL
 const selectCity = (city) => {
-  citySearch.value = city.city_name_fa
-  updateFilter('cities', [city.city_name_en])
+  if (!isCitySelected(city)) {
+    selectedCities.value.push(city)
+    const cityNames = selectedCities.value.map(c => c.city_name_en)
+    updateFilter('cities', cityNames)
+  }
+  citySearch.value = ''
   showCityDropdown.value = false
+  highlightedIndex.value = -1
+}
+
+// Add function to remove a city without applying to URL
+const removeCity = (city) => {
+  selectedCities.value = selectedCities.value.filter(c => c.city_name_en !== city.city_name_en)
+  const cityNames = selectedCities.value.map(c => c.city_name_en)
+  updateFilter('cities', cityNames)
 }
 
 // Navigate dropdown with keyboard
@@ -316,18 +367,6 @@ const handleCityBlur = () => {
   }, 200)
 }
 
-// Watch for changes in filters.cities and update citySearch
-watch(() => filters.value.cities, (newCities) => {
-  if (newCities && newCities.length > 0 && cities.value) {
-    const cityObj = cities.value.find(city => city.city_name_en === newCities[0])
-    if (cityObj) {
-      citySearch.value = cityObj.city_name_fa
-    }
-  } else {
-    citySearch.value = ''
-  }
-}, { immediate: true })
-
 // Handle type change
 const handleTypeChange = (event) => {
   const selectedType = event.target.value
@@ -352,8 +391,13 @@ const handleDateUpdate = (dates) => {
   updateFilter('check_out', dates.checkout)
 }
 
-// Apply filters
+// Apply filters - this will be called when the Apply Filters button is clicked
 const handleApplyFilters = async () => {
+  // Make sure the cities are properly set in the filters
+  const cityNames = selectedCities.value.map(c => c.city_name_en)
+  updateFilter('cities', cityNames)
+  
+  // Apply filters to URL
   await applyFiltersToUrl()
   emit('apply-filters')
 }

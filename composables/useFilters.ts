@@ -23,7 +23,7 @@ function queryToArray(value: LocationQueryValue | LocationQueryValue[] | null | 
   if (Array.isArray(value)) {
     return value.filter((v): v is string => typeof v === 'string')
   }
-  if (typeof value === 'string' && value.includes(',')) {
+  if (typeof value === 'string') {
     return value.split(',').filter(Boolean)
   }
   return [value].filter(Boolean)
