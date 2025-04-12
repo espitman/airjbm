@@ -57,65 +57,13 @@
           </div>
           
           <!-- Pagination -->
-          <div v-if="!$listingsApi.loading.value && !$listingsApi.error.value" class="mt-8 flex justify-center">
-            <div class="flex flex-wrap justify-center gap-2 max-w-full">
-              <!-- Previous Page Button -->
-              <button 
-                v-if="currentPage > 1"
-                @click="goToPage(currentPage - 1)"
-                class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
-              >
-                <i class="fas fa-chevron-left"></i>
-              </button>
-              
-              <!-- First Page -->
-              <button 
-                v-if="currentPage > 3"
-                @click="goToPage(1)"
-                class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
-              >
-                1
-              </button>
-              
-              <!-- Ellipsis -->
-              <span v-if="currentPage > 4" class="px-2 py-2">...</span>
-              
-              <!-- Page Numbers -->
-              <button 
-                v-for="page in displayedPages" 
-                :key="page"
-                @click="goToPage(page)"
-                :class="[
-                  'px-3 py-2 rounded-lg',
-                  currentPage === page 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                ]"
-              >
-                {{ page }}
-              </button>
-              
-              <!-- Ellipsis -->
-              <span v-if="currentPage < totalPages - 3" class="px-2 py-2">...</span>
-              
-              <!-- Last Page -->
-              <button 
-                v-if="currentPage < totalPages - 2"
-                @click="goToPage(totalPages)"
-                class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
-              >
-                {{ totalPages }}
-              </button>
-              
-              <!-- Next Page Button -->
-              <button 
-                v-if="currentPage < totalPages"
-                @click="goToPage(currentPage + 1)"
-                class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
-              >
-                <i class="fas fa-chevron-right"></i>
-              </button>
-            </div>
+          <div v-if="!$listingsApi.loading.value && !$listingsApi.error.value" class="mt-8">
+            <Pagination
+              :current-page="currentPage"
+              :total-items="$listingsApi.total?.value || 0"
+              :items-per-page="itemsPerPage"
+              @page-change="goToPage"
+            />
           </div>
         </div>
       </div>
@@ -154,6 +102,7 @@ import FilterModals from '~/components/ui/FilterModals.vue'
 import ListingCard from '~/components/ui/ListingCard.vue'
 import RulesAmenitiesModal from '~/components/ui/RulesAmenitiesModal.vue'
 import SearchResultsTitle from '~/components/ui/SearchResultsTitle.vue'
+import Pagination from '~/components/ui/Pagination.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -213,38 +162,75 @@ const handleApplyFilters = async () => {
   // Apply filters to URL and get the updated filters
   const appliedFilters = await applyFilters()
   
-  // Fetch listings with the updated filters
-  await fetchListings(currentPage.value, appliedFilters)
+  // Reset to page 1 when filters are applied
+  currentPage.value = 1
+  
+  // Fetch listings with the updated filters and page 1
+  await fetchListings(1, appliedFilters)
 }
 
-const fetchListings = (page, currentFilters = filters.value) => {
-  $listingsApi.fetchListings({ 
-    page, 
-    size: itemsPerPage, 
-    keyword: keyword.value,
-    cities: currentFilters.cities,
-    types: currentFilters.types,
-    regions: currentFilters.regions,
-    passengerCount: currentFilters.passengerCount ? Number(currentFilters.passengerCount) : undefined,
-    rooms: currentFilters.roomsCount ? Number(currentFilters.roomsCount) : undefined,
-    check_in: currentFilters.check_in || undefined,
-    check_out: currentFilters.check_out || undefined,
-    min_price: currentFilters.minPrice ? parseInt(currentFilters.minPrice) : undefined,
-    max_price: currentFilters.maxPrice ? parseInt(currentFilters.maxPrice) : undefined,
-    sort: currentFilters.sortBy || route.query.sort,
-    selectedRules: currentFilters.selectedRules,
-    selectedAmenities: currentFilters.selectedAmenities
-  })
+const fetchListings = async (page, currentFilters = filters.value) => {
+  try {
+    // Show loading state
+    $listingsApi.loading.value = true
+    
+    // Fetch listings with the current page and filters
+    await $listingsApi.fetchListings({ 
+      page, 
+      size: itemsPerPage, 
+      keyword: keyword.value,
+      cities: currentFilters.cities,
+      types: currentFilters.types,
+      regions: currentFilters.regions,
+      passengerCount: currentFilters.passengerCount ? Number(currentFilters.passengerCount) : undefined,
+      rooms: currentFilters.roomsCount ? Number(currentFilters.roomsCount) : undefined,
+      check_in: currentFilters.check_in || undefined,
+      check_out: currentFilters.check_out || undefined,
+      min_price: currentFilters.minPrice ? parseInt(currentFilters.minPrice) : undefined,
+      max_price: currentFilters.maxPrice ? parseInt(currentFilters.maxPrice) : undefined,
+      sort: currentFilters.sortBy || route.query.sort,
+      selectedRules: currentFilters.selectedRules,
+      selectedAmenities: currentFilters.selectedAmenities
+    })
+  } catch (error) {
+    console.error('Error fetching listings:', error)
+    $listingsApi.error.value = error instanceof Error ? error.message : 'An error occurred while fetching listings'
+  } finally {
+    $listingsApi.loading.value = false
+  }
 }
 
-const updatePageQuery = (page) => {
+const updatePageQuery = async (page) => {
+  // Create a new query object with all existing filters
   const query = { ...route.query, page: page.toString() }
-  router.push({ query })
+  
+  // Update URL without triggering navigation
+  await router.replace({ query })
+  
+  // Fetch listings with the updated page
+  await fetchListings(page)
 }
 
-const goToPage = (page) => {
+const goToPage = async (page) => {
   currentPage.value = page
+  await updatePageQuery(page)
 }
+
+// Watch for changes in the current page
+watch(() => currentPage.value, async (newPage) => {
+  if (newPage > 0) {
+    await updatePageQuery(newPage)
+  }
+})
+
+// Watch for changes in the route query page parameter
+watch(() => route.query.page, (newPage) => {
+  const page = parseInt(newPage || '1')
+  if (page > 0 && page !== currentPage.value) {
+    currentPage.value = page
+    fetchListings(page)
+  }
+}, { immediate: true })
 
 const totalPages = computed(() => {
   return Math.ceil(($listingsApi.total?.value || 0) / itemsPerPage)
