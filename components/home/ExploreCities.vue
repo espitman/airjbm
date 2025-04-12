@@ -16,7 +16,7 @@
             </div>
           </NuxtLink>
           <NuxtLink :to="`/listings/city-${cities[1].name_en}`" class="relative h-64 rounded-lg overflow-hidden group">
-            <img :src="`/images/cities/${cities[1].name_en}.jpg`" :alt="cities[1].name_fa" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+            <img :src="`/images/cities/${cities[1].name_en}.webp`" :alt="cities[1].name_fa" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end items-center p-4">
               <h3 class="text-xl font-semibold text-white uppercase">{{ cities[1].name_en }}</h3>
               <p class="text-sm text-white">{{ cities[0].name_fa }}</p>
@@ -34,14 +34,14 @@
         <!-- Second row -->
         <div class="grid grid-cols-3 gap-4">
           <NuxtLink :to="`/listings/city-${cities[3].name_en}`" class="relative h-64 rounded-lg overflow-hidden group">
-            <img :src="`/images/cities/${cities[3].name_en}.jpg`" :alt="cities[3].name_fa" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+            <img :src="`/images/cities/${cities[3].name_en}.webp`" :alt="cities[3].name_fa" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end items-center p-4">
               <h3 class="text-xl font-semibold text-white uppercase">{{ cities[3].name_en }}</h3>
               <p class="text-sm text-white">{{ cities[0].name_fa }}</p>
             </div>
           </NuxtLink>
           <NuxtLink :to="`/listings/city-${cities[4].name_en}`" class="relative h-64 rounded-lg overflow-hidden group col-span-2">
-            <img :src="`/images/cities/${cities[4].name_en}.jpg`" :alt="cities[4].name_fa" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+            <img :src="`/images/cities/${cities[4].name_en}.webp`" :alt="cities[4].name_fa" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end items-center p-4">
               <h3 class="text-xl font-semibold text-white uppercase">{{ cities[4].name_en }}</h3>
               <p class="text-sm text-white">{{ cities[0].name_fa }}</p>
