@@ -544,6 +544,15 @@ const toggleRegion = (region) => {
 const removeRegion = (region) => {
   selectedRegions.value = selectedRegions.value.filter(r => r !== region)
 }
+
+// Watch for changes in filters.regions and update selectedRegions
+watch(() => filters.value.regions, (newRegions) => {
+  if (newRegions && Array.isArray(newRegions) && newRegions.length > 0) {
+    selectedRegions.value = newRegions
+  } else {
+    selectedRegions.value = []
+  }
+}, { immediate: true })
 </script>
 
 <style>
