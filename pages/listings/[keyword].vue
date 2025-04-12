@@ -16,7 +16,6 @@
           class="lg:w-1/4 transition-all duration-300 lg:sticky lg:top-24 lg:self-start"
         >
           <Filters 
-            v-model:filters="filters"
             :user-filters="$listingsApi.userFilters.value"
             :show-rules-modal="showRulesModal"
             :show-amenities-modal="showAmenitiesModal"
@@ -149,6 +148,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useNuxtApp } from '#app'
+import { useFilters } from '~/composables/useFilters'
 import Filters from '~/components/ui/Filters.vue'
 import FilterModals from '~/components/ui/FilterModals.vue'
 import ListingCard from '~/components/ui/ListingCard.vue'
@@ -158,9 +158,12 @@ import SearchResultsTitle from '~/components/ui/SearchResultsTitle.vue'
 const route = useRoute()
 const router = useRouter()
 const { $listingsApi } = useNuxtApp()
+const { filters, updateFilter, applyFilters } = useFilters()
 
 const showFilters = ref(true)
 const showModal = ref(false)
+const showRulesModal = ref(false)
+const showAmenitiesModal = ref(false)
 const windowWidth = ref(0)
 const currentPage = computed({
   get: () => {
@@ -190,38 +193,8 @@ onMounted(() => {
   const pageFromQuery = parseInt(route.query.page) || 1
   const page = pageFromQuery > 0 ? pageFromQuery : 1
   
-  // Initialize filters from URL query parameters
-  const query = route.query
-  if (query.search) filters.value.search = query.search
-  if (query.city) filters.value.city = query.city
-  if (query.type) filters.value.type = query.type
-  if (query.minPrice) filters.value.minPrice = query.minPrice
-  if (query.maxPrice) filters.value.maxPrice = query.maxPrice
-  if (query.passengerCount) filters.value.passengerCount = query.passengerCount
-  if (query.roomsCount) filters.value.roomsCount = query.roomsCount
-  if (query.region) filters.value.region = query.region
-  if (query.check_in) filters.value.check_in = query.check_in
-  if (query.check_out) filters.value.check_out = query.check_out
-  if (query.selectedRules) filters.value.selectedRules = query.selectedRules.split(',')
-  if (query.selectedAmenities) filters.value.selectedAmenities = query.selectedAmenities.split(',')
-  if (query.sortBy) filters.value.sortBy = query.sortBy
-  
   // Fetch listings with the page from URL and keyword from route params
-  $listingsApi.fetchListings({ 
-    page, 
-    size: itemsPerPage, 
-    keyword: keyword.value,
-    cities: filters.value.city ? [filters.value.city] : [],
-    types: filters.value.type ? [filters.value.type] : [],
-    regions: filters.value.region ? [filters.value.region] : [],
-    passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
-    rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined,
-    check_in: filters.value.check_in || undefined,
-    check_out: filters.value.check_out || undefined,
-    min_price: filters.value.minPrice ? parseInt(filters.value.minPrice) : undefined,
-    max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined,
-    sort: filters.value.sortBy
-  })
+  fetchListings(page)
 })
 
 onUnmounted(() => {
@@ -230,392 +203,99 @@ onUnmounted(() => {
 
 const toggleFilters = () => {
   showFilters.value = !showFilters.value
-  console.log('Toggling filters:', showFilters.value)
 }
 
 const hideFilters = () => {
-  console.log('Hiding filters')
   showFilters.value = false
 }
 
-const filters = ref({
-  search: '',
-  city: '',
-  type: '',
-  minPrice: '',
-  maxPrice: '',
-  passengerCount: '',
-  roomsCount: '',
-  region: '',
-  check_in: '',
-  check_out: '',
-  selectedRules: [],
-  selectedAmenities: [],
-  sortBy: ''
-})
-
-// Remove the localListings array and use API results directly
-const filteredListings = computed(() => {
-  // If we have filters applied, we need to filter the API results
-  const hasFilters = 
-    filters.value.search || 
-    filters.value.city || 
-    filters.value.type || 
-    filters.value.minPrice || 
-    filters.value.maxPrice || 
-    filters.value.passengerCount || 
-    filters.value.roomsCount || 
-    filters.value.region || 
-    filters.value.check_in || 
-    filters.value.check_out || 
-    filters.value.selectedRules.length > 0 || 
-    filters.value.selectedAmenities.length > 0 || 
-    filters.value.sortBy !== ''
+const handleApplyFilters = async () => {
+  // Apply filters to URL and get the updated filters
+  const appliedFilters = await applyFilters()
   
-  // If no filters are applied, just return the API results
-  if (!hasFilters) {
-    return $listingsApi.listings.value
-  }
-  
-  // Otherwise, apply filters to the API results
-  let result = [...$listingsApi.listings.value]
+  // Fetch listings with the updated filters
+  await fetchListings(currentPage.value, appliedFilters)
+}
 
-  // Apply search filter
-  if (filters.value.search) {
-    const searchTerm = filters.value.search.toLowerCase()
-    result = result.filter(listing => 
-      listing.title.toLowerCase().includes(searchTerm) ||
-      listing.location.toLowerCase().includes(searchTerm)
-    )
-  }
+const fetchListings = (page, currentFilters = filters.value) => {
+  $listingsApi.fetchListings({ 
+    page, 
+    size: itemsPerPage, 
+    keyword: keyword.value,
+    cities: currentFilters.cities,
+    types: currentFilters.types,
+    regions: currentFilters.regions,
+    passengerCount: currentFilters.passengerCount ? Number(currentFilters.passengerCount) : undefined,
+    rooms: currentFilters.roomsCount ? Number(currentFilters.roomsCount) : undefined,
+    check_in: currentFilters.check_in || undefined,
+    check_out: currentFilters.check_out || undefined,
+    min_price: currentFilters.minPrice ? parseInt(currentFilters.minPrice) : undefined,
+    max_price: currentFilters.maxPrice ? parseInt(currentFilters.maxPrice) : undefined,
+    sort: currentFilters.sortBy || route.query.sort,
+    selectedRules: currentFilters.selectedRules,
+    selectedAmenities: currentFilters.selectedAmenities
+  })
+}
 
-  // Apply city filter
-  if (filters.value.city) {
-    result = result.filter(listing => listing.city === filters.value.city)
-  }
+const updatePageQuery = (page) => {
+  const query = { ...route.query, page: page.toString() }
+  router.push({ query })
+}
 
-  // Apply type filter
-  if (filters.value.type) {
-    result = result.filter(listing => listing.type === filters.value.type)
-  }
+const goToPage = (page) => {
+  currentPage.value = page
+}
 
-  // Apply price range filter
-  if (filters.value.minPrice) {
-    result = result.filter(listing => listing.price >= Number(filters.value.minPrice))
-  }
-  if (filters.value.maxPrice) {
-    result = result.filter(listing => listing.price <= Number(filters.value.maxPrice))
-  }
-
-  // Apply passenger count filter
-  if (filters.value.passengerCount) {
-    result = result.filter(listing => 
-      listing.capacity.base + listing.capacity.extra >= Number(filters.value.passengerCount)
-    )
-  }
-
-  // Apply rooms count filter
-  if (filters.value.roomsCount) {
-    result = result.filter(listing => listing.rooms >= Number(filters.value.roomsCount))
-  }
-
-  // Apply region filter
-  if (filters.value.region) {
-    result = result.filter(listing => listing.region === filters.value.region)
-  }
-
-  // Apply check-in date filter
-  if (filters.value.check_in) {
-    result = result.filter(listing => listing.checkinDate >= filters.value.check_in)
-  }
-
-  // Apply check-out date filter
-  if (filters.value.check_out) {
-    result = result.filter(listing => listing.checkoutDate <= filters.value.check_out)
-  }
-
-  // Apply rules filter
-  if (filters.value.selectedRules.length > 0) {
-    result = result.filter(listing => 
-      filters.value.selectedRules.every(rule => listing.rules.includes(rule))
-    )
-  }
-
-  // Apply amenities filter
-  if (filters.value.selectedAmenities.length > 0) {
-    result = result.filter(listing => 
-      filters.value.selectedAmenities.every(amenity => listing.amenities.includes(amenity))
-    )
-  }
-
-  // Apply sorting
-  switch (filters.value.sortBy) {
-    case 'price-asc':
-      result.sort((a, b) => a.price - b.price)
-      break
-    case 'price-desc':
-      result.sort((a, b) => b.price - a.price)
-      break
-    case 'rating-desc':
-      result.sort((a, b) => b.rating - a.rating)
-      break
-    case 'rating-asc':
-      result.sort((a, b) => a.rating - b.rating)
-      break
-  }
-
-  return result
-})
-
-// Pagination
 const totalPages = computed(() => {
-  return Math.ceil($listingsApi.total.value / itemsPerPage)
+  return Math.ceil(($listingsApi.total?.value || 0) / itemsPerPage)
 })
 
-// Calculate which page numbers to display
 const displayedPages = computed(() => {
   const pages = []
-  const maxDisplayed = 5 // Maximum number of page buttons to show
+  const maxPages = 5
+  let start = Math.max(1, currentPage.value - Math.floor(maxPages / 2))
+  let end = Math.min(totalPages.value, start + maxPages - 1)
   
-  if (totalPages.value <= maxDisplayed) {
-    // If total pages is less than max displayed, show all pages
-    for (let i = 1; i <= totalPages.value; i++) {
-      pages.push(i)
-    }
-  } else {
-    // Calculate the range of pages to show around the current page
-    let start = Math.max(1, currentPage.value - Math.floor(maxDisplayed / 2))
-    let end = Math.min(totalPages.value, start + maxDisplayed - 1)
-    
-    // Adjust start if we're near the end
-    if (end === totalPages.value) {
-      start = Math.max(1, end - maxDisplayed + 1)
-    }
-    
-    // Add pages to the array
-    for (let i = start; i <= end; i++) {
-      pages.push(i)
-    }
+  if (end - start + 1 < maxPages) {
+    start = Math.max(1, end - maxPages + 1)
+  }
+  
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
   }
   
   return pages
 })
 
-// Use the API results directly for pagination
 const paginatedListings = computed(() => {
-  // The API already returns the correct page of results, so we don't need to slice
   return $listingsApi.listings.value
 })
 
-// Reset to first page when filters change
-watch(filters, () => {
-  currentPage.value = 1
-}, { deep: true })
-
-// Function to update page in URL
-const updatePageQuery = (page) => {
-  setTimeout(() => {
-    console.log('Updating page in URL:', page)
-    router.push({
-      query: {
-      ...route.query,
-      page: page > 1 ? page : undefined
-      }
-    })
-  }, 10)
-}
-
-// Watch for route query changes to update filters
-watch(() => route.query, (newQuery) => {
-  // Update filters from query parameters
-  if (newQuery.search !== undefined) filters.value.search = newQuery.search
-  if (newQuery.city !== undefined) {
-    // Use the English city name directly from the URL
-    filters.value.city = newQuery.city
-  }
-  if (newQuery.type !== undefined) filters.value.type = newQuery.type
-  if (newQuery.minPrice !== undefined) filters.value.minPrice = newQuery.minPrice
-  if (newQuery.maxPrice !== undefined) filters.value.maxPrice = newQuery.maxPrice
-  if (newQuery.passengerCount !== undefined) filters.value.passengerCount = newQuery.passengerCount
-  if (newQuery.roomsCount !== undefined) filters.value.roomsCount = newQuery.roomsCount
-  if (newQuery.region !== undefined) filters.value.region = newQuery.region
-  if (newQuery.check_in !== undefined) filters.value.check_in = newQuery.check_in
-  if (newQuery.check_out !== undefined) filters.value.check_out = newQuery.check_out
-  if (newQuery.selectedRules !== undefined) filters.value.selectedRules = newQuery.selectedRules.split(',')
-  if (newQuery.selectedAmenities !== undefined) filters.value.selectedAmenities = newQuery.selectedAmenities.split(',')
-  if (newQuery.sortBy !== undefined) filters.value.sortBy = newQuery.sortBy
-  
-  // Fetch listings when page parameter changes
-  if (newQuery.page !== undefined) {
-    const page = parseInt(newQuery.page)
-    if (page > 0) {
-      // Fetch new listings for the page from URL
-      $listingsApi.fetchListings({ 
-        page, 
-        size: itemsPerPage, 
-        keyword: keyword.value,
-        cities: filters.value.city ? [filters.value.city] : [],
-        types: filters.value.type ? [filters.value.type] : [],
-        regions: filters.value.region ? [filters.value.region] : [],
-        passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
-        rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined,
-        check_in: filters.value.check_in || undefined,
-        check_out: filters.value.check_out || undefined,
-        min_price: filters.value.minPrice ? parseInt(filters.value.minPrice) : undefined,
-        max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined,
-        sort: filters.value.sortBy
-      })
-    }
-  }
-}, { deep: true })
-
-// Watch for route parameter changes to update keyword
-watch(() => route.params.keyword, (newKeyword) => {
-  if (newKeyword) {
-    // Reset to first page when keyword changes
-    currentPage.value = 1
-    
-    // Fetch listings with the new keyword
-    $listingsApi.fetchListings({ 
-      page: 1, 
-      size: itemsPerPage, 
-      keyword: newKeyword,
-      cities: filters.value.city ? [filters.value.city] : [],
-      types: filters.value.type ? [filters.value.type] : [],
-      regions: filters.value.region ? [filters.value.region] : [],
-      passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
-      rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined,
-      check_in: filters.value.check_in || undefined,
-      check_out: filters.value.check_out || undefined,
-      min_price: filters.value.minPrice ? parseInt(filters.value.minPrice) : undefined,
-      max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined,
-      sort: filters.value.sortBy
-    })
-  }
-})
-
-// Update pagination navigation to use the new currentPage setter
-const goToPage = (page) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page
-    
-    // Fetch new listings for the selected page
-    $listingsApi.fetchListings({ 
-      page, 
-      size: itemsPerPage, 
-      keyword: keyword.value,
-      cities: filters.value.city ? [filters.value.city] : [],
-      types: filters.value.type ? [filters.value.type] : [],
-      regions: filters.value.region ? [filters.value.region] : [],
-      passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
-      rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined,
-      check_in: filters.value.check_in || undefined,
-      check_out: filters.value.check_out || undefined,
-      min_price: filters.value.minPrice ? parseInt(filters.value.minPrice) : undefined,
-      max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined,
-      sort: filters.value.sortBy
-    })
-    
-    // Scroll to top when changing pages
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-}
-
 // Function to handle modal filters
 const handleModalFilters = (newFilters) => {
-  filters.value = { ...newFilters }
-  updateFiltersInUrl()
+  // Update each filter individually using the composable's updateFilter function
+  Object.entries(newFilters).forEach(([key, value]) => {
+    if (key in filters.value) {
+      updateFilter(key, value)
+    }
+  })
+  // Don't apply filters immediately, wait for the user to click the Apply button
 }
 
 // Function to handle modal apply filters
-const handleModalApplyFilters = () => {
-  updateFiltersInUrl()
+const handleModalApplyFilters = async () => {
+  await handleApplyFilters()
 }
 
 // Function to update selected rules
 const updateSelectedRules = (rules) => {
-  filters.value.selectedRules = rules
+  updateFilter('selectedRules', rules)
+  // Don't apply filters immediately, wait for the user to click the Apply button
 }
 
 // Function to update selected amenities
 const updateSelectedAmenities = (amenities) => {
-  filters.value.selectedAmenities = amenities
-}
-
-// Add a new function to handle the apply-filters event
-const handleApplyFilters = (newFilters) => {
-  console.log('Applying filters:', newFilters)
-  
-  // Update the filters object
-  filters.value = { ...newFilters }
-  
-  // Update the URL with all filters
-  const query = { ...route.query }
-  
-  // Only include non-empty filters in the URL
-  if (filters.value.city) query.city = filters.value.city
-  else delete query.city
-  
-  if (filters.value.type) query.type = filters.value.type
-  else delete query.type
-  
-  if (filters.value.region) query.region = filters.value.region
-  else delete query.region
-  
-  if (filters.value.minPrice) query.minPrice = filters.value.minPrice
-  else delete query.minPrice
-  
-  if (filters.value.maxPrice) query.maxPrice = filters.value.maxPrice
-  else delete query.maxPrice
-  
-  if (filters.value.passengerCount) query.passengerCount = filters.value.passengerCount
-  else delete query.passengerCount
-  
-  if (filters.value.roomsCount) query.roomsCount = filters.value.roomsCount
-  else delete query.roomsCount
-  
-  if (filters.value.check_in) query.check_in = filters.value.check_in
-  else delete query.check_in
-  
-  if (filters.value.check_out) query.check_out = filters.value.check_out
-  else delete query.check_out
-  
-  if (filters.value.selectedRules && filters.value.selectedRules.length > 0) 
-    query.selectedRules = filters.value.selectedRules.join(',')
-  else delete query.selectedRules
-  
-  if (filters.value.selectedAmenities && filters.value.selectedAmenities.length > 0) 
-    query.selectedAmenities = filters.value.selectedAmenities.join(',')
-  else delete query.selectedAmenities
-  
-  if (filters.value.sortBy) 
-    query.sortBy = filters.value.sortBy
-  else delete query.sortBy
-  
-  // Reset to first page when filters change
-  query.page = undefined
-  
-  console.log('New query:', query)
-  router.push({ query })
-  
-  // Fetch listings with all current filters
-  $listingsApi.fetchListings({ 
-    page: 1, 
-    size: itemsPerPage, 
-    keyword: keyword.value,
-    cities: filters.value.city ? [filters.value.city] : [],
-    types: filters.value.type ? [filters.value.type] : [],
-    regions: filters.value.region ? [filters.value.region] : [],
-    passengerCount: filters.value.passengerCount ? Number(filters.value.passengerCount) : undefined,
-    rooms: filters.value.roomsCount ? Number(filters.value.roomsCount) : undefined,
-    check_in: filters.value.check_in || undefined,
-    check_out: filters.value.check_out || undefined,
-    min_price: filters.value.minPrice ? parseInt(filters.value.minPrice) : undefined,
-    max_price: filters.value.maxPrice ? parseInt(filters.value.maxPrice) : undefined,
-    sort: filters.value.sortBy
-  })
-  
-  // Scroll to top when applying filters
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  updateFilter('selectedAmenities', amenities)
+  // Don't apply filters immediately, wait for the user to click the Apply button
 }
 </script> 

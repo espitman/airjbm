@@ -67,8 +67,8 @@
         @click="showDateModal = true"
         class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-right flex justify-between items-center"
       >
-        <span v-if="props.filters.check_in && props.filters.check_out">
-          {{ formatDate(props.filters.check_in) }} - {{ formatDate(props.filters.check_out) }}
+        <span v-if="filters.check_in && filters.check_out">
+          {{ formatDate(filters.check_in) }} - {{ formatDate(filters.check_out) }}
         </span>
         <span v-else>انتخاب تاریخ ورود و خروج</span>
         <i class="fas fa-calendar-alt text-gray-400"></i>
@@ -82,7 +82,7 @@
           <label class="block text-sm font-medium text-gray-700 mb-1">تعداد مسافر</label>
           <input 
             type="number" 
-            v-model="props.filters.passengerCount" 
+            v-model="filters.passengerCount" 
             placeholder="تعداد مسافران" 
             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
           >
@@ -91,7 +91,7 @@
           <label class="block text-sm font-medium text-gray-700 mb-1">تعداد اتاق</label>
           <input 
             type="number" 
-            v-model="props.filters.roomsCount" 
+            v-model="filters.roomsCount" 
             placeholder="تعداد اتاق‌ها" 
             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
           >
@@ -149,7 +149,7 @@
     <div class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">مرتب‌سازی بر اساس</label>
       <select 
-        v-model="props.filters.sortBy" 
+        v-model="filters.sortBy" 
         class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
       >
         <option value="">پیشفرض</option>
@@ -162,7 +162,7 @@
 
     <!-- Apply Filters Button -->
     <button 
-      @click="applyFilters" 
+      @click="handleApplyFilters" 
       class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm"
     >
       اعمال فیلترها
@@ -171,8 +171,8 @@
     <!-- Date Selection Modal -->
     <DateSelectionModal
       :show="showDateModal"
-      :initial-checkin-date="props.filters.check_in"
-      :initial-checkout-date="props.filters.check_out"
+      :initial-checkin-date="filters.check_in"
+      :initial-checkout-date="filters.check_out"
       @close="showDateModal = false"
       @update:dates="handleDateUpdate"
     />
@@ -190,17 +190,13 @@ import VueSlider from 'vue-3-slider-component'
 const { $persianTranslations } = useNuxtApp()
 
 const props = defineProps({
-  filters: {
-    type: Object,
-    required: true
-  },
   userFilters: {
     type: Object,
     default: () => ({})
   }
 })
 
-const emit = defineEmits(['update:filters', 'close', 'apply-filters', 'show-modal'])
+const emit = defineEmits(['close', 'apply-filters', 'show-modal'])
 
 const showModal = ref(false)
 const showDateModal = ref(false)
@@ -250,158 +246,84 @@ watch(() => props.userFilters.regions, (newRegions) => {
   }
 }, { immediate: true })
 
-// Function to close filters
+// Watch for changes in filters and update price range
+watch(() => filters.value, (newFilters) => {
+  if (newFilters.minPrice) {
+    priceRange.value[0] = parseInt(newFilters.minPrice)
+  }
+  if (newFilters.maxPrice) {
+    priceRange.value[1] = parseInt(newFilters.maxPrice)
+  }
+}, { deep: true })
+
+// Handle city change
+const handleCityChange = (event) => {
+  const selectedCity = event.target.value
+  if (selectedCity) {
+    const cityObj = cities.value.find(city => city.city_name_fa === selectedCity)
+    if (cityObj) {
+      updateFilter('cities', [cityObj.city_name_en])
+    }
+  } else {
+    updateFilter('cities', [])
+  }
+}
+
+// Handle type change
+const handleTypeChange = (event) => {
+  const selectedType = event.target.value
+  updateFilter('types', selectedType ? [selectedType] : [])
+}
+
+// Handle region change
+const handleRegionChange = (event) => {
+  const selectedRegion = event.target.value
+  updateFilter('regions', selectedRegion ? [selectedRegion] : [])
+}
+
+// Handle price change
+const handlePriceChange = (values) => {
+  updateFilter('minPrice', values[0].toString())
+  updateFilter('maxPrice', values[1].toString())
+}
+
+// Handle date update
+const handleDateUpdate = (dates) => {
+  updateFilter('check_in', dates.checkin)
+  updateFilter('check_out', dates.checkout)
+}
+
+// Apply filters
+const handleApplyFilters = async () => {
+  await applyFiltersToUrl()
+  emit('apply-filters')
+}
+
+// Close filters
 const closeFilters = () => {
   emit('close')
 }
 
-// Function to apply filters
-const applyFilters = () => {
-  // First update the URL
-  const currentFilters = applyFiltersToUrl()
-  
-  // Then emit the filters for the API call
-  emit('apply-filters', {
-    city: currentFilters.cities[0] || '',
-    type: currentFilters.types[0] || '',
-    region: currentFilters.regions[0] || '',
-    minPrice: props.filters.minPrice || '',
-    maxPrice: props.filters.maxPrice || '',
-    passengerCount: props.filters.passengerCount || '',
-    roomsCount: props.filters.roomsCount || '',
-    check_in: props.filters.check_in || '',
-    check_out: props.filters.check_out || '',
-    selectedRules: props.filters.rules || [],
-    selectedAmenities: props.filters.amenities || [],
-    sortBy: props.filters.sortBy || 'default'
-  })
-  
-  // Close the modal if it's open
-  if (showModal.value) {
-    showModal.value = false
-  }
-}
-
-// Function to get Persian name for type using the plugin
-const getPersianTypeName = (type) => {
-  return $persianTranslations.getPersianTypeName(type)
-}
-
-// Function to get Persian name for region using the plugin
-const getPersianRegionName = (region) => {
-  return $persianTranslations.getPersianRegionName(region)
-}
-
-// Function to format date for display
-const formatDate = (dateString) => {
-  if (!dateString) return '';
-  
-  // Convert Gregorian to Jalali for display
-  const [year, month, day] = dateString.split('-').map(Number);
-  const jalaliDate = $persianTranslations.gregorianToJalali(year, month, day);
-  
-  return `${jalaliDate.jy}/${jalaliDate.jm}/${jalaliDate.jd}`;
-}
-
-// Function to handle date updates from the modal
-const handleDateUpdate = (dates) => {
-  props.filters.check_in = dates.check_in;
-  props.filters.check_out = dates.check_out;
-}
-
-// Update the city selection handler
-const handleCityChange = (event) => {
-  const select = event.target
-  const selectedCity = cities.value.find(city => city.city_name_fa === select.value)
-  if (selectedCity) {
-    updateFilter('cities', [selectedCity.city_name_en])
-    selectedCityDisplay.value = selectedCity.city_name_fa
-  } else {
-    updateFilter('cities', [])
-    selectedCityDisplay.value = ''
-  }
-}
-
-// Update the type selection handler
-const handleTypeChange = (event) => {
-  const select = event.target
-  updateFilter('types', select.value ? [select.value] : [])
-}
-
-// Update the region selection handler
-const handleRegionChange = (event) => {
-  const select = event.target
-  updateFilter('regions', select.value ? [select.value] : [])
-}
-
-// Format price in toman
+// Format price
 const formatPrice = (price) => {
-  return `${(price / 10).toLocaleString('fa-IR')} تومان`
+  return new Intl.NumberFormat('fa-IR').format(price) + ' تومان'
 }
 
-// Update price range and filters
-const handlePriceChange = (newValue) => {
-  priceRange.value = newValue
-  // Convert toman to dollars for the API
-  const minPrice = Math.floor(newValue[0] / 10)
-  const maxPrice = Math.floor(newValue[1] / 10)
-  
-  // Emit the price changes to update the URL
-  emit('update:filters', {
-    ...props.filters,
-    minPrice: minPrice.toString(),
-    maxPrice: maxPrice.toString()
-  })
+// Format date
+const formatDate = (date) => {
+  if (!date) return ''
+  return new Date(date).toLocaleDateString('fa-IR')
 }
 
-// Initialize price range from filters
-onMounted(() => {
-  // Initialize price range from URL parameters
-  if (props.filters.minPrice) {
-    priceRange.value[1] = parseInt(props.filters.minPrice) * 10 // Convert dollars to toman
-  }
-  if (props.filters.maxPrice) {
-    priceRange.value[0] = parseInt(props.filters.maxPrice) * 10
-  }
-  
-  // Only set default types if not already set and API hasn't provided values
-  if ((!types.value || types.value.length === 0) && 
-      (!props.userFilters?.types || !Array.isArray(props.userFilters.types) || props.userFilters.types.length === 0)) {
-    types.value = ['apartment', 'villa', 'carvansara', 'cottage', 'hostel']
-  }
-  
-  // Only set default regions if not already set and API hasn't provided values
-  if ((!regions.value || regions.value.length === 0) && 
-      (!props.userFilters?.regions || !Array.isArray(props.userFilters.regions) || props.userFilters.regions.length === 0)) {
-    regions.value = ['coastal', 'rustic', 'urban', 'forest', 'mountainous', 'desert', 'jungle', 'city']
-  }
-  
-  // Initialize filters from URL if available
-  if (props.filters) {
-    // Update city filter if available
-    if (props.filters.city) {
-      updateFilter('cities', [props.filters.city])
-      
-      // Update city display if cities are loaded
-      if (cities.value) {
-        const cityObj = cities.value.find(city => city.city_name_en === props.filters.city)
-        if (cityObj) {
-          selectedCityDisplay.value = cityObj.city_name_fa
-        }
-      }
-    }
-    
-    // Update type filter if available
-    if (props.filters.type) {
-      updateFilter('types', [props.filters.type])
-    }
-    
-    // Update region filter if available
-    if (props.filters.region) {
-      updateFilter('regions', [props.filters.region])
-    }
-  }
-})
+// Get Persian type name
+const getPersianTypeName = (type) => {
+  return $persianTranslations?.getPersianTypeName(type) || type
+}
+
+// Get Persian region name
+const getPersianRegionName = (region) => {
+  return $persianTranslations?.getPersianRegionName(region) || region
+}
 </script>
 
 <style>

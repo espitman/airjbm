@@ -48,7 +48,7 @@ interface ListingsResponse {
 interface FetchListingsParams {
   page?: number
   size?: number
-  keyword?: string
+  keyword: string
   cities?: string[]
   types?: string[]
   regions?: string[]
@@ -59,6 +59,8 @@ interface FetchListingsParams {
   min_price?: number
   max_price?: number
   sort?: string
+  selectedRules?: string[]
+  selectedAmenities?: string[]
 }
 
 export default defineNuxtPlugin(() => {
@@ -88,7 +90,9 @@ export default defineNuxtPlugin(() => {
     check_out,
     min_price,
     max_price,
-    sort
+    sort,
+    selectedRules = [],
+    selectedAmenities = []
   }: FetchListingsParams) => {
     try {
       state.loading.value = true
@@ -119,7 +123,9 @@ export default defineNuxtPlugin(() => {
         ...(min_price && { min_price: min_price * 10 }),
         ...(max_price && { max_price: max_price * 10 }),
         ...(sortParam && { sort: sortParam }),
-        ...(orderParam && { order: orderParam })
+        ...(orderParam && { order: orderParam }),
+        ...(selectedRules.length > 0 && { rules: selectedRules }),
+        ...(selectedAmenities.length > 0 && { amenities: selectedAmenities })
       }
 
       const response = await fetch(url, {

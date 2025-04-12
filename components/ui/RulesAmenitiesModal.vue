@@ -122,11 +122,15 @@ watch(() => props.filters, (newFilters) => {
 }, { immediate: true, deep: true })
 
 const applyFilters = () => {
-  emit('update:filters', {
-    ...props.filters,
-    selectedRules: localFilters.value.selectedRules,
-    selectedAmenities: localFilters.value.selectedAmenities
-  })
+  // Create a new filters object with all existing values
+  const updatedFilters = { ...props.filters }
+  
+  // Update only the rules and amenities
+  updatedFilters.selectedRules = [...localFilters.value.selectedRules]
+  updatedFilters.selectedAmenities = [...localFilters.value.selectedAmenities]
+  
+  // Emit the updated filters
+  emit('update:filters', updatedFilters)
   emit('close')
 }
 </script> 
