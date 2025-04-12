@@ -20,7 +20,8 @@
             :show-rules-modal="showRulesModal"
             :show-amenities-modal="showAmenitiesModal"
             @close="hideFilters"
-            @apply-filters="handleApplyFilters"
+            @apply-filters="onApplyFilters"
+            @clear-filters="onClearFilters"
             @open-rules-modal="showRulesModal = true"
             @open-amenities-modal="showAmenitiesModal = true"
             @show-modal="showModal = true"
@@ -107,22 +108,25 @@ import Pagination from '~/components/ui/Pagination.vue'
 const route = useRoute()
 const router = useRouter()
 const { $listingsApi } = useNuxtApp()
-const { filters, updateFilter, applyFilters } = useFilters()
+const { 
+  filters,
+  isApplyingFilters,
+  toggleFilter,
+  updateFilter,
+  applyFilters,
+  handleApplyFilters,
+  handleClearFilters,
+  fetchListings,
+  currentPage,
+  updatePageQuery,
+  goToPage
+} = useFilters()
 
 const showFilters = ref(true)
 const showModal = ref(false)
 const showRulesModal = ref(false)
 const showAmenitiesModal = ref(false)
 const windowWidth = ref(0)
-const currentPage = computed({
-  get: () => {
-    const page = parseInt(route.query.page) || 1
-    return page > 0 ? page : 1
-  },
-  set: (value) => {
-    updatePageQuery(value)
-  }
-})
 const itemsPerPage = 16
 
 // Get the keyword from the URL parameter
@@ -157,129 +161,6 @@ const toggleFilters = () => {
 const hideFilters = () => {
   showFilters.value = false
 }
-
-// Add a flag to track if we're applying filters
-const isApplyingFilters = ref(false)
-
-const handleApplyFilters = async (updatedFilters = filters.value) => {
-  // Set the flag to indicate we're applying filters
-  isApplyingFilters.value = true
-  
-  // Apply filters to URL and get the updated filters
-  const appliedFilters = await applyFilters()
-  
-  // Reset to page 1 when filters are applied
-  currentPage.value = 1
-  
-  // Fetch listings with the updated filters and page 1
-  await fetchListings(1, appliedFilters)
-  
-  // Scroll to top of the page
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-  
-  // Reset the flag after a short delay
-  setTimeout(() => {
-    isApplyingFilters.value = false
-  }, 100)
-}
-
-const handleClearFilters = async () => {
-  // Set the flag to indicate we're applying filters
-  isApplyingFilters.value = true
-  
-  // Clear all filters
-  filters.value = {
-    priceRange: [0, 1000000],
-    bedrooms: [],
-    bathrooms: [],
-    propertyTypes: [],
-    amenities: [],
-    moreFilters: {}
-  }
-  
-  // Clear URL parameters except keyword
-  const query = { keyword: route.query.keyword }
-  await router.replace({ query })
-  
-  // Reset to page 1
-  currentPage.value = 1
-  
-  // Fetch listings with cleared filters
-  await fetchListings(1)
-  
-  // Scroll to top of the page
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-  
-  // Reset the flag after a short delay
-  setTimeout(() => {
-    isApplyingFilters.value = false
-  }, 100)
-}
-
-const fetchListings = async (page, currentFilters = filters.value) => {
-  try {
-    // Show loading state
-    $listingsApi.loading.value = true
-    
-    // Fetch listings with the current page and filters
-    await $listingsApi.fetchListings({ 
-      page, 
-      size: itemsPerPage, 
-      keyword: keyword.value,
-      cities: currentFilters.cities,
-      types: currentFilters.types,
-      regions: currentFilters.regions,
-      passengerCount: currentFilters.passengerCount ? Number(currentFilters.passengerCount) : undefined,
-      rooms: currentFilters.roomsCount ? Number(currentFilters.roomsCount) : undefined,
-      check_in: currentFilters.check_in || undefined,
-      check_out: currentFilters.check_out || undefined,
-      min_price: currentFilters.minPrice ? parseInt(currentFilters.minPrice) : undefined,
-      max_price: currentFilters.maxPrice ? parseInt(currentFilters.maxPrice) : undefined,
-      sort: currentFilters.sortBy || route.query.sort,
-      selectedRules: currentFilters.selectedRules,
-      selectedAmenities: currentFilters.selectedAmenities
-    })
-  } catch (error) {
-    console.error('Error fetching listings:', error)
-    $listingsApi.error.value = error instanceof Error ? error.message : 'An error occurred while fetching listings'
-  } finally {
-    $listingsApi.loading.value = false
-  }
-}
-
-const updatePageQuery = async (page) => {
-  // Create a new query object with all existing filters
-  const query = { ...route.query, page: page.toString() }
-  
-  // Update URL without triggering navigation
-  await router.replace({ query })
-  
-  // Only fetch listings if we're not applying filters
-  if (!isApplyingFilters.value) {
-    await fetchListings(page)
-  }
-}
-
-const goToPage = async (page) => {
-  currentPage.value = page
-  await updatePageQuery(page)
-}
-
-// Watch for changes in the current page
-watch(() => currentPage.value, async (newPage) => {
-  if (newPage > 0) {
-    await updatePageQuery(newPage)
-  }
-})
-
-// Watch for changes in the route query page parameter
-watch(() => route.query.page, (newPage) => {
-  const page = parseInt(newPage || '1')
-  if (page > 0 && page !== currentPage.value) {
-    currentPage.value = page
-    fetchListings(page)
-  }
-}, { immediate: true })
 
 const totalPages = computed(() => {
   return Math.ceil(($listingsApi.total?.value || 0) / itemsPerPage)
@@ -317,9 +198,19 @@ const handleModalFilters = (newFilters) => {
   // Don't apply filters immediately, wait for the user to click the Apply button
 }
 
+// Function to handle applying filters
+const onApplyFilters = () => {
+  handleApplyFilters()
+}
+
+// Function to handle clearing filters
+const onClearFilters = () => {
+  handleClearFilters()
+}
+
 // Function to handle modal apply filters
 const handleModalApplyFilters = async () => {
-  await handleApplyFilters()
+  await onApplyFilters()
 }
 
 // Function to update selected rules

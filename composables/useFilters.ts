@@ -1,6 +1,7 @@
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { LocationQueryValue } from 'vue-router'
+import { useNuxtApp } from '#app'
 
 export interface Filters {
   cities: string[]
@@ -15,6 +16,12 @@ export interface Filters {
   selectedRules: string[]
   selectedAmenities: string[]
   sortBy: string
+  priceRange: number[]
+  bedrooms: string[]
+  bathrooms: string[]
+  propertyTypes: string[]
+  amenities: string[]
+  moreFilters: any
 }
 
 // Helper function to safely convert query values to string array
@@ -41,11 +48,24 @@ function queryToString(value: LocationQueryValue | LocationQueryValue[] | null |
 export function useFilters() {
   const route = useRoute()
   const router = useRouter()
+  const { $listingsApi } = useNuxtApp()
   
   // Add a flag to skip the route watcher
   const skipRouteWatcher = ref(false)
+  const isApplyingFilters = ref(false)
   
-  // Initialize filters from URL or empty values
+  // Pagination state
+  const currentPage = computed({
+    get: () => {
+      const page = parseInt(route.query.page) || 1
+      return page > 0 ? page : 1
+    },
+    set: (value) => {
+      updatePageQuery(value)
+    }
+  })
+
+  // Initialize filters from URL or defaults
   const filters = ref<Filters>({
     cities: queryToArray(route.query.cities),
     types: queryToArray(route.query.types),
@@ -58,7 +78,25 @@ export function useFilters() {
     check_out: queryToString(route.query.check_out),
     selectedRules: queryToArray(route.query.selectedRules?.toString().split(',')),
     selectedAmenities: queryToArray(route.query.selectedAmenities?.toString().split(',')),
-    sortBy: queryToString(route.query.sortBy)
+    sortBy: queryToString(route.query.sortBy),
+    priceRange: route.query.priceRange 
+      ? route.query.priceRange.split(',').map(Number)
+      : [0, 1000000],
+    bedrooms: route.query.bedrooms 
+      ? route.query.bedrooms.split(',')
+      : [],
+    bathrooms: route.query.bathrooms 
+      ? route.query.bathrooms.split(',')
+      : [],
+    propertyTypes: route.query.propertyTypes 
+      ? route.query.propertyTypes.split(',')
+      : [],
+    amenities: route.query.amenities 
+      ? route.query.amenities.split(',')
+      : [],
+    moreFilters: route.query.moreFilters 
+      ? JSON.parse(route.query.moreFilters as string)
+      : {}
   })
 
   // Function to update a single filter
@@ -203,9 +241,135 @@ export function useFilters() {
     filters.value = updatedFilters
   }, { immediate: true })
 
+  // Function to fetch listings
+  const fetchListings = async (page: number, currentFilters = filters.value) => {
+    try {
+      // Show loading state
+      $listingsApi.loading.value = true
+      
+      // Fetch listings with the current page and filters
+      await $listingsApi.fetchListings({ 
+        page, 
+        size: 16, // itemsPerPage
+        keyword: route.params.keyword || 'city-tehran',
+        cities: currentFilters.cities,
+        types: currentFilters.types,
+        regions: currentFilters.regions,
+        passengerCount: currentFilters.passengerCount ? Number(currentFilters.passengerCount) : undefined,
+        rooms: currentFilters.roomsCount ? Number(currentFilters.roomsCount) : undefined,
+        check_in: currentFilters.check_in || undefined,
+        check_out: currentFilters.check_out || undefined,
+        min_price: currentFilters.minPrice ? parseInt(currentFilters.minPrice) : undefined,
+        max_price: currentFilters.maxPrice ? parseInt(currentFilters.maxPrice) : undefined,
+        sort: currentFilters.sortBy || route.query.sort,
+        selectedRules: currentFilters.selectedRules,
+        selectedAmenities: currentFilters.selectedAmenities
+      })
+    } catch (error) {
+      console.error('Error fetching listings:', error)
+      $listingsApi.error.value = error instanceof Error ? error.message : 'An error occurred while fetching listings'
+    } finally {
+      $listingsApi.loading.value = false
+    }
+  }
+
+  // Handle applying filters
+  const handleApplyFilters = async () => {
+    // Set the flag to indicate we're applying filters
+    isApplyingFilters.value = true
+    
+    // Apply filters to URL and get the updated filters
+    const appliedFilters = await applyFilters()
+    
+    // Reset to page 1 and fetch new listings
+    await fetchListings(1, appliedFilters)
+    
+    // Scroll to top of the page
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    
+    // Reset the flag after a short delay
+    setTimeout(() => {
+      isApplyingFilters.value = false
+    }, 100)
+  }
+
+  // Handle clearing all filters
+  const handleClearFilters = async () => {
+    // Set the flag to indicate we're applying filters
+    isApplyingFilters.value = true
+    
+    // Clear all filters
+    filters.value = {
+      priceRange: [0, 1000000],
+      bedrooms: [],
+      bathrooms: [],
+      propertyTypes: [],
+      amenities: [],
+      moreFilters: {}
+    }
+    
+    // Clear URL parameters except keyword
+    const query = { keyword: route.query.keyword }
+    await router.replace({ query })
+    
+    // Reset to page 1 and fetch new listings
+    await fetchListings(1)
+    
+    // Scroll to top of the page
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    
+    // Reset the flag after a short delay
+    setTimeout(() => {
+      isApplyingFilters.value = false
+    }, 100)
+  }
+
+  // Function to update page in URL and fetch listings
+  const updatePageQuery = async (page) => {
+    // Create a new query object with all existing filters
+    const query = { ...route.query, page: page.toString() }
+    
+    // Update URL without triggering navigation
+    await router.replace({ query })
+    
+    // Only fetch listings if we're not applying filters
+    if (!isApplyingFilters.value) {
+      await fetchListings(page)
+    }
+  }
+
+  // Function to go to a specific page
+  const goToPage = async (page) => {
+    currentPage.value = page
+    await updatePageQuery(page)
+  }
+
+  // Watch for changes in the current page
+  watch(() => currentPage.value, async (newPage) => {
+    if (newPage > 0) {
+      await updatePageQuery(newPage)
+    }
+  })
+
+  // Watch for changes in the route query page parameter
+  watch(() => route.query.page, (newPage) => {
+    const page = parseInt(newPage || '1')
+    if (page > 0 && page !== currentPage.value) {
+      currentPage.value = page
+      fetchListings(page)
+    }
+  }, { immediate: true })
+
   return {
     filters,
+    isApplyingFilters,
+    currentPage,
     updateFilter,
-    applyFilters
+    applyFilters,
+    handleApplyFilters,
+    handleClearFilters,
+    fetchListings,
+    updatePageQuery,
+    goToPage
   }
 } 
