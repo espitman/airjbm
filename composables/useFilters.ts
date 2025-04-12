@@ -221,6 +221,10 @@ export function useFilters() {
     // Update URL with current filters
     const query = { ...route.query }
     
+    // Reset page to 1 when applying filters
+    query.page = '1'
+    currentPage.value = 1
+    
     // Handle array filters
     if (filters.value.cities.length > 0) {
       query.cities = filters.value.cities.join(',')
