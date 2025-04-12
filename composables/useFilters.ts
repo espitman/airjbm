@@ -135,11 +135,21 @@ export function useFilters() {
 
   // City selection
   const filteredCities = computed(() => {
-    if (!citySearch.value) return []
-    return $listingsApi.userFilters.value.cities.filter(city => 
-      city.city_name_fa.includes(citySearch.value) ||
-      city.city_name_en.toLowerCase().includes(citySearch.value.toLowerCase())
-    )
+    const cities = $listingsApi.userFilters.value.cities
+    if (!cities) return []
+    
+    // Filter based on search text if it exists
+    const searchFiltered = citySearch.value
+      ? cities.filter(city => 
+          city.city_name_fa.includes(citySearch.value) ||
+          city.city_name_en.toLowerCase().includes(citySearch.value.toLowerCase())
+        )
+      : cities
+    
+    // Sort cities by Persian name
+    return searchFiltered.sort((a, b) => {
+      return a.city_name_fa.localeCompare(b.city_name_fa, 'fa')
+    })
   })
 
   const isCitySelected = (city) => {
@@ -151,8 +161,8 @@ export function useFilters() {
       selectedCities.value.push(city)
       filters.value.cities = selectedCities.value.map(c => c.city_name_en)
     }
+    // Clear search text when a city is selected
     citySearch.value = ''
-    showCityDropdown.value = false
     highlightedIndex.value = -1
   }
 

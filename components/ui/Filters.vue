@@ -16,35 +16,45 @@
     </div>
     
     <!-- City -->
-    <div v-if="cities && cities.length > 1" class="mb-4">
+    <div class="mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-1">شهر</label>
       <div class="relative" ref="cityDropdownRef">
-        <input
-          type="text"
-          v-model="citySearch"
-          @focus="showCityDropdown = true"
-          @blur="handleCityBlur"
-          @keydown.down.prevent="navigateDropdown('down')"
-          @keydown.up.prevent="navigateDropdown('up')"
-          @keydown.enter.prevent="selectHighlightedCity"
-          @keydown.esc="closeDropdown"
-          placeholder="جستجوی شهر..."
-          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6"
-        />
         <div 
-          v-if="showCityDropdown && filteredCities.length > 0"
+          @click="showCityDropdown = !showCityDropdown"
+          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pl-6 cursor-pointer flex justify-between items-center"
+        >
+          <span>{{ selectedCities.length > 0 ? 'انتخاب شهر' : 'انتخاب شهر' }}</span>
+          <i class="fas fa-chevron-down text-gray-400"></i>
+        </div>
+        
+        <div 
+          v-if="showCityDropdown"
           class="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto"
         >
+          <!-- Search input -->
+          <div class="sticky top-0 bg-white p-2 border-b">
+            <input 
+              type="text" 
+              v-model="citySearch"
+              @input="highlightedIndex = -1"
+              @keydown.down.prevent="navigateDropdown('down')"
+              @keydown.up.prevent="navigateDropdown('up')"
+              @keydown.enter.prevent="selectHighlightedCity"
+              @keydown.esc="closeDropdown"
+              placeholder="جستجوی شهر..." 
+              class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+            >
+          </div>
+          
+          <!-- City list -->
           <div
             v-for="(city, index) in filteredCities"
             :key="city.city_name_en"
-            @mousedown="selectCity(city)"
+            @click="selectCity(city)"
             :class="[
               'px-3 py-2 cursor-pointer text-sm',
-              highlightedIndex === index ? 'bg-blue-100' : 'hover:bg-gray-100',
-              isCitySelected(city) ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''
+              isCitySelected(city) ? 'bg-blue-100' : highlightedIndex === index ? 'bg-gray-100' : 'hover:bg-gray-100'
             ]"
-            :style="isCitySelected(city) ? 'pointer-events: none;' : ''"
           >
             {{ city.city_name_fa }}
             <span v-if="isCitySelected(city)" class="float-left text-xs text-gray-500">(انتخاب شده)</span>
