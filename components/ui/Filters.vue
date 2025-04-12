@@ -123,6 +123,8 @@
           <input 
             type="number" 
             v-model="filters.passengerCount" 
+            @input="validatePassengerCount"
+            min="1"
             placeholder="تعداد مسافران" 
             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
           >
@@ -132,6 +134,8 @@
           <input 
             type="number" 
             v-model="filters.roomsCount" 
+            @input="validateRoomCount"
+            min="0"
             placeholder="تعداد اتاق‌ها" 
             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
           >
@@ -449,6 +453,19 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
+
+// Add validation functions
+const validatePassengerCount = () => {
+  if (filters.value.passengerCount && parseInt(filters.value.passengerCount) < 1) {
+    filters.value.passengerCount = '1'
+  }
+}
+
+const validateRoomCount = () => {
+  if (filters.value.roomsCount && parseInt(filters.value.roomsCount) < 0) {
+    filters.value.roomsCount = '0'
+  }
+}
 </script>
 
 <style>
