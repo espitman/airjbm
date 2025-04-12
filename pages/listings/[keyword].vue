@@ -40,8 +40,16 @@
             <p class="text-red-600">{{ $listingsApi.error.value }}</p>
           </div>
 
+          <!-- Results Title -->
+          <SearchResultsTitle v-if="!$listingsApi.loading.value && !$listingsApi.error.value" :keyword="keyword" />
+
+          <!-- No Results Message -->
+          <div v-if="!$listingsApi.loading.value && !$listingsApi.error.value && $listingsApi.listings.value.length === 0" class="text-center py-8">
+            <p class="text-gray-600 text-lg">هیچ اقامتگاهی با معیارهای شما یافت نشد.</p>
+          </div>
+
           <!-- Listings Grid -->
-          <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div v-if="!$listingsApi.loading.value && !$listingsApi.error.value && $listingsApi.listings.value.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ListingCard 
               v-for="listing in paginatedListings" 
               :key="listing.id" 
@@ -145,6 +153,7 @@ import Filters from '~/components/ui/Filters.vue'
 import FilterModals from '~/components/ui/FilterModals.vue'
 import ListingCard from '~/components/ui/ListingCard.vue'
 import RulesAmenitiesModal from '~/components/ui/RulesAmenitiesModal.vue'
+import SearchResultsTitle from '~/components/ui/SearchResultsTitle.vue'
 
 const route = useRoute()
 const router = useRouter()
