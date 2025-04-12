@@ -463,23 +463,29 @@ watch(() => filters.value.regions, (newRegions) => {
 // Add ref for the city dropdown container
 const cityDropdownRef = ref(null)
 
+// Add ref for the type dropdown container
+const typeDropdownRef = ref(null)
+
 // Add click outside handler
-const handleClickOutside = (event) => {
-  if (cityDropdownRef.value && !cityDropdownRef.value.contains(event.target)) {
-    closeDropdown()
-  }
-  if (regionDropdownRef.value && !regionDropdownRef.value.contains(event.target)) {
-    showRegionDropdown.value = false
-  }
-}
-
-// Add and remove event listener
 onMounted(() => {
+  const handleClickOutside = (event) => {
+    if (cityDropdownRef.value && !cityDropdownRef.value.contains(event.target)) {
+      closeDropdown()
+    }
+    if (regionDropdownRef.value && !regionDropdownRef.value.contains(event.target)) {
+      showRegionDropdown.value = false
+    }
+    if (typeDropdownRef.value && !typeDropdownRef.value.contains(event.target)) {
+      showTypeDropdown.value = false
+    }
+  }
+  
+  // Add and remove event listener
   document.addEventListener('click', handleClickOutside)
-})
-
-onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside)
+  
+  onBeforeUnmount(() => {
+    document.removeEventListener('click', handleClickOutside)
+  })
 })
 
 // Add region dropdown state
