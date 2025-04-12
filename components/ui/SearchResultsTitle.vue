@@ -27,6 +27,7 @@
 <script setup>
 import { useFilters } from '~/composables/useFilters'
 import { useNuxtApp } from '#app'
+import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
   keyword: {
@@ -37,12 +38,14 @@ const props = defineProps({
 
 const { $listingsApi } = useNuxtApp()
 const { filters, applyFilters } = useFilters()
+const route = useRoute()
+const router = useRouter()
 
 const handleSortChange = async () => {
   // Apply filters to URL and get the updated filters
   const appliedFilters = await applyFilters()
   
-  // Fetch listings with the updated filters
+  // Fetch listings with the updated filters and page 1
   await $listingsApi.fetchListings({ 
     page: 1, 
     size: 16, 
@@ -60,5 +63,9 @@ const handleSortChange = async () => {
     selectedRules: appliedFilters.selectedRules,
     selectedAmenities: appliedFilters.selectedAmenities
   })
+  
+  // Update the URL to include page=1
+  const query = { ...route.query, page: '1' }
+  await router.replace({ query })
 }
 </script> 
