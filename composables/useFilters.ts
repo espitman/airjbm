@@ -55,15 +55,7 @@ export function useFilters() {
   const isApplyingFilters = ref(false)
   
   // Pagination state
-  const currentPage = computed({
-    get: () => {
-      const page = parseInt(route.query.page) || 1
-      return page > 0 ? page : 1
-    },
-    set: (value) => {
-      updatePageQuery(value)
-    }
-  })
+  const currentPage = ref(parseInt(route.query.page) || 1)
 
   // Initialize filters from URL or defaults
   const filters = ref<Filters>({
@@ -324,32 +316,23 @@ export function useFilters() {
     }, 100)
   }
 
-  // Function to update page in URL and fetch listings
-  const updatePageQuery = async (page) => {
+  // Function to go to a specific page
+  const goToPage = async (page) => {
+    // Don't do anything if we're already on this page
+    if (page === currentPage.value) return
+    
+    // Update the current page
+    currentPage.value = page
+    
     // Create a new query object with all existing filters
     const query = { ...route.query, page: page.toString() }
     
     // Update URL without triggering navigation
     await router.replace({ query })
     
-    // Only fetch listings if we're not applying filters
-    if (!isApplyingFilters.value) {
-      await fetchListings(page)
-    }
+    // Fetch listings with the new page
+    await fetchListings(page)
   }
-
-  // Function to go to a specific page
-  const goToPage = async (page) => {
-    currentPage.value = page
-    await updatePageQuery(page)
-  }
-
-  // Watch for changes in the current page
-  watch(() => currentPage.value, async (newPage) => {
-    if (newPage > 0) {
-      await updatePageQuery(newPage)
-    }
-  })
 
   // Watch for changes in the route query page parameter
   watch(() => route.query.page, (newPage) => {
@@ -369,7 +352,6 @@ export function useFilters() {
     handleApplyFilters,
     handleClearFilters,
     fetchListings,
-    updatePageQuery,
     goToPage
   }
 } 

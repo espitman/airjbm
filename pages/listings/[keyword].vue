@@ -63,7 +63,7 @@
               :current-page="currentPage"
               :total-items="$listingsApi.total?.value || 0"
               :items-per-page="itemsPerPage"
-              @page-change="goToPage"
+              @page-change="handlePageChange"
             />
           </div>
         </div>
@@ -118,7 +118,6 @@ const {
   handleClearFilters,
   fetchListings,
   currentPage,
-  updatePageQuery,
   goToPage
 } = useFilters()
 
@@ -211,6 +210,11 @@ const onClearFilters = () => {
 // Function to handle modal apply filters
 const handleModalApplyFilters = async () => {
   await onApplyFilters()
+}
+
+// Function to handle page change
+const handlePageChange = (page) => {
+  goToPage(page)
 }
 
 // Function to update selected rules
