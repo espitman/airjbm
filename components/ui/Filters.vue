@@ -261,7 +261,10 @@ const filteredCities = computed(() => {
       )
     : cities.value
   
-  return searchFiltered
+  // Sort cities by Persian name
+  return searchFiltered.sort((a, b) => {
+    return a.city_name_fa.localeCompare(b.city_name_fa, 'fa')
+  })
 })
 
 // Price range state
