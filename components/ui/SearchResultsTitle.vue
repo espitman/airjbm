@@ -83,14 +83,10 @@ const toggleMobileSort = () => {
 
 const handleMobileSortSelect = async (value) => {
   // Update the URL first with the correct parameter name 'sort'
-  const query = { ...route.query, sort: value, page: '1' }
+  const query = { ...route.query, sortBy: value, page: '1' }
   await router.replace({ query })
   
-  // Then update the filter and fetch listings
-  filters.sortBy = value
-  showMobileSort.value = false
-  
-  // Apply filters and fetch listings
+
   const appliedFilters = await applyFilters()
   await $listingsApi.fetchListings({ 
     page: 1, 
