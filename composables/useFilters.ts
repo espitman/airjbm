@@ -69,6 +69,9 @@ export function useFilters() {
   const highlightedIndex = ref(-1)
   const showDateModal = ref(false)
 
+  // Add selectedAmenities ref
+  const selectedAmenities = ref<string[]>([])
+
   // Initialize filters from URL or defaults
   const filters = ref<Filters>({
     cities: queryToArray(route.query.cities),
@@ -422,14 +425,48 @@ export function useFilters() {
     }, 100)
   }
 
+  // Add hasActiveFilters computed property
+  const hasActiveFilters = computed(() => {
+    return (
+      selectedCities.value.length > 0 ||
+      selectedRegions.value.length > 0 ||
+      selectedTypes.value.length > 0 ||
+      priceRange.value[0] !== 0 ||
+      priceRange.value[1] !== 1000000000 ||
+      filters.value.passengerCount ||
+      filters.value.roomsCount ||
+      filters.value.check_in ||
+      filters.value.check_out
+    )
+  })
+
   // Handle clearing all filters
   const handleClearFilters = async () => {
     // Set the flag to indicate we're applying filters
     isApplyingFilters.value = true
     
-    // Clear all filters
+    // Clear all filter states
+    selectedCities.value = []
+    selectedRegions.value = []
+    selectedTypes.value = []
+    priceRange.value = [0, 1000000000]
+    selectedAmenities.value = []
+    
+    // Reset filters object with all required properties
     filters.value = {
-      priceRange: [0, 1000000],
+      cities: [],
+      regions: [],
+      types: [],
+      minPrice: '0',
+      maxPrice: '1000000000',
+      passengerCount: '',
+      roomsCount: '',
+      check_in: '',
+      check_out: '',
+      selectedRules: [],
+      selectedAmenities: [],
+      sortBy: '',
+      priceRange: [0, 1000000000],
       bedrooms: [],
       bathrooms: [],
       propertyTypes: [],
@@ -437,15 +474,22 @@ export function useFilters() {
       moreFilters: {}
     }
     
+    // Reset dropdown states
+    showCityDropdown.value = false
+    showRegionDropdown.value = false
+    showTypeDropdown.value = false
+    citySearch.value = ''
+    highlightedIndex.value = -1
+    
+    // Reset page to 1
+    currentPage.value = 1
+    
     // Clear URL parameters except keyword
     const query = { keyword: route.query.keyword }
     await router.replace({ query })
     
-    // Reset to page 1 and fetch new listings
+    // Fetch new listings
     await fetchListings(1)
-    
-    // Scroll to top of the page
-    window.scrollTo({ top: 0, behavior: 'smooth' })
     
     // Reset the flag after a short delay
     setTimeout(() => {
@@ -489,6 +533,11 @@ export function useFilters() {
     }
   }, { immediate: true })
 
+  // Add clearFilters function
+  const clearFilters = () => {
+    handleClearFilters()
+  }
+
   return {
     filters,
     isApplyingFilters,
@@ -496,6 +545,7 @@ export function useFilters() {
     selectedCities,
     selectedRegions,
     selectedTypes,
+    selectedAmenities,
     priceRange,
     showCityDropdown,
     showRegionDropdown,
@@ -507,6 +557,7 @@ export function useFilters() {
     applyFilters,
     handleApplyFilters,
     handleClearFilters,
+    hasActiveFilters,
     fetchListings,
     goToPage,
     validatePassengerCount,
@@ -524,6 +575,7 @@ export function useFilters() {
     toggleType,
     removeType,
     handlePriceChange,
-    handleDateUpdate
+    handleDateUpdate,
+    clearFilters
   }
 } 

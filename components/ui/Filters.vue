@@ -276,12 +276,23 @@
     </div>
 
     <!-- Apply Filters Button -->
-    <button 
-      @click="handleApplyFilters" 
-      class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm"
-    >
-      اعمال فیلترها
-    </button>
+    <div class="flex flex-col gap-2">
+      <button 
+        @click="handleApplyFilters" 
+        class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+      >
+        اعمال فیلترها
+      </button>
+      
+      <button 
+        v-if="hasActiveFilters"
+        @click="onClearFilters" 
+        class="w-full text-red-600 py-2 px-4 text-sm flex items-center justify-center gap-2 hover:text-red-700 transition-colors"
+      >
+        <i class="fas fa-undo-alt"></i>
+        پاک کردن فیلترها
+      </button>
+    </div>
     
     <!-- Date Selection Modal -->
     <DateSelectionModal
@@ -311,7 +322,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['close', 'apply-filters', 'show-modal'])
+const emit = defineEmits(['close', 'apply-filters', 'show-modal', 'clear-filters'])
 
 const showModal = ref(false)
 const showDateModal = ref(false)
@@ -321,6 +332,7 @@ const {
   selectedCities,
   selectedRegions,
   selectedTypes,
+  selectedAmenities,
   priceRange,
   showCityDropdown,
   showRegionDropdown,
@@ -331,6 +343,8 @@ const {
   validateRoomCount,
   formatPrice,
   formatDate,
+  getPersianTypeName,
+  getPersianRegionName,
   filteredCities,
   isCitySelected,
   selectCity,
@@ -344,7 +358,9 @@ const {
   handlePriceChange,
   handleDateUpdate,
   applyFilters,
-  updateFilter
+  updateFilter,
+  handleClearFilters,
+  hasActiveFilters
 } = useFilters()
 
 // Use cities from userFilters
@@ -504,6 +520,12 @@ const regionDropdownRef = ref(null)
 // Add function to toggle region dropdown
 const toggleRegionDropdown = () => {
   showRegionDropdown.value = !showRegionDropdown.value
+}
+
+// Handle clearing filters
+const onClearFilters = async () => {
+  await handleClearFilters()
+  emit('clear-filters')
 }
 </script>
 
