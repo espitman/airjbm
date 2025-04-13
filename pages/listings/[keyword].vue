@@ -1,6 +1,9 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <div class="container mx-auto px-4 py-8">
+      <div v-if="$listingsApi.loading.value">
+            <ListingsPageSkeleton />
+          </div>
       <div class="flex flex-col lg:flex-row gap-8">
         <!-- Filters Sidebar (Desktop) -->
         <div 
@@ -20,15 +23,14 @@
           />
         </div>
 
+        
         <!-- Listings Grid -->
         <div :class="['lg:w-3/4', {'w-full': !showFilters}]">
           <!-- Loading State -->
-          <div v-if="$listingsApi.loading.value" class="absolute inset-0 flex justify-center items-center bg-white/80 z-40">
-            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-          </div>
+         
 
           <!-- Error State -->
-          <div v-else-if="$listingsApi.error.value" class="text-center py-8">
+          <div v-if="$listingsApi.error.value" class="text-center py-8">
             <p class="text-red-600">{{ $listingsApi.error.value }}</p>
           </div>
 
@@ -131,6 +133,7 @@ import ListingCard from '~/components/ui/ListingCard.vue'
 import RulesAmenitiesModal from '~/components/ui/RulesAmenitiesModal.vue'
 import SearchResultsTitle from '~/components/ui/SearchResultsTitle.vue'
 import Pagination from '~/components/ui/Pagination.vue'
+import ListingsPageSkeleton from '~/components/ui/ListingsPageSkeleton.vue'
 
 const route = useRoute()
 const router = useRouter()
