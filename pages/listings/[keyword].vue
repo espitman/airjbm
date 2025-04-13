@@ -4,8 +4,8 @@
       <div class="flex flex-col lg:flex-row gap-8">
         <!-- Filters Sidebar (Desktop) -->
         <div 
-          v-if="windowWidth >= 1024 && !$listingsApi.loading.value"
-          class="lg:w-1/4 transition-all duration-300 lg:sticky lg:top-24 lg:self-start"
+          v-if="!$listingsApi.loading.value"
+          class="hidden lg:block lg:w-1/4 transition-all duration-300 lg:sticky lg:top-24 lg:self-start"
         >
           <Filters 
             :user-filters="$listingsApi.userFilters.value"
@@ -21,7 +21,7 @@
         </div>
 
         <!-- Listings Grid -->
-        <div :class="['lg:w-3/4', {'w-full': !showFilters && windowWidth < 1024}]">
+        <div :class="['lg:w-3/4', {'w-full': !showFilters}]">
           <!-- Loading State -->
           <div v-if="$listingsApi.loading.value" class="absolute inset-0 flex justify-center items-center bg-white/80 z-40">
             <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
@@ -54,7 +54,7 @@
               leave-from-class="opacity-100 max-h-[2000px]"
               leave-to-class="opacity-0 max-h-0 overflow-hidden"
             >
-              <div v-if="showFilters && windowWidth < 1024" class="mb-6">
+              <div v-if="showFilters" class="mb-6">
                 <Filters 
                   :user-filters="$listingsApi.userFilters.value"
                   :show-rules-modal="showRulesModal"
