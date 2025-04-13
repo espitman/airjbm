@@ -35,8 +35,8 @@
           v-if="showMobileSort"
           class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50"
         >
-          <button 
-            v-for="option in sortOptions" 
+          <button
+            v-for="option in sortOptions"
             :key="option.value"
             @click="handleMobileSortSelect(option.value)"
             class="w-full px-4 py-2 text-right text-sm hover:bg-gray-100"

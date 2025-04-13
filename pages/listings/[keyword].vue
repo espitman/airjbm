@@ -2,17 +2,9 @@
   <div class="min-h-screen bg-gray-50">
     <div class="container mx-auto px-4 py-8">
       <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Filters Toggle Button (Mobile) -->
-        <button 
-          @click="toggleFilters"
-          class="lg:hidden w-full mb-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          {{ showFilters ? 'Hide Filters' : 'Show Filters' }}
-        </button>
-
-        <!-- Filters Sidebar -->
+        <!-- Filters Sidebar (Desktop) -->
         <div 
-          v-if="(showFilters || windowWidth >= 1024) && !$listingsApi.loading.value"
+          v-if="windowWidth >= 1024 && !$listingsApi.loading.value"
           class="lg:w-1/4 transition-all duration-300 lg:sticky lg:top-24 lg:self-start"
         >
           <Filters 
@@ -40,8 +32,34 @@
             <p class="text-red-600">{{ $listingsApi.error.value }}</p>
           </div>
 
-          <!-- Results Title -->
-          <SearchResultsTitle v-if="!$listingsApi.loading.value && !$listingsApi.error.value" :keyword="keyword" />
+          <!-- Results Title and Mobile Filters -->
+          <template v-if="!$listingsApi.loading.value && !$listingsApi.error.value">
+            <SearchResultsTitle :keyword="keyword" />
+            
+            <!-- Mobile Filters Toggle Button -->
+            <button 
+              @click="toggleFilters"
+              class="lg:hidden w-full mb-4 bg-white text-gray-700 py-2 px-4 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors flex items-center justify-center shadow-sm"
+            >
+              <span>{{ showFilters ? 'بستن فیلترها' : 'نمایش فیلترها' }}</span>
+              <i class="fas fa-chevron-down mr-2" :class="{ 'transform rotate-180': showFilters }"></i>
+            </button>
+            
+            <!-- Mobile Filters (hidden by default, shown when toggled) -->
+            <div v-if="showFilters && windowWidth < 1024" class="mb-6">
+              <Filters 
+                :user-filters="$listingsApi.userFilters.value"
+                :show-rules-modal="showRulesModal"
+                :show-amenities-modal="showAmenitiesModal"
+                @close="hideFilters"
+                @apply-filters="onApplyFilters"
+                @clear-filters="onClearFilters"
+                @open-rules-modal="showRulesModal = true"
+                @open-amenities-modal="showAmenitiesModal = true"
+                @show-modal="showModal = true"
+              />
+            </div>
+          </template>
 
           <!-- No Results Message -->
           <div v-if="!$listingsApi.loading.value && !$listingsApi.error.value && $listingsApi.listings.value.length === 0" class="text-center py-8">
@@ -121,7 +139,7 @@ const {
   goToPage
 } = useFilters()
 
-const showFilters = ref(true)
+const showFilters = ref(false)
 const showModal = ref(false)
 const showRulesModal = ref(false)
 const showAmenitiesModal = ref(false)
