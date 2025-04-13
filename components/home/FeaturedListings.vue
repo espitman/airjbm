@@ -19,8 +19,10 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <ListingCardSkeleton v-for="n in 3" :key="n" />
+      <div v-if="loading" class="relative">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 featured-listings-swiper min-h-[400px]">
+          <ListingCardSkeleton v-for="n in 3" :key="n" class="h-full" />
+        </div>
       </div>
 
       <!-- Error State -->
