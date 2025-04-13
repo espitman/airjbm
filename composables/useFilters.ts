@@ -550,7 +550,7 @@ export function useFilters() {
     await $listingsApi.fetchListings({ 
       page: 1, 
       size: 16, 
-      keyword: route.query.keyword as string,
+      keyword: route.params.keyword || 'city-tehran',
       cities: appliedFilters.cities,
       types: appliedFilters.types,
       regions: appliedFilters.regions,
@@ -574,7 +574,7 @@ export function useFilters() {
     await $listingsApi.fetchListings({ 
       page: 1, 
       size: 16, 
-      keyword: route.query.keyword as string,
+      keyword: route.params.keyword || 'city-tehran',
       cities: appliedFilters.cities,
       types: appliedFilters.types,
       regions: appliedFilters.regions,
