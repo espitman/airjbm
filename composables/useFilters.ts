@@ -138,8 +138,8 @@ export function useFilters() {
 
   // City selection
   const filteredCities = computed(() => {
-    const cities = $listingsApi.userFilters.value.cities
-    if (!cities) return []
+    // Get cities from the API response
+    const cities = $listingsApi.userFilters?.value?.cities || []
     
     // Filter based on search text if it exists
     const searchFiltered = citySearch.value
@@ -322,7 +322,6 @@ export function useFilters() {
       delete query.sortBy
     }
 
-    // Handle array filters that need to be joined
     if (filters.value.selectedRules.length > 0) {
       query.selectedRules = filters.value.selectedRules.join(',')
     } else {
@@ -334,17 +333,101 @@ export function useFilters() {
     } else {
       delete query.selectedAmenities
     }
+
+    // Update URL with new query
+    await router.push({ query })
     
-    // Update URL without triggering navigation and wait for it to complete
-    await router.replace({ query })
+    // Reset the flag
+    skipRouteWatcher.value = false
     
-    // Reset the flag after a short delay
-    setTimeout(() => {
-      skipRouteWatcher.value = false
-    }, 100)
+    // Return the current filters for API use
+    return {
+      cities: filters.value.cities,
+      types: filters.value.types,
+      regions: filters.value.regions,
+      passengerCount: filters.value.passengerCount,
+      rooms: filters.value.roomsCount,
+      check_in: filters.value.check_in,
+      check_out: filters.value.check_out,
+      min_price: parseInt(filters.value.minPrice) || 0,
+      max_price: parseInt(filters.value.maxPrice) || 1000000000,
+      sort: filters.value.sortBy,
+      selectedRules: filters.value.selectedRules,
+      selectedAmenities: filters.value.selectedAmenities
+    }
+  }
+
+  // Function to handle applying filters
+  const handleApplyFilters = async () => {
+    isApplyingFilters.value = true
+    try {
+      await applyFilters()
+    } finally {
+      isApplyingFilters.value = false
+    }
+  }
+
+  // Function to handle clearing filters
+  const handleClearFilters = async () => {
+    // Set the flag to skip the route watcher
+    skipRouteWatcher.value = true
     
-    // Return filters for API call
-    return filters.value
+    // Reset all filters to default values
+    filters.value = {
+      cities: [],
+      types: [],
+      regions: [],
+      minPrice: '',
+      maxPrice: '',
+      passengerCount: '',
+      roomsCount: '',
+      check_in: '',
+      check_out: '',
+      selectedRules: [],
+      selectedAmenities: [],
+      sortBy: '',
+      priceRange: [0, 1000000],
+      bedrooms: [],
+      bathrooms: [],
+      propertyTypes: [],
+      amenities: [],
+      moreFilters: {}
+    }
+    
+    // Reset selected arrays
+    selectedCities.value = []
+    selectedTypes.value = []
+    selectedRegions.value = []
+    priceRange.value = [0, 1000000000]
+    selectedAmenities.value = []
+    
+    // Reset page to 1
+    currentPage.value = 1
+    
+    // Update URL to remove all filter parameters
+    await router.push({ 
+      query: { page: '1' }
+    })
+    
+    // Reset the flag
+    skipRouteWatcher.value = false
+  }
+
+  // Function to go to a specific page
+  const goToPage = async (page) => {
+    // Set the flag to skip the route watcher
+    skipRouteWatcher.value = true
+    
+    // Update current page
+    currentPage.value = page
+    
+    // Update URL with new page number
+    await router.push({
+      query: { ...route.query, page: page.toString() }
+    })
+    
+    // Reset the flag
+    skipRouteWatcher.value = false
   }
 
   // Watch for URL changes to update filters
@@ -405,26 +488,6 @@ export function useFilters() {
     }
   }
 
-  // Handle applying filters
-  const handleApplyFilters = async () => {
-    // Set the flag to indicate we're applying filters
-    isApplyingFilters.value = true
-    
-    // Apply filters to URL and get the updated filters
-    const appliedFilters = await applyFilters()
-    
-    // Reset to page 1 and fetch new listings
-    await fetchListings(1, appliedFilters)
-    
-    // Scroll to top of the page
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-    
-    // Reset the flag after a short delay
-    setTimeout(() => {
-      isApplyingFilters.value = false
-    }, 100)
-  }
-
   // Add hasActiveFilters computed property
   const hasActiveFilters = computed(() => {
     return (
@@ -439,81 +502,6 @@ export function useFilters() {
       filters.value.check_out
     )
   })
-
-  // Handle clearing all filters
-  const handleClearFilters = async () => {
-    // Set the flag to indicate we're applying filters
-    isApplyingFilters.value = true
-    
-    // Clear all filter states
-    selectedCities.value = []
-    selectedRegions.value = []
-    selectedTypes.value = []
-    priceRange.value = [0, 1000000000]
-    selectedAmenities.value = []
-    
-    // Reset filters object with all required properties
-    filters.value = {
-      cities: [],
-      regions: [],
-      types: [],
-      minPrice: '0',
-      maxPrice: '1000000000',
-      passengerCount: '',
-      roomsCount: '',
-      check_in: '',
-      check_out: '',
-      selectedRules: [],
-      selectedAmenities: [],
-      sortBy: '',
-      priceRange: [0, 1000000000],
-      bedrooms: [],
-      bathrooms: [],
-      propertyTypes: [],
-      amenities: [],
-      moreFilters: {}
-    }
-    
-    // Reset dropdown states
-    showCityDropdown.value = false
-    showRegionDropdown.value = false
-    showTypeDropdown.value = false
-    citySearch.value = ''
-    highlightedIndex.value = -1
-    
-    // Reset page to 1
-    currentPage.value = 1
-    
-    // Clear URL parameters except keyword
-    const query = { keyword: route.query.keyword }
-    await router.replace({ query })
-    
-    // Fetch new listings
-    await fetchListings(1)
-    
-    // Reset the flag after a short delay
-    setTimeout(() => {
-      isApplyingFilters.value = false
-    }, 100)
-  }
-
-  // Function to go to a specific page
-  const goToPage = async (page) => {
-    // Don't do anything if we're already on this page
-    if (page === currentPage.value) return
-    
-    // Update the current page
-    currentPage.value = page
-    
-    // Create a new query object with all existing filters
-    const query = { ...route.query, page: page.toString() }
-    
-    // Update URL without triggering navigation
-    await router.replace({ query })
-    
-    // Fetch listings with the new page
-    await fetchListings(page)
-  }
 
   // Watch for changes in the route query page parameter
   watch(() => route.query.page, (newPage) => {
@@ -570,28 +558,16 @@ export function useFilters() {
     // Apply filters to URL and get the updated filters
     const appliedFilters = await applyFilters()
     
-    // Fetch listings with the updated filters and page 1
-    await $listingsApi.fetchListings({ 
-      page: 1, 
-      size: 16, 
-      keyword: route.params.keyword || 'city-tehran',
-      cities: appliedFilters.cities,
-      types: appliedFilters.types,
-      regions: appliedFilters.regions,
-      passengerCount: appliedFilters.passengerCount ? Number(appliedFilters.passengerCount) : undefined,
-      rooms: appliedFilters.roomsCount ? Number(appliedFilters.roomsCount) : undefined,
-      check_in: appliedFilters.check_in || undefined,
-      check_out: appliedFilters.check_out || undefined,
-      min_price: appliedFilters.minPrice ? parseInt(appliedFilters.minPrice) : undefined,
-      max_price: appliedFilters.maxPrice ? parseInt(appliedFilters.maxPrice) : undefined,
-      sort: appliedFilters.sortBy,
-      selectedRules: appliedFilters.selectedRules,
-      selectedAmenities: appliedFilters.selectedAmenities
-    })
-    
     // Update the URL to include page=1
     const query = { ...route.query, page: '1' }
-    await router.replace({ query })
+    await router.push({ query })
+    
+    // Reset to page 1
+    currentPage.value = 1
+    
+    // Emit an event to notify the parent component that filters have changed
+    // The parent component will handle the API call
+    emit('filters-changed', appliedFilters)
   }
 
   return {

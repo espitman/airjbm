@@ -124,14 +124,14 @@ const fetchListings = async () => {
     loading.value = true
     error.value = null
 
-    await $listingsApi.fetchListings({ 
+    const data = await $listingsApi.fetchListings({ 
       page: 1, 
       size: 12, 
       keyword: props.keyword 
     })
 
-    listings.value = $listingsApi.listings.value
-    total.value = $listingsApi.total.value
+    listings.value = data.items
+    total.value = data.total
   } catch (err) {
     console.error('Error fetching listings:', err)
     error.value = err instanceof Error ? err.message : 'An error occurred while fetching listings'

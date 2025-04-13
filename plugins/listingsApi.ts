@@ -1,4 +1,3 @@
-import { ref } from 'vue'
 import { defineNuxtPlugin } from 'nuxt/app'
 
 export interface Listing {
@@ -64,18 +63,13 @@ interface FetchListingsParams {
 }
 
 export default defineNuxtPlugin(() => {
-  const state = {
-    listings: ref<Listing[]>([]),
-    loading: ref(true),
-    error: ref<string | null>(null),
-    total: ref(0),
-    userFilters: ref<UserFilters>({
-      cities: [],
-      provinces: [],
-      regions: [],
-      types: []
-    })
-  }
+  // Add state for userFilters
+  const userFilters = ref<UserFilters>({
+    cities: [],
+    provinces: [],
+    regions: [],
+    types: []
+  })
 
   const fetchListings = async ({ 
     page = 1, 
@@ -93,80 +87,67 @@ export default defineNuxtPlugin(() => {
     sort,
     selectedRules = [],
     selectedAmenities = []
-  }: FetchListingsParams) => {
-    try {
-      state.loading.value = true
-      state.error.value = null
+  }: FetchListingsParams): Promise<ListingsResponse> => {
+    const url = `https://jayaber.liara.run/gw.jabama.com/api/taraaz/v1/search/merchandising/plp/${keyword}`
 
-      const url = `https://jayaber.liara.run/gw.jabama.com/api/taraaz/v1/search/merchandising/plp/${keyword}`
-
-      // Handle sort parameter
-      let sortParam = sort
-      let orderParam = 'desc'
-      if (sort?.includes('-')) {
-        const [sortValue, orderValue] = sort.split('-')
-        sortParam = sortValue
-        orderParam = orderValue || 'desc'
-      }
-
-      const requestBody = {
-        page,
-        size,
-        keyword,
-        cities,
-        types,
-        regions,
-        ...(passengerCount && { capacity: passengerCount }),
-        ...(rooms && { rooms }),
-        ...(check_in && { check_in }),
-        ...(check_out && { check_out }),
-        ...(min_price && { min_price: min_price * 10 }),
-        ...(max_price && { max_price: max_price * 10 }),
-        ...(sortParam && { sort: sortParam }),
-        ...(orderParam && { order: orderParam }),
-        ...(selectedRules.length > 0 && { rules: selectedRules }),
-        ...(selectedAmenities.length > 0 && { amenities: selectedAmenities })
-      }
-
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'accept': 'application/json',
-          'content-type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-      })
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch listings: ${response.status} ${response.statusText}`)
-      }
-
-      const data: ListingsResponse = await response.json()
-      
-      if (!data.items || !Array.isArray(data.items)) {
-        throw new Error('Invalid response format: items array not found')
-      }
-
-      state.listings.value = data.items
-      state.total.value = data.total
-      
-      // Set userFilters from the API response
-      if (data.userFilters) {
-        state.userFilters.value = data.userFilters
-      }
-    } catch (err) {
-      console.error('Error fetching listings:', err)
-      state.error.value = err instanceof Error ? err.message : 'An error occurred while fetching listings'
-    } finally {
-      state.loading.value = false
+    // Handle sort parameter
+    let sortParam = sort
+    let orderParam = 'desc'
+    if (sort?.includes('-')) {
+      const [sortValue, orderValue] = sort.split('-')
+      sortParam = sortValue
+      orderParam = orderValue || 'desc'
     }
+
+    const requestBody = {
+      page,
+      size,
+      keyword,
+      cities,
+      types,
+      regions,
+      ...(passengerCount && { capacity: passengerCount }),
+      ...(rooms && { rooms }),
+      ...(check_in && { check_in }),
+      ...(check_out && { check_out }),
+      ...(min_price && { min_price: min_price * 10 }),
+      ...(max_price && { max_price: max_price * 10 }),
+      ...(sortParam && { sort: sortParam }),
+      ...(orderParam && { order: orderParam }),
+      ...(selectedRules.length > 0 && { rules: selectedRules }),
+      ...(selectedAmenities.length > 0 && { amenities: selectedAmenities })
+    }
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch listings: ${response.status} ${response.statusText}`)
+    }
+
+    const data: ListingsResponse = await response.json()
+    
+    if (!data.items || !Array.isArray(data.items)) {
+      throw new Error('Invalid response format: items array not found')
+    }
+
+    // Store userFilters from the API response
+    userFilters.value = data.userFilters
+
+    return data
   }
 
   return {
     provide: {
       listingsApi: {
-        ...state,
-        fetchListings
+        fetchListings,
+        userFilters
       }
     }
   }
