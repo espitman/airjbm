@@ -31,7 +31,7 @@
         <!-- Listings Grid -->
         <div :class="['lg:w-3/4', {'w-full': !showFilters && windowWidth < 1024}]">
           <!-- Loading State -->
-          <div v-if="$listingsApi.loading.value" class="fixed inset-0 flex justify-center items-center bg-white/80 z-50">
+          <div v-if="$listingsApi.loading.value" class="absolute inset-0 flex justify-center items-center bg-white/80 z-40">
             <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
           </div>
 
