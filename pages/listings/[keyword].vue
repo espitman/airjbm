@@ -1,13 +1,12 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <div class="container mx-auto px-4 py-8">
-      <!-- Loading State -->
-      <ListingsPageSkeleton v-if="isLoading" :show-filters="true" />
-
-      <!-- Content State -->
-      <div v-else class="flex flex-col lg:flex-row gap-8">
+      <div class="flex flex-col lg:flex-row gap-8">
         <!-- Filters Sidebar (Desktop) -->
-        <div class="hidden lg:block lg:w-1/4 transition-all duration-300 lg:sticky lg:top-24 lg:self-start">
+        <div 
+          v-if="windowWidth >= 1024 && !$listingsApi.loading.value"
+          class="lg:w-1/4 transition-all duration-300 lg:sticky lg:top-24 lg:self-start"
+        >
           <Filters 
             :user-filters="$listingsApi.userFilters.value"
             :show-rules-modal="showRulesModal"
@@ -22,14 +21,19 @@
         </div>
 
         <!-- Listings Grid -->
-        <div class="w-full lg:w-3/4">
+        <div :class="['lg:w-3/4', {'w-full': !showFilters && windowWidth < 1024}]">
+          <!-- Loading State -->
+          <div v-if="$listingsApi.loading.value" class="absolute inset-0 flex justify-center items-center bg-white/80 z-40">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+          </div>
+
           <!-- Error State -->
-          <div v-if="$listingsApi.error.value" class="text-center py-8">
+          <div v-else-if="$listingsApi.error.value" class="text-center py-8">
             <p class="text-red-600">{{ $listingsApi.error.value }}</p>
           </div>
 
           <!-- Results Title and Mobile Filters -->
-          <template v-if="!$listingsApi.error.value">
+          <template v-if="!$listingsApi.loading.value && !$listingsApi.error.value">
             <SearchResultsTitle :keyword="keyword" />
             
             <!-- Mobile Filters Toggle Button -->
@@ -50,7 +54,7 @@
               leave-from-class="opacity-100 max-h-[2000px]"
               leave-to-class="opacity-0 max-h-0 overflow-hidden"
             >
-              <div v-if="showFilters" class="lg:hidden mb-6">
+              <div v-if="showFilters && windowWidth < 1024" class="mb-6">
                 <Filters 
                   :user-filters="$listingsApi.userFilters.value"
                   :show-rules-modal="showRulesModal"
@@ -67,12 +71,12 @@
           </template>
 
           <!-- No Results Message -->
-          <div v-if="!$listingsApi.error.value && $listingsApi.listings.value.length === 0" class="text-center py-8">
+          <div v-if="!$listingsApi.loading.value && !$listingsApi.error.value && $listingsApi.listings.value.length === 0" class="text-center py-8">
             <p class="text-gray-600 text-lg">هیچ اقامتگاهی با معیارهای شما یافت نشد.</p>
           </div>
 
           <!-- Listings Grid -->
-          <div v-if="!$listingsApi.error.value && $listingsApi.listings.value.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div v-if="!$listingsApi.loading.value && !$listingsApi.error.value && $listingsApi.listings.value.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ListingCard 
               v-for="listing in paginatedListings" 
               :key="listing.id" 
@@ -81,7 +85,7 @@
           </div>
           
           <!-- Pagination -->
-          <div v-if="!$listingsApi.error.value" class="mt-8">
+          <div v-if="!$listingsApi.loading.value && !$listingsApi.error.value" class="mt-8">
             <Pagination
               :current-page="currentPage"
               :total-items="$listingsApi.total?.value || 0"
@@ -124,10 +128,9 @@ import { useFilters } from '~/composables/useFilters'
 import Filters from '~/components/ui/Filters.vue'
 import FilterModals from '~/components/ui/FilterModals.vue'
 import ListingCard from '~/components/ui/ListingCard.vue'
-import SearchResultsTitle from '~/components/ui/SearchResultsTitle.vue'
 import RulesAmenitiesModal from '~/components/ui/RulesAmenitiesModal.vue'
+import SearchResultsTitle from '~/components/ui/SearchResultsTitle.vue'
 import Pagination from '~/components/ui/Pagination.vue'
-import ListingsPageSkeleton from '~/components/ui/ListingsPageSkeleton.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -151,7 +154,6 @@ const showRulesModal = ref(false)
 const showAmenitiesModal = ref(false)
 const windowWidth = ref(0)
 const itemsPerPage = 16
-const isLoading = ref(true)
 
 // Get the keyword from the URL parameter
 const keyword = computed(() => {
@@ -171,28 +173,12 @@ onMounted(() => {
   const page = pageFromQuery > 0 ? pageFromQuery : 1
   
   // Fetch listings with the page from URL and keyword from route params
-  loadListings(page)
+  fetchListings(page)
 })
 
 onUnmounted(() => {
   window.removeEventListener('resize', updateWindowWidth)
 })
-
-const loadListings = async (page) => {
-  // Set loading state before any async operations
-  isLoading.value = true
-  $listingsApi.loading.value = true
-  
-  try {
-    await fetchListings(page)
-  } finally {
-    // Add a small delay to ensure smooth transition
-    setTimeout(() => {
-      isLoading.value = false
-      $listingsApi.loading.value = false
-    }, 500)
-  }
-}
 
 const toggleFilters = () => {
   showFilters.value = !showFilters.value
@@ -239,41 +225,17 @@ const handleModalFilters = (newFilters) => {
 }
 
 // Function to handle applying filters
-const onApplyFilters = async () => {
-  // Set loading state before any async operations
-  isLoading.value = true
-  $listingsApi.loading.value = true
-  
-  try {
-    await handleApplyFilters()
-    // Close the filters box on mobile after applying filters
-    if (windowWidth.value < 1024) {
-      showFilters.value = false
-    }
-  } finally {
-    // Add a small delay to ensure smooth transition
-    setTimeout(() => {
-      isLoading.value = false
-      $listingsApi.loading.value = false
-    }, 500)
+const onApplyFilters = () => {
+  handleApplyFilters()
+  // Close the filters box on mobile after applying filters
+  if (windowWidth.value < 1024) {
+    showFilters.value = false
   }
 }
 
 // Function to handle clearing filters
-const onClearFilters = async () => {
-  // Set loading state before any async operations
-  isLoading.value = true
-  $listingsApi.loading.value = true
-  
-  try {
-    await handleClearFilters()
-  } finally {
-    // Add a small delay to ensure smooth transition
-    setTimeout(() => {
-      isLoading.value = false
-      $listingsApi.loading.value = false
-    }, 500)
-  }
+const onClearFilters = () => {
+  handleClearFilters()
 }
 
 // Function to handle modal apply filters
@@ -282,20 +244,8 @@ const handleModalApplyFilters = async () => {
 }
 
 // Function to handle page change
-const handlePageChange = async (page) => {
-  // Set loading state before any async operations
-  isLoading.value = true
-  $listingsApi.loading.value = true
-  
-  try {
-    await goToPage(page)
-  } finally {
-    // Add a small delay to ensure smooth transition
-    setTimeout(() => {
-      isLoading.value = false
-      $listingsApi.loading.value = false
-    }, 500)
-  }
+const handlePageChange = (page) => {
+  goToPage(page)
 }
 
 // Function to update selected rules
