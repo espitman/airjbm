@@ -39,26 +39,35 @@
             <!-- Mobile Filters Toggle Button -->
             <button 
               @click="toggleFilters"
-              class="lg:hidden w-full mb-4 bg-white text-gray-700 py-2 px-4 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors flex items-center justify-center shadow-sm"
+              class="lg:hidden w-full mb-4 bg-white text-gray-700 py-2 px-4 rounded-lg border border-gray-300 transition-colors flex items-center justify-center shadow-sm"
             >
               <span>{{ showFilters ? 'بستن فیلترها' : 'نمایش فیلترها' }}</span>
-              <i class="fas fa-chevron-down mr-2" :class="{ 'transform rotate-180': showFilters }"></i>
+              <i class="fas fa-chevron-down mr-2 transition-transform duration-300" :class="{ 'transform rotate-180': showFilters }"></i>
             </button>
             
-            <!-- Mobile Filters (hidden by default, shown when toggled) -->
-            <div v-if="showFilters && windowWidth < 1024" class="mb-6">
-              <Filters 
-                :user-filters="$listingsApi.userFilters.value"
-                :show-rules-modal="showRulesModal"
-                :show-amenities-modal="showAmenitiesModal"
-                @close="hideFilters"
-                @apply-filters="onApplyFilters"
-                @clear-filters="onClearFilters"
-                @open-rules-modal="showRulesModal = true"
-                @open-amenities-modal="showAmenitiesModal = true"
-                @show-modal="showModal = true"
-              />
-            </div>
+            <!-- Mobile Filters with Animation -->
+            <transition
+              enter-active-class="transition-all duration-300 ease-out"
+              enter-from-class="opacity-0 max-h-0 overflow-hidden"
+              enter-to-class="opacity-100 max-h-[2000px]"
+              leave-active-class="transition-all duration-300 ease-in"
+              leave-from-class="opacity-100 max-h-[2000px]"
+              leave-to-class="opacity-0 max-h-0 overflow-hidden"
+            >
+              <div v-if="showFilters && windowWidth < 1024" class="mb-6">
+                <Filters 
+                  :user-filters="$listingsApi.userFilters.value"
+                  :show-rules-modal="showRulesModal"
+                  :show-amenities-modal="showAmenitiesModal"
+                  @close="hideFilters"
+                  @apply-filters="onApplyFilters"
+                  @clear-filters="onClearFilters"
+                  @open-rules-modal="showRulesModal = true"
+                  @open-amenities-modal="showAmenitiesModal = true"
+                  @show-modal="showModal = true"
+                />
+              </div>
+            </transition>
           </template>
 
           <!-- No Results Message -->
@@ -218,6 +227,10 @@ const handleModalFilters = (newFilters) => {
 // Function to handle applying filters
 const onApplyFilters = () => {
   handleApplyFilters()
+  // Close the filters box on mobile after applying filters
+  if (windowWidth.value < 1024) {
+    showFilters.value = false
+  }
 }
 
 // Function to handle clearing filters
