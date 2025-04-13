@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "nitro build",
+    "start": "node ./server/index.mjs",
+    "dev": "nitro dev",
+    "prepare": "nitro prepare",
+    "preview": "node ./server/index.mjs"
+  },
+  "devDependencies": {
+    "nitropack": "latest"
+  }
+}

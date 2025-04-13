@@ -1,7 +1,7 @@
 <template>
   <header :class="['bg-white shadow-md sticky top-0 z-50 transition-all duration-300', isScrolled ? 'py-2' : 'py-4']">
     <div class="container mx-auto px-4">
-      <div class="flex items-center justify-between h-10 h-auto" :class="{'md:h-10': isScrolled, 'md:h-16': !isScrolled}">
+        <div class="flex items-center h-10 h-auto" :class="{'md:h-10': isScrolled, 'md:h-16': !isScrolled}">
         <!-- Logo -->
         <div class="flex items-center">
           <NuxtLink to="/" class="flex items-center gap-2">

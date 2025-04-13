@@ -98,7 +98,7 @@ export default defineNuxtPlugin(() => {
       state.loading.value = true
       state.error.value = null
 
-      const url = `https://jayaber.liara.run/search/${keyword}`
+      const url = `https://jayaber.liara.run/gw.jabama.com/api/taraaz/v1/search/merchandising/plp/${keyword}`
 
       // Handle sort parameter
       let sortParam = sort

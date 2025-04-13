@@ -117,7 +117,7 @@ const fetchListings = async () => {
     loading.value = true
     error.value = null
 
-    const url = `https://jayaber.liara.run/search/${props.keyword}`
+    const url = `https://jayaber.liara.run/gw.jabama.com/api/taraaz/v1/search/merchandising/plp/${props.keyword}`
 
     const response = await fetch(url, {
       method: 'POST',
