@@ -19,8 +19,8 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading" class="flex justify-center items-center h-64">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ListingCardSkeleton v-for="n in 3" :key="n" />
       </div>
 
       <!-- Error State -->
@@ -83,6 +83,7 @@ import { onMounted, ref } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation } from 'swiper/modules'
 import ListingCard from '~/components/ui/ListingCard.vue'
+import ListingCardSkeleton from '~/components/ui/ListingCardSkeleton.vue'
 import { Listing } from '~/plugins/listingsApi'
 import 'swiper/css'
 import 'swiper/css/navigation'
