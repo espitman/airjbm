@@ -538,6 +538,62 @@ export function useFilters() {
     handleClearFilters()
   }
 
+  // Add the handleMobileSortSelect function
+  const handleMobileSortSelect = async (value: string) => {
+    // Update the URL first with the correct parameter name 'sort'
+    const query = { ...route.query, sortBy: value, page: '1' }
+    await router.replace({ query })
+    
+    
+    // Apply filters and fetch listings
+    const appliedFilters = await applyFilters()
+    await $listingsApi.fetchListings({ 
+      page: 1, 
+      size: 16, 
+      keyword: route.query.keyword as string,
+      cities: appliedFilters.cities,
+      types: appliedFilters.types,
+      regions: appliedFilters.regions,
+      passengerCount: appliedFilters.passengerCount ? Number(appliedFilters.passengerCount) : undefined,
+      rooms: appliedFilters.roomsCount ? Number(appliedFilters.roomsCount) : undefined,
+      check_in: appliedFilters.check_in || undefined,
+      check_out: appliedFilters.check_out || undefined,
+      min_price: appliedFilters.minPrice ? parseInt(appliedFilters.minPrice) : undefined,
+      max_price: appliedFilters.maxPrice ? parseInt(appliedFilters.maxPrice) : undefined,
+      sort: value,
+      selectedRules: appliedFilters.selectedRules,
+      selectedAmenities: appliedFilters.selectedAmenities
+    })
+  }
+
+  const handleSortChange = async () => {
+    // Apply filters to URL and get the updated filters
+    const appliedFilters = await applyFilters()
+    
+    // Fetch listings with the updated filters and page 1
+    await $listingsApi.fetchListings({ 
+      page: 1, 
+      size: 16, 
+      keyword: route.query.keyword as string,
+      cities: appliedFilters.cities,
+      types: appliedFilters.types,
+      regions: appliedFilters.regions,
+      passengerCount: appliedFilters.passengerCount ? Number(appliedFilters.passengerCount) : undefined,
+      rooms: appliedFilters.roomsCount ? Number(appliedFilters.roomsCount) : undefined,
+      check_in: appliedFilters.check_in || undefined,
+      check_out: appliedFilters.check_out || undefined,
+      min_price: appliedFilters.minPrice ? parseInt(appliedFilters.minPrice) : undefined,
+      max_price: appliedFilters.maxPrice ? parseInt(appliedFilters.maxPrice) : undefined,
+      sort: appliedFilters.sortBy,
+      selectedRules: appliedFilters.selectedRules,
+      selectedAmenities: appliedFilters.selectedAmenities
+    })
+    
+    // Update the URL to include page=1
+    const query = { ...route.query, page: '1' }
+    await router.replace({ query })
+  }
+
   return {
     filters,
     isApplyingFilters,
@@ -576,6 +632,8 @@ export function useFilters() {
     removeType,
     handlePriceChange,
     handleDateUpdate,
-    clearFilters
+    clearFilters,
+    handleMobileSortSelect,
+    handleSortChange
   }
 } 

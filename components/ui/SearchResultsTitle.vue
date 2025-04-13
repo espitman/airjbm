@@ -64,7 +64,7 @@ const props = defineProps({
 })
 
 const { $listingsApi } = useNuxtApp()
-const { filters, applyFilters } = useFilters()
+const { filters, applyFilters, handleMobileSortSelect, handleSortChange } = useFilters()
 const route = useRoute()
 const router = useRouter()
 const showMobileSort = ref(false)
@@ -79,32 +79,6 @@ const sortOptions = [
 
 const toggleMobileSort = () => {
   showMobileSort.value = !showMobileSort.value
-}
-
-const handleMobileSortSelect = async (value) => {
-  // Update the URL first with the correct parameter name 'sort'
-  const query = { ...route.query, sortBy: value, page: '1' }
-  await router.replace({ query })
-  
-
-  const appliedFilters = await applyFilters()
-  await $listingsApi.fetchListings({ 
-    page: 1, 
-    size: 16, 
-    keyword: props.keyword,
-    cities: appliedFilters.cities,
-    types: appliedFilters.types,
-    regions: appliedFilters.regions,
-    passengerCount: appliedFilters.passengerCount ? Number(appliedFilters.passengerCount) : undefined,
-    rooms: appliedFilters.roomsCount ? Number(appliedFilters.roomsCount) : undefined,
-    check_in: appliedFilters.check_in || undefined,
-    check_out: appliedFilters.check_out || undefined,
-    min_price: appliedFilters.minPrice ? parseInt(appliedFilters.minPrice) : undefined,
-    max_price: appliedFilters.maxPrice ? parseInt(appliedFilters.maxPrice) : undefined,
-    sort: value,
-    selectedRules: appliedFilters.selectedRules,
-    selectedAmenities: appliedFilters.selectedAmenities
-  })
 }
 
 // Close dropdown when clicking outside
@@ -123,32 +97,4 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
-
-const handleSortChange = async () => {
-  // Apply filters to URL and get the updated filters
-  const appliedFilters = await applyFilters()
-  
-  // Fetch listings with the updated filters and page 1
-  await $listingsApi.fetchListings({ 
-    page: 1, 
-    size: 16, 
-    keyword: props.keyword,
-    cities: appliedFilters.cities,
-    types: appliedFilters.types,
-    regions: appliedFilters.regions,
-    passengerCount: appliedFilters.passengerCount ? Number(appliedFilters.passengerCount) : undefined,
-    rooms: appliedFilters.roomsCount ? Number(appliedFilters.roomsCount) : undefined,
-    check_in: appliedFilters.check_in || undefined,
-    check_out: appliedFilters.check_out || undefined,
-    min_price: appliedFilters.minPrice ? parseInt(appliedFilters.minPrice) : undefined,
-    max_price: appliedFilters.maxPrice ? parseInt(appliedFilters.maxPrice) : undefined,
-    sort: appliedFilters.sortBy,
-    selectedRules: appliedFilters.selectedRules,
-    selectedAmenities: appliedFilters.selectedAmenities
-  })
-  
-  // Update the URL to include page=1
-  const query = { ...route.query, page: '1' }
-  await router.replace({ query })
-}
 </script> 
