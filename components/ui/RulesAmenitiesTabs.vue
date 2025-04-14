@@ -49,7 +49,7 @@
               :value="rule.key"
               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             >
-            <label :for="rule.key" class="ml-2 text-sm text-gray-700">{{ rule['persian-name'] }}</label>
+            <label :for="rule.key" class="mr-2 text-sm text-gray-700">{{ rule['persian-name'] }}</label>
           </div>
         </div>
 
@@ -63,7 +63,7 @@
               :value="amenity"
               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             >
-            <label :for="amenity" class="ml-2 text-sm text-gray-700">{{ amenity }}</label>
+            <label :for="amenity" class="mr-2 text-sm text-gray-700">{{ amenity }}</label>
           </div>
         </div>
       </div>
