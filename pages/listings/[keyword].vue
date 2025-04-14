@@ -132,11 +132,13 @@
     />
 
     <!-- Rules & Amenities Modal -->
-    <RulesAmenitiesModal 
+    <RulesAmenitiesTabs 
       :show="showModal"
-      :filters="filters"
+      :selected-rules="filters.selectedRules"
+      :selected-amenities="filters.selectedAmenities"
       @close="showModal = false"
-      @update:filters="handleModalFilters"
+      @update:selected-rules="updateSelectedRules"
+      @update:selected-amenities="updateSelectedAmenities"
     />
   </div>
 </template>
@@ -149,7 +151,7 @@ import { useFilters } from '~/composables/useFilters'
 import Filters from '~/components/ui/Filters.vue'
 import FilterModals from '~/components/ui/FilterModals.vue'
 import ListingCard from '~/components/ui/ListingCard.vue'
-import RulesAmenitiesModal from '~/components/ui/RulesAmenitiesModal.vue'
+import RulesAmenitiesTabs from '~/components/ui/RulesAmenitiesTabs.vue'
 import SearchResultsTitle from '~/components/ui/SearchResultsTitle.vue'
 import Pagination from '~/components/ui/Pagination.vue'
 import ListingsPageSkeleton from '~/components/ui/ListingsPageSkeleton.vue'
