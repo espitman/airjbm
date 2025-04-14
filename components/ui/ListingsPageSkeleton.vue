@@ -60,7 +60,7 @@
 
         <!-- Listings Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <ListingCardSkeleton v-for="i in 6" :key="i" />
+            <ListingCardSkeleton v-for="i in 16" :key="i" />
         </div>
       </div>
     </div>
