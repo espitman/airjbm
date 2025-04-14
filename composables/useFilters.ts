@@ -477,7 +477,7 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
         check_out: currentFilters.check_out || undefined,
         min_price: currentFilters.minPrice ? parseInt(currentFilters.minPrice) : undefined,
         max_price: currentFilters.maxPrice ? parseInt(currentFilters.maxPrice) : undefined,
-        sort: currentFilters.sortBy || route.query.sort,
+        sort: currentFilters.sortBy || route.query.sortBy,
         selectedRules: currentFilters.selectedRules,
         selectedAmenities: currentFilters.selectedAmenities
       })
@@ -532,8 +532,8 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
     // Update the sort value in filters
     filters.value.sortBy = value
     
-    // Update the URL with the correct parameter name 'sort'
-    const query = { ...route.query, sort: value, page: '1' }
+    // Update the URL with the correct parameter name 'sortBy'
+    const query = { ...route.query, sortBy: value, page: '1' }
     await router.replace({ query })
     
     // Reset to page 1
