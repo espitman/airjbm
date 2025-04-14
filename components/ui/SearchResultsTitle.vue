@@ -63,8 +63,10 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['sort-change'])
+
 const { $listingsApi } = useNuxtApp()
-const { filters, applyFilters, handleMobileSortSelect, handleSortChange } = useFilters()
+const { filters } = useFilters()
 const route = useRoute()
 const router = useRouter()
 const showMobileSort = ref(false)
@@ -76,6 +78,15 @@ const sortOptions = [
   { value: 'score-desc', label: 'امتیاز: زیاد به کم' },
   { value: 'score-asc', label: 'امتیاز: کم به زیاد' }
 ]
+
+const handleSortChange = (event) => {
+  emit('sort-change', event.target.value)
+}
+
+const handleMobileSortSelect = (value) => {
+  emit('sort-change', value)
+  showMobileSort.value = false
+}
 
 const toggleMobileSort = () => {
   showMobileSort.value = !showMobileSort.value

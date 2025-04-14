@@ -45,7 +45,10 @@
 
             <!-- Results Title and Mobile Filters -->
             <template v-if="!pageState.loading && !pageState.error">
-              <SearchResultsTitle :keyword="keyword" />
+              <SearchResultsTitle 
+                :keyword="keyword" 
+                @sort-change="handleSortChange"
+              />
               
               <!-- Mobile Filters Toggle Button -->
               <button 
@@ -481,5 +484,31 @@ const handleFiltersChanged = async (appliedFilters) => {
     selectedRules: appliedFilters.selectedRules,
     selectedAmenities: appliedFilters.selectedAmenities
   })
+}
+
+// Function to handle sort change
+const handleSortChange = async (sortValue) => {
+  // Scroll to top immediately
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+  
+  // Update the URL with the new sort value
+  const query = { ...route.query }
+  if (sortValue) {
+    query.sortBy = sortValue
+  } else {
+    delete query.sortBy
+  }
+  
+  // Update the URL without triggering a page reload
+  await router.replace({ query })
+  
+  // Reset to first page
+  goToPage(1)
+  
+  // Fetch listings with the new sort value
+  await fetchPageListings()
 }
 </script> 
