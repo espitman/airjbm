@@ -52,8 +52,6 @@
 
 <script setup>
 import { useFilters } from '~/composables/useFilters'
-import { useNuxtApp } from '#app'
-import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
@@ -65,10 +63,7 @@ const props = defineProps({
 
 const emit = defineEmits(['sort-change'])
 
-const { $listingsApi } = useNuxtApp()
 const { filters } = useFilters()
-const route = useRoute()
-const router = useRouter()
 const showMobileSort = ref(false)
 
 const sortOptions = [

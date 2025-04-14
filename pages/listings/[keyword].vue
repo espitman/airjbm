@@ -290,7 +290,6 @@ const handleModalFilters = (newFilters) => {
       updateFilter(key, value)
     }
   })
-  // Don't apply filters immediately, wait for the user to click the Apply button
 }
 
 // Function to handle applying filters
@@ -374,12 +373,7 @@ const handleModalApplyFilters = async () => {
   goToPage(1)
   
   // Fetch listings with the updated filters
-  await fetchPageListings({
-    page: 1,
-    size: 16,
-    keyword: route.params.keyword || 'city-tehran',
-    ...appliedFilters
-  })
+  await fetchPageListings()
 }
 
 // Function to update selected rules
@@ -459,6 +453,32 @@ const fetchPageListings = async () => {
   }, 100) // 100ms debounce
 }
 
+// Function to handle sort change
+const handleSortChange = async (sortValue) => {
+  // Scroll to top immediately
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+  
+  // Update the URL with the new sort value
+  const query = { ...route.query }
+  if (sortValue) {
+    query.sortBy = sortValue
+  } else {
+    delete query.sortBy
+  }
+  
+  // Update the URL without triggering a page reload
+  await router.replace({ query })
+  
+  // Reset to first page
+  goToPage(1)
+  
+  // Fetch listings with the new sort value
+  await fetchPageListings()
+}
+
 // Add the handler function
 const handleFiltersChanged = async (appliedFilters) => {
   // Scroll to top immediately
@@ -484,31 +504,5 @@ const handleFiltersChanged = async (appliedFilters) => {
     selectedRules: appliedFilters.selectedRules,
     selectedAmenities: appliedFilters.selectedAmenities
   })
-}
-
-// Function to handle sort change
-const handleSortChange = async (sortValue) => {
-  // Scroll to top immediately
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  })
-  
-  // Update the URL with the new sort value
-  const query = { ...route.query }
-  if (sortValue) {
-    query.sortBy = sortValue
-  } else {
-    delete query.sortBy
-  }
-  
-  // Update the URL without triggering a page reload
-  await router.replace({ query })
-  
-  // Reset to first page
-  goToPage(1)
-  
-  // Fetch listings with the new sort value
-  await fetchPageListings()
 }
 </script> 
