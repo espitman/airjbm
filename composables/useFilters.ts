@@ -1,4 +1,4 @@
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, defineEmits } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { LocationQueryValue } from 'vue-router'
 import { useNuxtApp } from '#app'
@@ -49,6 +49,7 @@ export function useFilters() {
   const route = useRoute()
   const router = useRouter()
   const { $listingsApi } = useNuxtApp()
+  const emit = defineEmits(['filters-changed'])
   
   // Add a flag to skip the route watcher
   const skipRouteWatcher = ref(false)
@@ -528,30 +529,22 @@ export function useFilters() {
 
   // Add the handleMobileSortSelect function
   const handleMobileSortSelect = async (value: string) => {
-    // Update the URL first with the correct parameter name 'sort'
-    const query = { ...route.query, sortBy: value, page: '1' }
+    // Update the sort value in filters
+    filters.value.sortBy = value
+    
+    // Update the URL with the correct parameter name 'sort'
+    const query = { ...route.query, sort: value, page: '1' }
     await router.replace({ query })
     
+    // Reset to page 1
+    currentPage.value = 1
     
-    // Apply filters and fetch listings
+    // Apply filters to get the updated filters
     const appliedFilters = await applyFilters()
-    await $listingsApi.fetchListings({ 
-      page: 1, 
-      size: 16, 
-      keyword: route.params.keyword || 'city-tehran',
-      cities: appliedFilters.cities,
-      types: appliedFilters.types,
-      regions: appliedFilters.regions,
-      passengerCount: appliedFilters.passengerCount ? Number(appliedFilters.passengerCount) : undefined,
-      rooms: appliedFilters.roomsCount ? Number(appliedFilters.roomsCount) : undefined,
-      check_in: appliedFilters.check_in || undefined,
-      check_out: appliedFilters.check_out || undefined,
-      min_price: appliedFilters.minPrice ? parseInt(appliedFilters.minPrice) : undefined,
-      max_price: appliedFilters.maxPrice ? parseInt(appliedFilters.maxPrice) : undefined,
-      sort: value,
-      selectedRules: appliedFilters.selectedRules,
-      selectedAmenities: appliedFilters.selectedAmenities
-    })
+    
+    // Emit an event to notify the parent component that filters have changed
+    // The parent component will handle the API call
+    emit('filters-changed', appliedFilters)
   }
 
   const handleSortChange = async () => {

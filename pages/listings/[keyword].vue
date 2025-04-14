@@ -305,7 +305,6 @@ watch(
     checkInDate: filters.value.check_in,
     checkOutDate: filters.value.check_out,
     priceRange: filters.value.priceRange,
-    currentSort: filters.value.sortBy,
     selectedRules: filters.value.selectedRules,
     selectedAmenities: filters.value.selectedAmenities
   }),
