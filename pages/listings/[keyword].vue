@@ -344,13 +344,56 @@ const handlePageChange = async (page) => {
 
 // Function to handle modal apply filters
 const handleModalApplyFilters = async () => {
-  await onApplyFilters()
+  // Ensure we have all the necessary filter values
+  const appliedFilters = {
+    ...filters.value,
+    cities: filters.value.cities || [],
+    types: filters.value.types || [],
+    regions: filters.value.regions || [],
+    passengerCount: filters.value.passengerCount || undefined,
+    roomsCount: filters.value.roomsCount || undefined,
+    check_in: filters.value.check_in || undefined,
+    check_out: filters.value.check_out || undefined,
+    minPrice: filters.value.minPrice || undefined,
+    maxPrice: filters.value.maxPrice || undefined,
+    sortBy: filters.value.sortBy || undefined,
+    selectedRules: filters.value.selectedRules || [],
+    selectedAmenities: filters.value.selectedAmenities || []
+  }
+
+  // Scroll to top immediately
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+  
+  // Reset to first page
+  goToPage(1)
+  
+  // Fetch listings with the updated filters
+  await fetchPageListings({
+    page: 1,
+    size: 16,
+    keyword: route.params.keyword || 'city-tehran',
+    ...appliedFilters
+  })
 }
 
 // Function to update selected rules
 const updateSelectedRules = (rules) => {
   // Update the filters without applying them and without triggering the callback
   updateFilter('selectedRules', rules, true)
+  
+  // Update the URL with the selected rules
+  const query = { ...route.query }
+  if (rules && rules.length > 0) {
+    query.selectedRules = rules.join(',')
+  } else {
+    delete query.selectedRules
+  }
+  
+  // Update the URL without triggering a page reload
+  router.replace({ query })
 }
 
 // Function to update selected amenities

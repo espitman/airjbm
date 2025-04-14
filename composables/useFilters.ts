@@ -247,7 +247,6 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
    
     // Assign the entire object back to filters.value
     filters.value = updatedFilters
-    return
     
     // Call the callback if provided and not skipped
     if (onFiltersChanged && !skipCallback) {
