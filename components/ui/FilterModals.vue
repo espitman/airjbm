@@ -3,7 +3,7 @@
   <div v-if="showRulesModal" class="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center">
     <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-xl font-semibold">Rules</h3>
+        <h3 class="text-xl font-semibold">قوانین</h3>
         <button @click="$emit('close-rules-modal')" class="text-gray-500 hover:text-gray-700">
           <i class="fas fa-times"></i>
         </button>
@@ -11,16 +11,16 @@
       <div class="space-y-2 max-h-96 overflow-y-auto">
         <label 
           v-for="rule in rules" 
-          :key="rule"
+          :key="rule.key"
           class="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
         >
           <input 
             type="checkbox" 
-            :value="rule"
+            :value="rule.key"
             v-model="localSelectedRules"
             class="rounded text-blue-600 focus:ring-blue-500"
           >
-          <span>{{ rule }}</span>
+          <span>{{ rule['persian-name'] }}</span>
         </label>
       </div>
       <div class="mt-6 flex justify-end">
@@ -28,13 +28,13 @@
           @click="applyRules"
           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mr-2"
         >
-          Apply
+          اعمال
         </button>
         <button 
           @click="$emit('close-rules-modal')"
           class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
         >
-          Close
+          بستن
         </button>
       </div>
     </div>
@@ -100,7 +100,29 @@ const props = defineProps({
 
 const emit = defineEmits(['close-rules-modal', 'close-amenities-modal', 'update:selectedRules', 'update:selectedAmenities', 'apply-filters'])
 
-const rules = ['No Smoking', 'No Pets', 'No Parties', 'No Children', 'Quiet Hours']
+const rules = [
+  {
+    key: 'ceremony',
+    'persian-name': 'امکان برگزاری مراسم و مهمانی'
+  },
+  {
+    key: 'pets',
+    'persian-name': 'امکان ورود حیوانات خانگی'
+  },
+  {
+    key: 'smoke',
+    'persian-name': 'امکان استعمال دخانیات'
+  },
+  {
+    key: '24h_reception',
+    'persian-name': 'امکان پذیرش ۲۴ ساعته مهمان'
+  },
+  {
+    key: 'single_persons',
+    'persian-name': 'امکان پذیرش گروه‌های مجردی (فقط آقایان یا خانم‌ها)'
+  }
+]
+
 const amenities = ['WiFi', 'Pool', 'Parking', 'Gym', 'Restaurant', 'Spa', 'Room Service']
 
 const localSelectedRules = ref([...props.selectedRules])
