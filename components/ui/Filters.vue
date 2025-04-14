@@ -1,10 +1,12 @@
 <template>
   <div class="bg-white rounded-lg shadow-md p-6">
-    <RulesAmenitiesModal 
+    <RulesAmenitiesTabs 
       :show="showModal"
-      :filters="filters"
+      :selected-rules="filters.selectedRules"
+      :selected-amenities="filters.selectedAmenities"
       @close="showModal = false"
-      @update:filters="(newFilters) => filters = newFilters"
+      @update:selected-rules="(rules) => filters.selectedRules = rules"
+      @update:selected-amenities="(amenities) => filters.selectedAmenities = amenities"
     />
     <div 
       class="flex justify-between items-center mb-4 cursor-pointer"
@@ -307,7 +309,7 @@
 
 <script setup>
 import { ref, watch, onMounted, computed, onBeforeUnmount } from 'vue'
-import RulesAmenitiesModal from './RulesAmenitiesModal.vue'
+import RulesAmenitiesTabs from './RulesAmenitiesTabs.vue'
 import DateSelectionModal from './DateSelectionModal.vue'
 import { useFilters } from '~/composables/useFilters'
 import { useNuxtApp } from '#app'
