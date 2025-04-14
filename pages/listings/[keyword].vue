@@ -342,32 +342,6 @@ const handlePageChange = async (page) => {
   await fetchPageListings()
 }
 
-// Watch for filter changes
-watch(
-  () => ({
-    selectedCities: filters.value.cities,
-    selectedTypes: filters.value.types,
-    selectedRegions: filters.value.regions,
-    selectedCapacity: filters.value.passengerCount,
-    selectedRooms: filters.value.roomsCount,
-    checkInDate: filters.value.check_in,
-    checkOutDate: filters.value.check_out,
-    priceRange: filters.value.priceRange,
-    selectedRules: filters.value.selectedRules,
-    selectedAmenities: filters.value.selectedAmenities
-  }),
-  async (newFilters) => {
-    // Reset to first page when filters change
-    currentPage.value = 1
-    // Update URL with new page number
-    await router.push({
-      query: { ...route.query, page: '1' }
-    })
-    await fetchPageListings()
-  },
-  { deep: true }
-)
-
 // Function to handle modal apply filters
 const handleModalApplyFilters = async () => {
   await onApplyFilters()
@@ -375,14 +349,14 @@ const handleModalApplyFilters = async () => {
 
 // Function to update selected rules
 const updateSelectedRules = (rules) => {
-  updateFilter('selectedRules', rules)
-  // Don't apply filters immediately, wait for the user to click the Apply button
+  // Update the filters without applying them and without triggering the callback
+  updateFilter('selectedRules', rules, true)
 }
 
 // Function to update selected amenities
 const updateSelectedAmenities = (amenities) => {
-  updateFilter('selectedAmenities', amenities)
-  // Don't apply filters immediately, wait for the user to click the Apply button
+  // Update the filters without applying them and without triggering the callback
+  updateFilter('selectedAmenities', amenities, true)
 }
 
 // Add a debounce mechanism to prevent duplicate API calls

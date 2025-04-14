@@ -229,7 +229,7 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
   }
 
   // Function to update a single filter
-  const updateFilter = (key: keyof Filters, value: string | string[]) => {
+  const updateFilter = (key: keyof Filters, value: string | string[], skipCallback = false) => {
     // Create a new filters object with all existing values
     const updatedFilters = { ...filters.value }
     
@@ -244,9 +244,15 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
         updatedFilters[key] = value
       }
     }
-    
+   
     // Assign the entire object back to filters.value
     filters.value = updatedFilters
+    return
+    
+    // Call the callback if provided and not skipped
+    if (onFiltersChanged && !skipCallback) {
+      onFiltersChanged()
+    }
   }
 
   // Function to scroll to top of the page

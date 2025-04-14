@@ -147,8 +147,11 @@ watch(() => props.selectedAmenities, (newAmenities) => {
 })
 
 const applyFilters = () => {
+  // Update the local state
   emit('update:selectedRules', localSelectedRules.value)
   emit('update:selectedAmenities', localSelectedAmenities.value)
+  
+  // Close the modal
   emit('close')
 }
 </script> 
