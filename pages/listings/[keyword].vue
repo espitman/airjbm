@@ -168,7 +168,25 @@ const {
   fetchListings,
   currentPage,
   goToPage
-} = useFilters()
+} = useFilters((appliedFilters) => {
+  fetchPageListings({
+    page: 1,
+    size: 16,
+    keyword: route.params.keyword || 'city-tehran',
+    cities: appliedFilters.cities,
+    types: appliedFilters.types,
+    regions: appliedFilters.regions,
+    passengerCount: appliedFilters.passengerCount ? Number(appliedFilters.passengerCount) : undefined,
+    rooms: appliedFilters.roomsCount ? Number(appliedFilters.roomsCount) : undefined,
+    check_in: appliedFilters.check_in || undefined,
+    check_out: appliedFilters.check_out || undefined,
+    min_price: appliedFilters.minPrice ? parseInt(appliedFilters.minPrice) : undefined,
+    max_price: appliedFilters.maxPrice ? parseInt(appliedFilters.maxPrice) : undefined,
+    sort: appliedFilters.sortBy,
+    selectedRules: appliedFilters.selectedRules,
+    selectedAmenities: appliedFilters.selectedAmenities
+  })
+})
 
 const showFilters = ref(false)
 const showModal = ref(false)

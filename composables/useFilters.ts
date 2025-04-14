@@ -45,7 +45,7 @@ function queryToString(value: LocationQueryValue | LocationQueryValue[] | null |
   return value
 }
 
-export function useFilters() {
+export function useFilters(onFiltersChanged?: (filters: any) => void) {
   const route = useRoute()
   const router = useRouter()
   const { $listingsApi } = useNuxtApp()
@@ -542,9 +542,10 @@ export function useFilters() {
     // Apply filters to get the updated filters
     const appliedFilters = await applyFilters()
     
-    // Emit an event to notify the parent component that filters have changed
-    // The parent component will handle the API call
-    emit('filters-changed', appliedFilters)
+    // Call the callback if provided
+    if (onFiltersChanged) {
+      onFiltersChanged(appliedFilters)
+    }
   }
 
   const handleSortChange = async () => {
@@ -558,9 +559,10 @@ export function useFilters() {
     // Reset to page 1
     currentPage.value = 1
     
-    // Emit an event to notify the parent component that filters have changed
-    // The parent component will handle the API call
-    emit('filters-changed', appliedFilters)
+    // Call the callback if provided
+    if (onFiltersChanged) {
+      onFiltersChanged(appliedFilters)
+    }
   }
 
   return {
