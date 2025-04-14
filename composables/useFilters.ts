@@ -249,10 +249,21 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
     filters.value = updatedFilters
   }
 
+  // Function to scroll to top of the page
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+
   // Function to apply all filters (update URL and return filters for API)
   const applyFilters = async () => {
     // Set the flag to skip the route watcher
     skipRouteWatcher.value = true
+    
+    // Scroll to top immediately
+    scrollToTop()
     
     // Update URL with current filters
     const query = { ...route.query }
@@ -419,6 +430,9 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
     // Set the flag to skip the route watcher
     skipRouteWatcher.value = true
     
+    // Scroll to top immediately
+    scrollToTop()
+    
     // Update current page
     currentPage.value = page
     
@@ -532,6 +546,9 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
     // Update the sort value in filters
     filters.value.sortBy = value
     
+    // Scroll to top immediately
+    scrollToTop()
+    
     // Update the URL with the correct parameter name 'sortBy'
     const query = { ...route.query, sortBy: value, page: '1' }
     await router.replace({ query })
@@ -549,6 +566,9 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
   }
 
   const handleSortChange = async () => {
+    // Scroll to top immediately
+    scrollToTop()
+    
     // Apply filters to URL and get the updated filters
     const appliedFilters = await applyFilters()
     

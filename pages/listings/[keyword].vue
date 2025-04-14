@@ -228,6 +228,10 @@ onMounted(() => {
   
   // Fetch listings with the page from URL and keyword from route params
   fetchPageListings()
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
 })
 
 onUnmounted(() => {
@@ -269,6 +273,12 @@ const paginatedListings = computed(() => {
 
 // Function to handle modal filters
 const handleModalFilters = (newFilters) => {
+  // Scroll to top immediately
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+  
   // Update each filter individually using the composable's updateFilter function
   Object.entries(newFilters).forEach(([key, value]) => {
     if (key in filters.value) {
@@ -280,6 +290,12 @@ const handleModalFilters = (newFilters) => {
 
 // Function to handle applying filters
 const onApplyFilters = async () => {
+  // Scroll to top immediately
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+  
   await handleApplyFilters()
   // Close the filters box on mobile after applying filters
   if (windowWidth.value < 1024) {
@@ -292,6 +308,12 @@ const onApplyFilters = async () => {
 
 // Function to handle clearing filters
 const onClearFilters = async () => {
+  // Scroll to top immediately
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+  
   await handleClearFilters()
   // Reset to first page and fetch listings with cleared filters
   goToPage(1)
@@ -300,6 +322,12 @@ const onClearFilters = async () => {
 
 // Function to handle page change
 const handlePageChange = async (page) => {
+  // Scroll to top immediately
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+  
   // Update current page
   currentPage.value = page
   
@@ -411,6 +439,12 @@ const fetchPageListings = async () => {
 
 // Add the handler function
 const handleFiltersChanged = async (appliedFilters) => {
+  // Scroll to top immediately
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+  
   await fetchPageListings({
     page: 1,
     size: 16,
