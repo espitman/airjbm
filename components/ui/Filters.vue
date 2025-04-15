@@ -446,13 +446,13 @@ const closeFilters = () => {
 
 // Add computed function for price range calculation
 const priceRangeConfig = computed(() => {
-  const minPrice = props.userFiltersPrices?.days_min_price || props.userFiltersPrices?.total_min_price || 0
-  const maxPrice = props.userFiltersPrices?.days_max_price || props.userFiltersPrices?.total_max_price || 1000000000
+  const minPrice = (props.userFiltersPrices?.total_min_price|| props.userFiltersPrices?.days_min_price  || 0) / 10
+  const maxPrice = (props.userFiltersPrices?.total_max_price || props.userFiltersPrices?.days_max_price || 1000000000) / 10
 
   return {
-    min: minPrice,
-    max: Math.min(maxPrice, 200000000),
-    interval: Math.min(500000, minPrice)
+    min: Math.max(minPrice-50000, 0),
+    max: Math.min(maxPrice+50000, 200000000),
+    interval: Math.min(50000, minPrice)
   }
 })
 
