@@ -39,10 +39,19 @@ interface UserFilters {
   types: string[]
 }
 
+interface UserFiltersPrices {
+  days_min_price: number
+  days_max_price: number
+  days_avg_price: number
+  total_min_price: number | null
+  total_max_price: number | null
+}
+
 interface ListingsResponse {
   items: Listing[]
   total: number
   userFilters: UserFilters
+  userFiltersPrices: UserFiltersPrices
 }
 
 interface FetchListingsParams {
