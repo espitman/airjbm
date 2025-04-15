@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Mobile Carousel -->
-    <div class="md:hidden relative w-full h-64 rounded-2xl overflow-hidden">
+    <div class="md:hidden relative w-screen h-64 -mx-4">
       <Swiper
         :modules="[Pagination, Navigation]"
         :pagination="false"
@@ -94,7 +94,6 @@ const onSwiper = (swiper: any) => {
 <style scoped>
 :deep(.swiper) {
   overflow: hidden;
-  border-radius: 1rem;
 }
 
 :deep(.swiper-slide) {
