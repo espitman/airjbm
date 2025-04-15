@@ -188,7 +188,7 @@ const {
     min_price: appliedFilters.minPrice ? parseInt(appliedFilters.minPrice) : undefined,
     max_price: appliedFilters.maxPrice ? parseInt(appliedFilters.maxPrice) : undefined,
     sort: appliedFilters.sortBy,
-    selectedRules: appliedFilters.selectedRules,
+    rules: appliedFilters.selectedRules,
     selectedAmenities: appliedFilters.selectedAmenities
   })
 })
@@ -359,7 +359,7 @@ const handleModalApplyFilters = async () => {
     minPrice: filters.value.minPrice || undefined,
     maxPrice: filters.value.maxPrice || undefined,
     sortBy: filters.value.sortBy || undefined,
-    selectedRules: filters.value.selectedRules || [],
+    rules: filters.value.selectedRules || [],
     selectedAmenities: filters.value.selectedAmenities || []
   }
 
@@ -384,9 +384,9 @@ const updateSelectedRules = (rules) => {
   // Update the URL with the selected rules
   const query = { ...route.query }
   if (rules && rules.length > 0) {
-    query.selectedRules = rules.join(',')
+    query.rules = rules.join(',')
   } else {
-    delete query.selectedRules
+    delete query.rules
   }
   
   // Update the URL without triggering a page reload
@@ -433,7 +433,7 @@ const fetchPageListings = async () => {
         min_price: currentFilters.minPrice ? parseInt(currentFilters.minPrice) : undefined,
         max_price: currentFilters.maxPrice ? parseInt(currentFilters.maxPrice) : undefined,
         sort: currentFilters.sortBy,
-        selectedRules: currentFilters.selectedRules,
+        rules: currentFilters.selectedRules,
         selectedAmenities: currentFilters.selectedAmenities
       }
 
@@ -501,7 +501,7 @@ const handleFiltersChanged = async (appliedFilters) => {
     min_price: appliedFilters.minPrice ? parseInt(appliedFilters.minPrice) : undefined,
     max_price: appliedFilters.maxPrice ? parseInt(appliedFilters.maxPrice) : undefined,
     sort: appliedFilters.sortBy,
-    selectedRules: appliedFilters.selectedRules,
+    rules: appliedFilters.selectedRules,
     selectedAmenities: appliedFilters.selectedAmenities
   })
 }

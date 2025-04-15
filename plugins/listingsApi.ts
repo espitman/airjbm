@@ -1,4 +1,5 @@
 import { defineNuxtPlugin } from 'nuxt/app'
+import { ref } from 'vue'
 
 export interface Listing {
   id: number
@@ -58,7 +59,7 @@ interface FetchListingsParams {
   min_price?: number
   max_price?: number
   sort?: string
-  selectedRules?: string[]
+  rules?: string[]
   selectedAmenities?: string[]
 }
 
@@ -85,7 +86,7 @@ export default defineNuxtPlugin(() => {
     min_price,
     max_price,
     sort,
-    selectedRules = [],
+    rules = [],
     selectedAmenities = []
   }: FetchListingsParams): Promise<ListingsResponse> => {
     const url = `https://jayaber.liara.run/gw.jabama.com/api/taraaz/v1/search/merchandising/plp/${keyword}`
@@ -114,7 +115,7 @@ export default defineNuxtPlugin(() => {
       ...(max_price && { max_price: max_price * 10 }),
       ...(sortParam && { sort: sortParam }),
       ...(orderParam && { order: orderParam }),
-      ...(selectedRules.length > 0 && { rules: selectedRules }),
+      ...(rules.length > 0 && { rules }),
       ...(selectedAmenities.length > 0 && { amenities: selectedAmenities })
     }
 

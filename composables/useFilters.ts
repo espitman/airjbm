@@ -84,8 +84,8 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
     roomsCount: queryToString(route.query.roomsCount),
     check_in: queryToString(route.query.check_in),
     check_out: queryToString(route.query.check_out),
-    selectedRules: queryToArray(route.query.selectedRules?.toString().split(',')),
-    selectedAmenities: queryToArray(route.query.selectedAmenities?.toString().split(',')),
+    selectedRules: queryToArray(route.query.rules?.toString().split(',')),
+    selectedAmenities: queryToArray(route.query.amenities?.toString().split(',')),
     sortBy: queryToString(route.query.sortBy),
     priceRange: route.query.priceRange 
       ? route.query.priceRange.split(',').map(Number)
@@ -340,15 +340,15 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
     }
 
     if (filters.value.selectedRules.length > 0) {
-      query.selectedRules = filters.value.selectedRules.join(',')
+      query.rules = filters.value.selectedRules.join(',')
     } else {
-      delete query.selectedRules
+      delete query.rules
     }
 
     if (filters.value.selectedAmenities.length > 0) {
-      query.selectedAmenities = filters.value.selectedAmenities.join(',')
+      query.amenities = filters.value.selectedAmenities.join(',')
     } else {
-      delete query.selectedAmenities
+      delete query.amenities
     }
 
     // Update URL with new query
@@ -369,7 +369,7 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
       min_price: parseInt(filters.value.minPrice) || 0,
       max_price: parseInt(filters.value.maxPrice) || 1000000000,
       sort: filters.value.sortBy,
-      selectedRules: filters.value.selectedRules,
+      rules: filters.value.selectedRules,
       selectedAmenities: filters.value.selectedAmenities
     }
   }
@@ -468,8 +468,8 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
     updatedFilters.roomsCount = queryToString(newQuery.roomsCount)
     updatedFilters.check_in = queryToString(newQuery.check_in)
     updatedFilters.check_out = queryToString(newQuery.check_out)
-    updatedFilters.selectedRules = queryToArray(newQuery.selectedRules)
-    updatedFilters.selectedAmenities = queryToArray(newQuery.selectedAmenities)
+    updatedFilters.selectedRules = queryToArray(newQuery.rules)
+    updatedFilters.selectedAmenities = queryToArray(newQuery.amenities)
     updatedFilters.sortBy = queryToString(newQuery.sortBy)
     
     // Assign the entire object back to filters.value
@@ -497,7 +497,7 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
         min_price: currentFilters.minPrice ? parseInt(currentFilters.minPrice) : undefined,
         max_price: currentFilters.maxPrice ? parseInt(currentFilters.maxPrice) : undefined,
         sort: currentFilters.sortBy || route.query.sortBy,
-        selectedRules: currentFilters.selectedRules,
+        rules: currentFilters.selectedRules,
         selectedAmenities: currentFilters.selectedAmenities
       })
     } catch (error) {

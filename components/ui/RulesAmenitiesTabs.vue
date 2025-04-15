@@ -158,7 +158,8 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const props = defineProps({
   show: {
@@ -175,7 +176,10 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['close', 'update:selectedRules', 'update:selectedAmenities'])
+const emit = defineEmits(['close', 'update:selectedRules', 'update:selectedAmenities', 'apply-filters'])
+
+const router = useRouter()
+const route = useRoute()
 
 const activeTab = ref('rules')
 const accordionStates = ref({
@@ -341,9 +345,49 @@ const applyFilters = () => {
   emit('update:selectedRules', localSelectedRules.value)
   emit('update:selectedAmenities', localSelectedAmenities.value)
   
+  // Update URL with selected filters
+  const query = { ...route.query }
+  
+  // Add rules to URL if any are selected
+  if (localSelectedRules.value.length > 0) {
+    query.rules = localSelectedRules.value.join(',')
+  } else {
+    delete query.rules
+  }
+  
+  // Add amenities to URL if any are selected
+  if (localSelectedAmenities.value.length > 0) {
+    query.amenities = localSelectedAmenities.value.join(',')
+  } else {
+    delete query.amenities
+  }
+  
+  // Update the URL without triggering a page reload
+  router.push({ query })
+  
+  // Emit an event to trigger the API call
+  emit('apply-filters', {
+    selectedRules: localSelectedRules.value,
+    selectedAmenities: localSelectedAmenities.value
+  })
+  
   // Close the modal
   emit('close')
 }
+
+// Initialize filters from URL when component mounts
+onMounted(() => {
+  const urlRules = route.query.rules?.split(',') || []
+  const urlAmenities = route.query.amenities?.split(',') || []
+  
+  if (urlRules.length > 0) {
+    localSelectedRules.value = urlRules
+  }
+  
+  if (urlAmenities.length > 0) {
+    localSelectedAmenities.value = urlAmenities
+  }
+})
 </script>
 
 <style scoped>

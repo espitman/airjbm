@@ -7,6 +7,7 @@
       @close="showModal = false"
       @update:selected-rules="(rules) => filters.selectedRules = rules"
       @update:selected-amenities="(amenities) => filters.selectedAmenities = amenities"
+      @apply-filters="handleApplyFilters"
     />
     <div 
       class="flex justify-between items-center mb-4 cursor-pointer"
