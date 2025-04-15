@@ -54,16 +54,86 @@
         </div>
 
         <!-- Amenities Tab -->
-        <div v-if="activeTab === 'amenities'" class="space-y-2">
-          <div v-for="amenity in amenities" :key="amenity" class="flex items-center">
-            <input 
-              type="checkbox" 
-              :id="amenity"
-              v-model="localSelectedAmenities"
-              :value="amenity"
-              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+        <div v-if="activeTab === 'amenities'" class="space-y-4">
+          <!-- امکانات اولیه -->
+          <div class="border rounded-lg overflow-hidden">
+            <button 
+              @click="toggleAccordion('basic')"
+              class="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
-            <label :for="amenity" class="mr-2 text-sm text-gray-700">{{ amenity }}</label>
+              <span class="font-medium">امکانات اولیه</span>
+              <i :class="['fas', accordionStates.basic ? 'fa-chevron-up' : 'fa-chevron-down', 'transition-transform duration-300']"></i>
+            </button>
+            <div 
+              :class="['accordion-content', { 'open': accordionStates.basic }]"
+            >
+              <div class="p-4 space-y-2">
+                <div v-for="amenity in basicAmenities" :key="amenity.key" class="flex items-center">
+                  <input 
+                    type="checkbox" 
+                    :id="amenity.key"
+                    v-model="localSelectedAmenities"
+                    :value="amenity.key"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  >
+                  <label :for="amenity.key" class="mr-2 text-sm text-gray-700">{{ amenity['persian-name'] }}</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- امکانات خاص -->
+          <div class="border rounded-lg overflow-hidden">
+            <button 
+              @click="toggleAccordion('special')"
+              class="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
+            >
+              <span class="font-medium">امکانات خاص</span>
+              <i :class="['fas', accordionStates.special ? 'fa-chevron-up' : 'fa-chevron-down', 'transition-transform duration-300']"></i>
+            </button>
+            <div 
+              :class="['accordion-content', { 'open': accordionStates.special }]"
+            >
+              <div class="p-4 space-y-2">
+                <div v-for="amenity in specialAmenities" :key="amenity.key" class="flex items-center">
+                  <input 
+                    type="checkbox" 
+                    :id="amenity.key"
+                    v-model="localSelectedAmenities"
+                    :value="amenity.key"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  >
+                  <label :for="amenity.key" class="mr-2 text-sm text-gray-700">{{ amenity['persian-name'] }}</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- مجهز به -->
+          <div class="border rounded-lg overflow-hidden">
+            <button 
+              @click="toggleAccordion('equipped')"
+              class="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
+            >
+              <span class="font-medium">مجهز به</span>
+              <i :class="['fas', accordionStates.equipped ? 'fa-chevron-up' : 'fa-chevron-down', 'transition-transform duration-300']"></i>
+            </button>
+            <div 
+              :class="['accordion-content', { 'open': accordionStates.equipped }]"
+            >
+              <div class="p-4 space-y-2">
+                <div v-for="amenity in equippedAmenities" :key="amenity.key" class="flex items-center">
+                  <input 
+                    type="checkbox" 
+                    :id="amenity.key"
+                    v-model="localSelectedAmenities"
+                    :value="amenity.key"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  >
+                  <label :for="amenity.key" class="mr-2 text-sm text-gray-700">{{ amenity['persian-name'] }}</label>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -108,6 +178,27 @@ const props = defineProps({
 const emit = defineEmits(['close', 'update:selectedRules', 'update:selectedAmenities'])
 
 const activeTab = ref('rules')
+const accordionStates = ref({
+  special: false,
+  equipped: false,
+  basic: true
+})
+
+const toggleAccordion = (section) => {
+  // If the clicked section is already open, just close it
+  if (accordionStates.value[section]) {
+    accordionStates.value[section] = false
+    return
+  }
+  
+  // Close all sections first
+  Object.keys(accordionStates.value).forEach(key => {
+    accordionStates.value[key] = false
+  })
+  
+  // Then open the clicked section
+  accordionStates.value[section] = true
+}
 
 const rules = [
   {
@@ -132,7 +223,106 @@ const rules = [
   }
 ]
 
-const amenities = ['وای‌فای', 'استخر', 'پارکینگ', 'باشگاه', 'رستوران', 'اسپا', 'سرویس اتاق']
+const specialAmenities = [
+  {
+    key: 'barbeque',
+    'persian-name': 'باربیکیو',
+  },
+  {
+    key: 'internet-wifi',
+    'persian-name': 'اينترنت (Wifi)',
+  },
+  {
+    key: 'swimming-pool',
+    'persian-name': 'استخر',
+  },
+  {
+    key: 'billiard',
+    'persian-name': 'میز بیلیارد',
+  },
+  {
+    key: 'jacuzzi',
+    'persian-name': 'جکوزی',
+  },
+  {
+    key: 'sauna',
+    'persian-name': 'سونا',
+  },
+  {
+    key: 'ventilation-system',
+    'persian-name': 'سیستم تهویه هوا',
+  }
+]
+
+const equippedAmenities = [
+  {
+    key: 'air-conditioning-system',
+    'persian-name': 'سیستم سرمایشی',
+  },
+  {
+    key: 'tv',
+    'persian-name': 'تلویزیون',
+  },
+  {
+    key: 'refrigerator',
+    'persian-name': 'یخچال',
+  },
+  {
+    key: 'heating-system',
+    'persian-name': 'سیستم گرمایشی',
+  },
+  {
+    key: 'sofa',
+    'persian-name': 'مبلمان',
+  },
+  {
+    key: 'food-serving-equipment',
+    'persian-name': 'لوازم سرو غذا',
+  }
+]
+
+const basicAmenities = [
+  {
+    key: 'bathroom',
+    'persian-name': 'حمام',
+  },
+  {
+    key: 'balcony',
+    'persian-name': 'بالکن',
+  },
+  {
+    key: 'wc',
+    'persian-name': 'سرویس بهداشتی فرنگی',
+  },
+  {
+    key: 'pwc',
+    'persian-name': 'سرویس بهداشتی ایرانی',
+  },
+  {
+    key: 'greenery',
+    'persian-name': 'فضای سبز',
+  },
+  {
+    key: 'parking',
+    'persian-name': 'پارکینگ',
+  },
+  {
+    key: 'elevator',
+    'persian-name': 'آسانسور',
+  },
+  {
+    key: 'water',
+    'persian-name': 'آب',
+  },
+  {
+    key: 'electric',
+    'persian-name': 'برق',
+  },
+  {
+    key: 'gas',
+    'persian-name': 'گاز',
+  }
+]
 
 const localSelectedRules = ref([...props.selectedRules])
 const localSelectedAmenities = ref([...props.selectedAmenities])
@@ -154,4 +344,17 @@ const applyFilters = () => {
   // Close the modal
   emit('close')
 }
-</script> 
+</script>
+
+<style scoped>
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.accordion-content.open {
+  max-height: 500px;
+  transition: max-height 0.3s ease-in;
+}
+</style> 
