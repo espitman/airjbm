@@ -19,7 +19,7 @@
       <!-- Main Content -->
       <div class="lg:col-span-2">
         <div class="flex items-center justify-between mb-4">
-          <h1 class="text-3xl font-bold">{{ accommodation?.title }}</h1>
+          <h1 class="text-3xl font-bold">{{ accommodation?.item?.title }}</h1>
           <div class="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-sm">
             کد: {{ code }}
           </div>
@@ -58,16 +58,19 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { useNuxtApp } from '#app'
+import { useNuxtApp } from 'nuxt/app'
 import type { AccommodationData } from '~/plugins/pdpApi'
 
 const route = useRoute()
-const { $pdpApi } = useNuxtApp()
+const nuxtApp = useNuxtApp()
+const pdpApi = nuxtApp.$pdpApi as {
+  fetchAccommodationByCode: (code: string) => Promise<AccommodationData>
+}
 
-const code = computed(() => route.params.code)
+const code = computed(() => route.params.code as string)
 const accommodation = ref<AccommodationData | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -76,8 +79,9 @@ const fetchAccommodationDetails = async () => {
   try {
     loading.value = true
     error.value = null
-    const data = await $pdpApi.fetchAccommodationByCode(code.value)
-    accommodation.value = data
+    const data = await pdpApi.fetchAccommodationByCode(code.value)
+    accommodation.value = data.result
+    console.log(accommodation.value)
   } catch (err) {
     error.value = 'متاسفانه در دریافت اطلاعات اقامتگاه مشکلی پیش آمده است.'
     console.error('Error fetching accommodation details:', err)

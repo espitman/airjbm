@@ -1,4 +1,4 @@
-import { defineNuxtPlugin, useRuntimeConfig } from '#app'
+import { defineNuxtPlugin, useRuntimeConfig } from 'nuxt/app'
 
 export interface AccommodationData {
   id: number
@@ -25,6 +25,10 @@ export interface AccommodationData {
   panoramic: any[]
   periods: any[]
   // Add more properties as needed based on the API response
+}
+
+export interface PdpApi {
+  fetchAccommodationByCode: (code: string) => Promise<AccommodationData>
 }
 
 export default defineNuxtPlugin(() => {
@@ -59,7 +63,7 @@ export default defineNuxtPlugin(() => {
     provide: {
       pdpApi: {
         fetchAccommodationByCode
-      }
+      } as PdpApi
     }
   }
 }) 
