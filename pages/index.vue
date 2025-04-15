@@ -8,6 +8,9 @@
       title="اقامتگاه‌های تهران" 
       description="بهترین اقامتگاه‌های تهران را کشف کنید" 
     />
+    <div class="container mx-auto px-4 my-16">
+      <VrboBanner />
+    </div>
     <FeaturedListings 
       keyword="all-villas" 
       title="ویلاهای لوکس" 
@@ -26,5 +29,6 @@ import HeroSection from '~/components/home/HeroSection.vue'
 import PopularCategories from '~/components/home/PopularCategories.vue'
 import FeaturedListings from '~/components/home/FeaturedListings.vue'
 import ExploreCities from '~/components/home/ExploreCities.vue'
+import VrboBanner from '~/components/home/VrboBanner.vue'
 </script>
 
