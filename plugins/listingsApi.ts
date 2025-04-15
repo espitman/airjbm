@@ -1,5 +1,4 @@
 import { defineNuxtPlugin } from 'nuxt/app'
-import { ref } from 'vue'
 
 export interface Listing {
   id: number
@@ -72,15 +71,9 @@ interface FetchListingsParams {
   selectedAmenities?: string[]
 }
 
-export default defineNuxtPlugin(() => {
-  // Add state for userFilters
-  const userFilters = ref<UserFilters>({
-    cities: [],
-    provinces: [],
-    regions: [],
-    types: []
-  })
+const convertPriceToRials = (price: number) => price * 10
 
+export default defineNuxtPlugin(() => {
   const fetchListings = async ({ 
     page = 1, 
     size = 10, 
@@ -100,14 +93,7 @@ export default defineNuxtPlugin(() => {
   }: FetchListingsParams): Promise<ListingsResponse> => {
     const url = `https://jayaber.liara.run/gw.jabama.com/api/taraaz/v1/search/merchandising/plp/${keyword}`
 
-    // Handle sort parameter
-    let sortParam = sort
-    let orderParam = 'desc'
-    if (sort?.includes('-')) {
-      const [sortValue, orderValue] = sort.split('-')
-      sortParam = sortValue
-      orderParam = orderValue || 'desc'
-    }
+    const [sortParam, orderParam = 'desc'] = sort?.includes('-') ? sort.split('-') : [sort, 'desc']
 
     const requestBody = {
       page,
@@ -120,8 +106,8 @@ export default defineNuxtPlugin(() => {
       ...(rooms && { rooms }),
       ...(check_in && { check_in }),
       ...(check_out && { check_out }),
-      ...(min_price && { min_price: min_price * 10 }),
-      ...(max_price && { max_price: max_price * 10 }),
+      ...(min_price && { min_price: convertPriceToRials(min_price) }),
+      ...(max_price && { max_price: convertPriceToRials(max_price) }),
       ...(sortParam && { sort: sortParam }),
       ...(orderParam && { order: orderParam }),
       ...(rules.length > 0 && { rules }),
@@ -141,14 +127,11 @@ export default defineNuxtPlugin(() => {
       throw new Error(`Failed to fetch listings: ${response.status} ${response.statusText}`)
     }
 
-    const data: ListingsResponse = await response.json()
+    const data = await response.json()
     
     if (!data.items || !Array.isArray(data.items)) {
       throw new Error('Invalid response format: items array not found')
     }
-
-    // Store userFilters from the API response
-    userFilters.value = data.userFilters
 
     return data
   }
@@ -156,8 +139,7 @@ export default defineNuxtPlugin(() => {
   return {
     provide: {
       listingsApi: {
-        fetchListings,
-        userFilters
+        fetchListings
       }
     }
   }

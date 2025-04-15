@@ -238,9 +238,9 @@
       <div class="px-4">
         <VueSlider
           v-model="priceRange"
-          :min="0"
-          :max="1000000000"
-          :interval="1000000"
+          :min="props.userFiltersPrices.days_min_price || props.userFiltersPrices.total_min_price || 0"
+          :max="props.userFiltersPrices.days_max_price || props.userFiltersPrices.total_max_price || 1000000000"
+          :interval="10000"
           :tooltip="'none'"
           :process="true"
           :dot-size="16"
@@ -322,6 +322,13 @@ const props = defineProps({
   userFilters: {
     type: Object,
     default: () => ({})
+  },
+  userFiltersPrices: {
+    type: Object,
+    default: () => ({
+      days_min_price: 0,
+      days_max_price: 1000000000
+    })
   }
 })
 
@@ -458,6 +465,23 @@ watch(() => props.userFilters.regions, (newRegions) => {
     regions.value = newRegions
   }
 }, { immediate: true })
+
+// Watch for changes in userFiltersPrices and update price range
+watch(() => props.userFiltersPrices, (newPrices) => {
+  if (newPrices) {
+    console.log('newPrices', newPrices)
+    // Update price range with the new min and max prices
+    // Use days prices if available, otherwise use total prices
+    const minPrice = newPrices.days_min_price || newPrices.total_min_price || 0
+    const maxPrice = newPrices.days_max_price || newPrices.total_max_price || 1000000000
+    
+    priceRange.value = [minPrice, maxPrice]
+    
+    // Update filters with the new price range
+    filters.value.minPrice = priceRange.value[0].toString()
+    filters.value.maxPrice = priceRange.value[1].toString()
+  }
+}, { immediate: true, deep: true })
 
 // Watch for changes in filters and update price range
 watch(() => filters.value, (newFilters) => {

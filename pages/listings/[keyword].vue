@@ -12,6 +12,7 @@
           >
             <Filters 
               :user-filters="pageState.userFilters"
+              :user-filters-prices="pageState.userFiltersPrices"
               :show-rules-modal="showRulesModal"
               :show-amenities-modal="showAmenitiesModal"
               :filters="filters"
@@ -71,6 +72,7 @@
                 <div v-if="showFilters" class="mb-6">
                   <Filters 
                     :user-filters="pageState.userFilters"
+                    :user-filters-prices="pageState.userFiltersPrices"
                     :show-rules-modal="showRulesModal"
                     :show-amenities-modal="showAmenitiesModal"
                     :filters="filters"
@@ -211,6 +213,10 @@ const pageState = ref({
     provinces: [],
     regions: [],
     types: []
+  },
+  userFiltersPrices: {
+    days_min_price: 0,
+    days_max_price: 1000000000
   }
 })
 
@@ -444,6 +450,10 @@ const fetchPageListings = async () => {
       pageState.value.listings = data.items
       pageState.value.total = data.total
       pageState.value.userFilters = data.userFilters
+      pageState.value.userFiltersPrices = data.userFiltersPrices || {
+        days_min_price: 0,
+        days_max_price: 1000000000
+      }
     } catch (err) {
       console.error('Error fetching listings:', err)
       pageState.value.error = err instanceof Error ? err.message : 'An error occurred while fetching listings'
