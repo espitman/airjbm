@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
+  <div class="container mx-auto px-4 py-0 md:py-8">
     <div v-if="loading" class="flex justify-center items-center min-h-[400px]">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
     </div>
@@ -21,7 +21,6 @@
         v-if="accommodation?.item?.placeImages?.length"
         :images="accommodation.item.placeImages"
         :title="accommodation.item.title"
-        class="mb-8"
       />
     <!-- Mobile Title -->
     <h1 class="mt-4 text-xl font-semibold md:hidden">{{ accommodation?.item?.title }}</h1>
