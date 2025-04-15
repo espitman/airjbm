@@ -316,6 +316,7 @@ import DateSelectionModal from './DateSelectionModal.vue'
 import { useFilters } from '~/composables/useFilters'
 import { useNuxtApp } from '#app'
 import VueSlider from 'vue-3-slider-component'
+import { useRoute } from 'vue-router'
 
 const { $persianTranslations } = useNuxtApp()
 
@@ -479,6 +480,13 @@ watch(() => props.userFilters.regions, (newRegions) => {
   }
 }, { immediate: true })
 
+// Watch for changes in filters.minPrice and filters.maxPrice
+watch(() => [filters.value.minPrice, filters.value.maxPrice], ([newMinPrice, newMaxPrice]) => {
+  if (newMinPrice && newMaxPrice) {
+    priceRange.value = [parseInt(newMinPrice), parseInt(newMaxPrice)]
+  }
+}, { immediate: true })
+
 // Watch for changes in userFiltersPrices and update price range
 watch(() => props.userFiltersPrices, (newPrices) => {
   if (newPrices) {
@@ -529,6 +537,17 @@ const typeDropdownRef = ref(null)
 
 // Add click outside handler
 onMounted(() => {
+  // Get price range from URL parameters
+  const route = useRoute()
+  console.log('route',route.query)
+  const minPrice = route.query.minPrice ? parseInt(route.query.minPrice) : priceRangeConfig.value.min
+  const maxPrice = route.query.maxPrice ? parseInt(route.query.maxPrice) : priceRangeConfig.value.max
+  console.log('minPrice',minPrice)
+  console.log('maxPrice',maxPrice)
+  
+  // Set price range from URL parameters or use default values
+  priceRange.value = [minPrice, maxPrice]
+  
   const handleClickOutside = (event) => {
     if (cityDropdownRef.value && !cityDropdownRef.value.contains(event.target)) {
       closeDropdown()
@@ -539,6 +558,7 @@ onMounted(() => {
     if (typeDropdownRef.value && !typeDropdownRef.value.contains(event.target)) {
       showTypeDropdown.value = false
     }
+    
   }
   
   // Add and remove event listener
