@@ -16,13 +16,15 @@
     </div>
 
     <div v-else>
-      <h1 class="text-3xl font-bold text-gray-900 mb-6">{{ accommodation?.item?.title }}</h1>
+      <h1 class="text-3xl font-bold text-gray-900 mb-6 hidden md:block">{{ accommodation?.item?.title }}</h1>
       <ImageGallery 
         v-if="accommodation?.item?.placeImages?.length"
         :images="accommodation.item.placeImages"
         :title="accommodation.item.title"
         class="mb-8"
       />
+    <!-- Mobile Title -->
+    <h1 class="mt-4 text-xl font-semibold md:hidden">{{ accommodation?.item?.title }}</h1>
     </div>
   </div>
 </template>

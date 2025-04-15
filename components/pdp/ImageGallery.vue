@@ -1,27 +1,29 @@
 <template>
   <div>
     <!-- Mobile Carousel -->
-    <div class="md:hidden relative w-screen h-64 -mx-4">
-      <Swiper
-        :modules="[Pagination, Navigation]"
-        :pagination="false"
-        :navigation="false"
-        class="w-full h-full"
-        @swiper="onSwiper"
-      >
-        <SwiperSlide v-for="(image, idx) in images" :key="image.url">
-          <div class="w-full h-full">
-            <img
-              :src="image.url"
-              :alt="`${title} - تصویر ${idx + 1}`"
-              class="w-full h-full object-cover"
-            />
-          </div>
-        </SwiperSlide>
-      </Swiper>
-      <!-- Photo Counter (outside slides) -->
-      <div class="absolute bottom-3 right-3 bg-black/50 text-white px-2 py-1 rounded-lg text-sm z-10">
-        {{ currentSlide + 1 }}/{{ images.length }}
+    <div class="md:hidden">
+      <div class="relative w-screen h-64 -mx-4">
+        <Swiper
+          :modules="[Pagination, Navigation]"
+          :pagination="false"
+          :navigation="false"
+          class="w-full h-full"
+          @swiper="onSwiper"
+        >
+          <SwiperSlide v-for="(image, idx) in images" :key="image.url">
+            <div class="w-full h-full">
+              <img
+                :src="image.url"
+                :alt="`${title} - تصویر ${idx + 1}`"
+                class="w-full h-full object-cover"
+              />
+            </div>
+          </SwiperSlide>
+        </Swiper>
+        <!-- Photo Counter (outside slides) -->
+        <div class="absolute bottom-3 right-3 bg-black/50 text-white px-2 py-1 rounded-lg text-sm z-10">
+          {{ currentSlide + 1 }}/{{ images.length }}
+        </div>
       </div>
     </div>
 
