@@ -1,110 +1,22 @@
 <template>
-  <div class="vrbo-banner">
-    <div class="banner-content">
-      <h1 class="banner-title">Rent your property confidently with Vrbo</h1>
-      <p class="banner-text">With live-support, quick signup, and highly-rated guests, hosting on Vrbo can feel like a vacation.</p>
-      <button class="list-button">List your property</button>
+  <div class="relative w-full h-auto md:h-[500px] overflow-hidden bg-[#2B2B2B] rounded-none md:rounded-2xl flex flex-col-reverse md:flex-row items-center dir-ltr">
+    <div class="relative z-10 w-full md:max-w-[450px] p-6 md:p-12 bg-white md:rounded-2xl md:ml-12">
+      <h1 class="text-3xl md:text-[42px] font-semibold text-[#2B2B2B] leading-tight mb-4 text-justify dir-rtl">
+        با اطمینان اقامتگاه خود را در جاباما اجاره دهید
+      </h1>
+      <p class="text-base md:text-lg text-[#4A4A4A] leading-relaxed mb-6 dir-rtl text-justify">
+        با پشتیبانی آنلاین، ثبت‌نام سریع و مهمانان خوش‌نام، میزبانی در جاباما مثل یک تعطیلات لذت‌بخش است.
+      </p>
+      <button class="bg-[#1976D2] hover:bg-[#1565C0] text-white px-6 py-3 rounded-full text-base font-medium transition-colors duration-200 w-full">
+        ثبت اقامتگاه
+      </button>
     </div>
-    <div class="banner-image">
-      <img src="/images/vrbo-banner.avif" alt="Woman relaxing in sauna" />
+    <div class="relative md:absolute md:top-0 md:right-0 w-full h-[300px] md:h-full">
+      <img 
+        src="/images/vrbo-banner.jpg" 
+        class="w-full h-full object-cover"
+      />
     </div>
   </div>
 </template>
 
-<style scoped>
-.vrbo-banner {
-  position: relative;
-  width: 100%;
-  height: 500px;
-  overflow: hidden;
-  background-color: #2B2B2B;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  direction: ltr;
-}
-
-.banner-content {
-  position: relative;
-  z-index: 2;
-  max-width: 450px;
-  padding: 48px;
-  background-color: white;
-  border-radius: 16px;
-  margin-left: 48px;
-}
-
-.banner-title {
-  font-size: 42px;
-  font-weight: 600;
-  color: #2B2B2B;
-  line-height: 1.2;
-  margin-bottom: 16px;
-  font-family: 'Georgia', serif;
-}
-
-.banner-text {
-  font-size: 18px;
-  color: #4A4A4A;
-  line-height: 1.5;
-  margin-bottom: 24px;
-}
-
-.list-button {
-  background-color: #1976D2;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 24px;
-  font-size: 16px;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.list-button:hover {
-  background-color: #1565C0;
-}
-
-.banner-image {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.banner-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-@media (max-width: 768px) {
-  .vrbo-banner {
-    height: auto;
-    flex-direction: column-reverse;
-  }
-
-  .banner-content {
-    margin: 0;
-    max-width: 100%;
-    padding: 24px;
-    border-radius: 0;
-  }
-
-  .banner-image {
-    position: relative;
-    width: 100%;
-    height: 300px;
-  }
-
-  .banner-title {
-    font-size: 32px;
-  }
-
-  .banner-text {
-    font-size: 16px;
-  }
-}
-</style> 

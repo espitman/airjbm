@@ -66,4 +66,13 @@
   .btn-primary {
     @apply bg-blue-600 text-white hover:bg-blue-700;
   }
+}
+
+@layer utilities {
+  .dir-ltr {
+    direction: ltr;
+  }
+  .dir-rtl {
+    direction: rtl;
+  }
 } 
