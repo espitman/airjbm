@@ -1,31 +1,5 @@
 import { defineNuxtPlugin, useRuntimeConfig } from 'nuxt/app'
-
-export interface AccommodationData {
-  id: number
-  code: string
-  title: string
-  description: string
-  images: string[]
-  price: number
-  location: string
-  city_fa: string
-  province_fa: string
-  capacity: {
-    base: number
-    extra: number
-  }
-  rooms: number
-  rate_score: number
-  rate_count: number
-  type: string
-  categories: string[]
-  tags: string[]
-  amenities: string[]
-  rules: string[]
-  panoramic: any[]
-  periods: any[]
-  // Add more properties as needed based on the API response
-}
+import { AccommodationData } from '../types/accommodation'
 
 export interface PdpApi {
   fetchAccommodationByCode: (code: string) => Promise<AccommodationData>

@@ -15,45 +15,14 @@
       <p class="text-gray-600">{{ error }}</p>
     </div>
 
-    <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <!-- Main Content -->
-      <div class="lg:col-span-2">
-        <div class="flex items-center justify-between mb-4">
-          <h1 class="text-3xl font-bold">{{ accommodation?.item?.title }}</h1>
-          <div class="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-sm">
-            کد: {{ code }}
-          </div>
-        </div>
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h2 class="text-xl font-semibold mb-4">توضیحات</h2>
-          <p class="text-gray-600">{{ accommodation?.description }}</p>
-        </div>
-      </div>
-
-      <!-- Sidebar -->
-      <div class="lg:col-span-1">
-        <div class="bg-white rounded-lg shadow-sm p-6 sticky top-4">
-          <h2 class="text-xl font-semibold mb-4">اطلاعات اقامتگاه</h2>
-          <div class="space-y-4">
-            <div>
-              <span class="text-gray-600">کد اقامتگاه:</span>
-              <span class="font-semibold mr-2">{{ code }}</span>
-            </div>
-            <div v-if="accommodation?.price">
-              <span class="text-gray-600">قیمت:</span>
-              <span class="font-semibold mr-2">{{ formatPrice(accommodation.price) }}</span>
-            </div>
-            <div v-if="accommodation?.capacity">
-              <span class="text-gray-600">ظرفیت:</span>
-              <span class="font-semibold mr-2">{{ getCapacity }}</span>
-            </div>
-            <div v-if="accommodation?.location">
-              <span class="text-gray-600">موقعیت:</span>
-              <span class="font-semibold mr-2">{{ getLocationDisplay }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div v-else>
+      <h1 class="text-3xl font-bold text-gray-900 mb-6">{{ accommodation?.item?.title }}</h1>
+      <ImageGallery 
+        v-if="accommodation?.item?.placeImages?.length"
+        :images="accommodation.item.placeImages"
+        :title="accommodation.item.title"
+        class="mb-8"
+      />
     </div>
   </div>
 </template>
@@ -63,6 +32,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useNuxtApp } from 'nuxt/app'
 import type { AccommodationData } from '~/plugins/pdpApi'
+import ImageGallery from '~/components/pdp/ImageGallery.vue'
 
 const route = useRoute()
 const nuxtApp = useNuxtApp()
