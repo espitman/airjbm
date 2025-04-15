@@ -96,8 +96,13 @@
             </template>
 
             <!-- No Results Message -->
-            <div v-if="!pageState.loading && !pageState.error && pageState.listings.length === 0" class="text-center py-8">
-              <p class="text-gray-600 text-lg">هیچ اقامتگاهی با معیارهای شما یافت نشد.</p>
+            <div v-if="!pageState.loading && !pageState.error && pageState.listings.length === 0">
+              <NoResultsFound 
+                :keyword="keyword"
+                :check_in="filters.check_in"
+                :check_out="filters.check_out"
+                :passenger-count="filters.passengerCount"
+              />
             </div>
 
             <!-- Listings Grid -->
@@ -160,6 +165,7 @@ import RulesAmenitiesTabs from '~/components/ui/RulesAmenitiesTabs.vue'
 import SearchResultsTitle from '~/components/ui/SearchResultsTitle.vue'
 import Pagination from '~/components/ui/Pagination.vue'
 import ListingsPageSkeleton from '~/components/ui/ListingsPageSkeleton.vue'
+import NoResultsFound from '~/components/ui/NoResultsFound.vue'
 
 const route = useRoute()
 const router = useRouter()
