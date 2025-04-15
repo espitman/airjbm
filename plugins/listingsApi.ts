@@ -132,7 +132,6 @@ export default defineNuxtPlugin(() => {
     if (!data.items || !Array.isArray(data.items)) {
       throw new Error('Invalid response format: items array not found')
     }
-
     return data
   }
 

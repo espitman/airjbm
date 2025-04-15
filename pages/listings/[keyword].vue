@@ -110,7 +110,10 @@
               <ListingCard 
                 v-for="listing in paginatedListings" 
                 :key="listing.id" 
-                :listing="listing" 
+                :listing="{
+                  ...listing,
+                  code: listing.code
+                }" 
               />
             </div>
             

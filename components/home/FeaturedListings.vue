@@ -61,6 +61,7 @@
             <ListingCard
               :listing="{
                 id: listing.id,
+                code: listing.code,
                 title: listing.title,
                 images: listing.images,
                 city_fa: listing.city_fa,

@@ -12,7 +12,7 @@
           class="listing-swiper"
         >
           <swiper-slide v-for="(image, index) in getAllImages" :key="index">
-            <NuxtLink :to="`/listings/${listing.id}`" class="block">
+            <NuxtLink :to="`/accommodation/${getRouteParam}`" class="block">
               <div class="relative overflow-hidden group">
                 <img
                   :src="image"
@@ -52,7 +52,7 @@
       <div class="absolute bottom-0 left-0 w-full h-4 bg-white z-10 rounded-t-[64px]"></div>
     </div>
     <div class="p-4">
-      <NuxtLink :to="`/listings/${listing.id}`" class="block">
+      <NuxtLink :to="`/accommodation/${getRouteParam}`" class="block">
         <h3 class="text-lg font-semibold mb-2 hover:text-blue-600 transition-colors text-left truncate">
           {{ getTypeName }} {{ listing.title }}
         </h3>
@@ -193,6 +193,11 @@ const getTypeName = computed(() => {
     props.listing.categories,
     props.listing.tags
   )
+})
+
+// Get route parameter with fallback
+const getRouteParam = computed(() => {
+  return props.listing.code || props.listing.id || ''
 })
 </script>
 
