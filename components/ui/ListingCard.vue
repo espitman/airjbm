@@ -53,7 +53,7 @@
     </div>
     <div class="p-4">
       <NuxtLink :to="`/listings/${listing.id}`" class="block">
-        <h3 class="text-lg font-semibold mb-2 hover:text-blue-600 transition-colors text-left">
+        <h3 class="text-lg font-semibold mb-2 hover:text-blue-600 transition-colors text-right truncate">
           {{ getTypeName }} {{ listing.title }}
         </h3>
       </NuxtLink>
