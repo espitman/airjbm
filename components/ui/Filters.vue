@@ -237,10 +237,11 @@
       <h3 class="text-lg font-semibold mb-4">محدوده قیمت</h3>
       <div class="px-4">
         <VueSlider
+          v-if="priceRangeConfig.min !== undefined && priceRangeConfig.max !== undefined"
           v-model="priceRange"
-          :min="props.userFiltersPrices.days_min_price || props.userFiltersPrices.total_min_price || 0"
-          :max="props.userFiltersPrices.days_max_price || props.userFiltersPrices.total_max_price || 1000000000"
-          :interval="10000"
+          :min="priceRangeConfig.min"
+          :max="priceRangeConfig.max"
+          :interval="priceRangeConfig.interval"
           :tooltip="'none'"
           :process="true"
           :dot-size="16"
@@ -443,6 +444,18 @@ const closeFilters = () => {
   emit('close')
 }
 
+// Add computed function for price range calculation
+const priceRangeConfig = computed(() => {
+  const minPrice = props.userFiltersPrices?.days_min_price || props.userFiltersPrices?.total_min_price || 0
+  const maxPrice = props.userFiltersPrices?.days_max_price || props.userFiltersPrices?.total_max_price || 1000000000
+
+  return {
+    min: minPrice,
+    max: Math.min(maxPrice, 200000000),
+    interval: Math.min(500000, minPrice)
+  }
+})
+
 // Watch for changes in userFilters.cities and update cities
 watch(() => props.userFilters.cities, (newCities) => {
   if (newCities && Array.isArray(newCities) && newCities.length > 0) {
@@ -469,13 +482,8 @@ watch(() => props.userFilters.regions, (newRegions) => {
 // Watch for changes in userFiltersPrices and update price range
 watch(() => props.userFiltersPrices, (newPrices) => {
   if (newPrices) {
-    console.log('newPrices', newPrices)
-    // Update price range with the new min and max prices
-    // Use days prices if available, otherwise use total prices
-    const minPrice = newPrices.days_min_price || newPrices.total_min_price || 0
-    const maxPrice = newPrices.days_max_price || newPrices.total_max_price || 1000000000
-    
-    priceRange.value = [minPrice, maxPrice]
+    // Update price range with the values from priceRangeConfig
+    priceRange.value = [priceRangeConfig.value.min, priceRangeConfig.value.max]
     
     // Update filters with the new price range
     filters.value.minPrice = priceRange.value[0].toString()
