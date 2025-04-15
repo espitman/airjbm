@@ -1,21 +1,28 @@
 <template>
   <div>
     <!-- Mobile Carousel -->
-    <div class="md:hidden relative w-full h-64">
+    <div class="md:hidden relative w-full h-64 rounded-2xl overflow-hidden">
       <Swiper
         :modules="[Pagination, Navigation]"
-        :pagination="{ clickable: true }"
-        :navigation="true"
+        :pagination="false"
+        :navigation="false"
         class="w-full h-full"
+        @swiper="onSwiper"
       >
         <SwiperSlide v-for="(image, idx) in images" :key="image.url">
-          <img
-            :src="image.url"
-            :alt="`${title} - تصویر ${idx + 1}`"
-            class="w-full h-full object-cover rounded-2xl"
-          />
+          <div class="w-full h-full">
+            <img
+              :src="image.url"
+              :alt="`${title} - تصویر ${idx + 1}`"
+              class="w-full h-full object-cover"
+            />
+          </div>
         </SwiperSlide>
       </Swiper>
+      <!-- Photo Counter (outside slides) -->
+      <div class="absolute bottom-3 right-3 bg-black/50 text-white px-2 py-1 rounded-lg text-sm z-10">
+        {{ currentSlide + 1 }}/{{ images.length }}
+      </div>
     </div>
 
     <!-- Desktop Grid (unchanged) -->
@@ -61,8 +68,7 @@
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination, Navigation } from 'swiper/modules'
 import 'swiper/css'
-import 'swiper/css/pagination'
-import 'swiper/css/navigation'
+import { ref } from 'vue'
 
 interface PlaceImage {
   caption: string
@@ -75,36 +81,28 @@ const props = defineProps<{
   images: PlaceImage[]
   title: string
 }>()
+
+const currentSlide = ref(0)
+
+const onSwiper = (swiper: any) => {
+  swiper.on('slideChange', () => {
+    currentSlide.value = swiper.activeIndex
+  })
+}
 </script>
 
 <style scoped>
-:deep(.swiper-pagination-bullet) {
-  background: white;
-  opacity: 0.5;
+:deep(.swiper) {
+  overflow: hidden;
+  border-radius: 1rem;
 }
 
-:deep(.swiper-pagination-bullet-active) {
-  opacity: 1;
-  transform: scale(1.25);
+:deep(.swiper-slide) {
+  overflow: hidden;
 }
 
-:deep(.swiper-button-next),
-:deep(.swiper-button-prev) {
-  color: white;
-  background: rgba(0, 0, 0, 0.3);
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-}
-
-:deep(.swiper-button-next:hover),
-:deep(.swiper-button-prev:hover) {
-  background: rgba(0, 0, 0, 0.5);
-}
-
-:deep(.swiper-button-next:after),
-:deep(.swiper-button-prev:after) {
-  font-size: 16px;
+:deep(.swiper-wrapper) {
+  z-index: 1;
 }
 
 @media (min-width: 768px) {
