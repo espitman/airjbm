@@ -539,11 +539,8 @@ const typeDropdownRef = ref(null)
 onMounted(() => {
   // Get price range from URL parameters
   const route = useRoute()
-  console.log('route',route.query)
   const minPrice = route.query.minPrice ? parseInt(route.query.minPrice) : priceRangeConfig.value.min
   const maxPrice = route.query.maxPrice ? parseInt(route.query.maxPrice) : priceRangeConfig.value.max
-  console.log('minPrice',minPrice)
-  console.log('maxPrice',maxPrice)
   
   // Set price range from URL parameters or use default values
   priceRange.value = [minPrice, maxPrice]
