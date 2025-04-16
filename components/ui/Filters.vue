@@ -376,9 +376,9 @@ const {
 } = useFilters()
 
 // Use cities from userFilters
-const cities = ref(null)
-const types = ref(['apartment', 'villa', 'carvansara', 'cottage', 'hostel'])
-const regions = ref(['coastal', 'rustic', 'urban', 'forest', 'mountainous', 'desert', 'jungle', 'city'])
+const cities = computed(() => props.userFilters?.cities || [])
+const types = computed(() => props.userFilters?.types || ['apartment', 'villa', 'carvansara', 'cottage', 'hostel'])
+const regions = computed(() => props.userFilters?.regions || ['coastal', 'rustic', 'urban', 'forest', 'mountainous', 'desert', 'jungle', 'city'])
 
 // Navigate dropdown with keyboard
 const navigateDropdown = (direction) => {

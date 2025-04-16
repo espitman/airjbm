@@ -3,6 +3,14 @@ import { useRoute, useRouter } from 'vue-router'
 import type { LocationQueryValue } from 'vue-router'
 import { useNuxtApp } from '#app'
 
+export interface City {
+  city_name_fa: string
+  city_name_en: string
+  province_name_fa: string
+  province_name_en: string
+  count: number
+}
+
 export interface Filters {
   cities: string[]
   types: string[]
@@ -27,21 +35,14 @@ export interface Filters {
 // Helper function to safely convert query values to string array
 function queryToArray(value: LocationQueryValue | LocationQueryValue[] | null | undefined): string[] {
   if (!value) return []
-  if (Array.isArray(value)) {
-    return value.filter((v): v is string => typeof v === 'string')
-  }
-  if (typeof value === 'string') {
-    return value.split(',').filter(Boolean)
-  }
-  return [value].filter(Boolean)
+  if (Array.isArray(value)) return value.filter(Boolean)
+  return value.split(',').filter(Boolean)
 }
 
 // Helper function to safely convert query value to string
 function queryToString(value: LocationQueryValue | LocationQueryValue[] | null | undefined): string {
   if (!value) return ''
-  if (Array.isArray(value)) {
-    return value[0] || ''
-  }
+  if (Array.isArray(value)) return value[0] || ''
   return value
 }
 
@@ -59,10 +60,10 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
   const currentPage = ref(parseInt(route.query.page) || 1)
 
   // Filter state
-  const selectedCities = ref([])
-  const selectedRegions = ref([])
-  const selectedTypes = ref([])
-  const priceRange = ref([0, 1000000000])
+  const selectedCities = ref<City[]>([])
+  const selectedRegions = ref<string[]>([])
+  const selectedTypes = ref<string[]>([])
+  const priceRange = ref<number[]>([0, 1000000000])
   const showCityDropdown = ref(false)
   const showRegionDropdown = ref(false)
   const showTypeDropdown = ref(false)
@@ -156,11 +157,11 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
     })
   })
 
-  const isCitySelected = (city) => {
+  const isCitySelected = (city: City) => {
     return selectedCities.value.some(c => c.city_name_en === city.city_name_en)
   }
 
-  const selectCity = (city) => {
+  const selectCity = (city: City) => {
     if (!isCitySelected(city)) {
       selectedCities.value.push(city)
       filters.value.cities = selectedCities.value.map(c => c.city_name_en)
@@ -170,10 +171,20 @@ export function useFilters(onFiltersChanged?: (filters: any) => void) {
     highlightedIndex.value = -1
   }
 
-  const removeCity = (city) => {
+  const removeCity = (city: City) => {
     selectedCities.value = selectedCities.value.filter(c => c.city_name_en !== city.city_name_en)
     filters.value.cities = selectedCities.value.map(c => c.city_name_en)
   }
+
+  // Watch for changes in userFilters.cities and update selectedCities
+  watch(() => $listingsApi.userFilters?.value?.cities, (newCities: City[] | undefined) => {
+    if (newCities && Array.isArray(newCities) && newCities.length > 0) {
+      // Update selectedCities based on filters.value.cities
+      selectedCities.value = newCities.filter(city => 
+        filters.value.cities.includes(city.city_name_en)
+      )
+    }
+  }, { immediate: true })
 
   // Region selection
   const isRegionSelected = (region) => {
