@@ -4,10 +4,10 @@
       <div class="flex flex-col lg:flex-row gap-6">
         <!-- Left side: Title and description -->
         <div class="lg:w-80 pt-2 lg:pt-3 text-center lg:text-right">
-          <h1 class="text-2xl lg:text-4xl font-bold text-gray-900 mb-3 leading-tight">
-            اقامتگاه‌های خصوصی مناسب شما را پیدا کنید
+          <h1 class="text-2xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+            اقامتگاه‌های خصوصی مناسب خود را پیدا کنید
           </h1>
-          <p class="text-gray-700 leading-relaxed">
+          <p class="text-gray-700 leading-relaxed text-justify">
             با مادربزرگ و بچه‌ها یا حیوانات خانگی سفر می‌کنید؟ اقامتگاه‌های تعطیلاتی را که برای هر نیاز شما مناسب هستند، کشف کنید.
           </p>
         </div>
