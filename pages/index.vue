@@ -16,9 +16,7 @@
       title="ویلاهای لوکس" 
       description="مجموعه کامل ویلاهای لوکس در سراسر ایران" 
     />
-    <div class="container mx-auto px-4 my-16">
-      <Stays />
-    </div>
+    <Stays />
     <FeaturedListings 
       keyword="zone-south" 
       title="اقامتگاه‌های جنوب" 
