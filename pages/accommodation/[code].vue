@@ -30,7 +30,8 @@
           <PdpHeader 
             v-if="accommodation?.item"
             :title="accommodation.item.title"
-            :location="getLocationDisplay"
+            :city="accommodation.item.placeOfResidence?.area?.city?.name?.fa || ''"
+            :province="accommodation.item.placeOfResidence?.area?.city?.province?.name?.fa || ''"
             :rating="accommodation.item.rateAndReview?.score || 0"
             :reviews="accommodation.item.rateAndReview?.count || 0"
             :hostName="accommodation.item.ownerName || 'میزبان'"
