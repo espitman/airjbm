@@ -26,7 +26,7 @@
           @click="openModal"
           class="py-3 px-8 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition-colors"
         >
-          مشاهده {{ amenities.length - displayedCount }} امکانات دیگر
+          مشاهده {{ count }} امکانات دیگر
         </button>
       </div>
     </div>
@@ -59,6 +59,7 @@
 
   const props = defineProps<{
     amenities: Amenity[]
+    count: number
   }>()
 
   const nuxtApp = useNuxtApp()
