@@ -1,9 +1,6 @@
 <template>
   <div>
     <HeroSection />
-    <div class="container mx-auto px-4 my-16">
-      <Stays />
-    </div>
     <PopularCategories  />
     <ExploreCities />
     <FeaturedListings 
@@ -19,6 +16,9 @@
       title="ویلاهای لوکس" 
       description="مجموعه کامل ویلاهای لوکس در سراسر ایران" 
     />
+    <div class="container mx-auto px-4 my-16">
+      <Stays />
+    </div>
     <FeaturedListings 
       keyword="zone-south" 
       title="اقامتگاه‌های جنوب" 
