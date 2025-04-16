@@ -1,8 +1,8 @@
 <template>
     <div class="max-w-4xl mx-auto p-8 bg-white rounded-3xl border border-gray-200 shadow-sm">
       <!-- Heading and subheading -->
-      <h2 class="text-3xl font-bold text-gray-900">Amenities</h2>
-      <p class="text-xl text-gray-500 mt-2">About the property's amenities and services</p>
+      <h2 class="text-3xl font-bold text-gray-900">امکانات</h2>
+      <p class="text-xl text-gray-500 mt-2">درباره امکانات و خدمات اقامتگاه</p>
       
       <!-- First divider -->
       <div class="w-32 h-px bg-gray-200 my-8"></div>
@@ -26,7 +26,7 @@
           @click="openModal"
           class="py-3 px-8 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition-colors"
         >
-          View more {{ amenities.length - displayedCount }} amenities
+          مشاهده {{ amenities.length - displayedCount }} امکانات دیگر
         </button>
       </div>
     </div>
@@ -36,7 +36,7 @@
       <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex justify-between items-center mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">All Amenities</h3>
+            <h3 class="text-2xl font-bold text-gray-900">همه امکانات</h3>
             <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
