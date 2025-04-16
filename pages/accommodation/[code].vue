@@ -31,15 +31,23 @@
             v-if="accommodation?.item"
             :title="accommodation.item.title"
             :location="getLocationDisplay"
-            :rating="4.5"
-            :reviews="112"
-            :hostName="accommodation.item.owner?.name || 'میزبان'"
-            :hostImage="accommodation.item.owner?.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'"
-            :guests="accommodation.item.capacity?.base || 0"
-            :beds="6"
-            :baths="3"
-            :bedrooms="2"
-            :propertyType="accommodation.item.type?.title || 'اقامتگاه'"
+            :rating="accommodation.item.rateAndReview?.score || 0"
+            :reviews="accommodation.item.rateAndReview?.count || 0"
+            :hostName="accommodation.item.ownerName || 'میزبان'"
+            :hostImage="accommodation.item.meta?.hostInfo?.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'"
+            :capacity="{
+              base: accommodation.item.capacity?.guests?.base || 0,
+              extra: accommodation.item.capacity?.guests?.extra || 0
+            }"
+            :beds="{
+              double: accommodation.item.capacity?.beds?.double || 0,
+              mattress: accommodation.item.capacity?.beds?.mattress || 0,
+              single: accommodation.item.capacity?.beds?.single || 0,
+              twin: accommodation.item.capacity?.beds?.twin || 0
+            }"
+            :baths="accommodation.item.accommodationMetrics?.bathroomsCount || 0"
+            :bedrooms="accommodation.item.accommodationMetrics?.bedroomsCount || 0"
+            :propertyType="accommodation.item.typeDetails?.title_fa || 'اقامتگاه'"
           />
         </div>
 
