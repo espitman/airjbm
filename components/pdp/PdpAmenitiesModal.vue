@@ -29,16 +29,17 @@
         <div v-else>
           <div v-for="(category, categoryIndex) in amenities" :key="categoryIndex" class="mb-8">
             <h4 class="text-xl font-bold text-gray-900 mb-4">{{ category.title.fa }}</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div v-for="(item, itemIndex) in category.items" :key="itemIndex" class="flex items-start p-3 border border-gray-200 rounded-lg">
-                <div class="w-6 h-6 ml-3 mt-1 text-gray-600" :class="{ 'opacity-50': !item.state }">
+            <div class="space-y-3">
+              <div v-for="(item, itemIndex) in category.items" :key="itemIndex" 
+                class="flex items-center py-3 border-b border-gray-200 last:border-b-0">
+                <div class="w-6 h-6 ml-3 text-gray-600" :class="{ 'opacity-50': !item.state }">
                   <img :src="item.icon.url" :alt="item.title.fa" class="w-full h-full object-contain" />
                 </div>
-                <div>
+                <div class="flex-1">
                   <div class="text-base font-medium" :class="{ 'opacity-50 line-through': !item.state }">{{ item.title.fa }}</div>
-                  <ul v-if="item.items && item.items.length > 0" class="mt-1 text-sm text-gray-600">
+                  <ul v-if="item.items && item.items.length > 0" class="mt-1 text-sm text-gray-600 flex flex-wrap gap-2">
                     <li v-for="(subItem, subIndex) in item.items" :key="subIndex" class="flex items-center">
-                      <span class="w-1.5 h-1.5 bg-gray-400 rounded-full mr-2"></span>
+                      <span class="w-1.5 h-1.5 bg-gray-400 rounded-full ml-2"></span>
                       {{ subItem }}
                     </li>
                   </ul>
