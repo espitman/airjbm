@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-4xl mx-auto p-8 bg-white rounded-3xl border border-gray-200 shadow-sm">
+  <div class="max-w-7xl mx-auto p-4 md:p-6 bg-white rounded-3xl border border-gray-100 shadow-sm">
     <h2 class="text-3xl font-bold text-gray-900 mb-8">درباره اقامتگاه</h2>
     
     <div class="w-32 h-px bg-gray-200 mb-8"></div>
