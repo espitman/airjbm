@@ -16,14 +16,39 @@
     </div>
 
     <div v-else>
-      <h1 class="text-3xl font-bold text-gray-900 mb-6 hidden md:block">{{ accommodation?.item?.title }}</h1>
+      <!-- Full width image gallery -->
       <ImageGallery 
         v-if="accommodation?.item?.placeImages?.length"
         :images="accommodation.item.placeImages"
         :title="accommodation.item.title"
       />
-    <!-- Mobile Title -->
-    <h1 class="mt-4 text-xl font-semibold md:hidden">{{ accommodation?.item?.title }}</h1>
+      
+      <!-- Two column layout for content below gallery -->
+      <div class="flex flex-col lg:flex-row gap-8 mt-8">
+        <!-- Right Column (75%) - Now on the right in RTL -->
+        <div class="lg:w-3/4">
+          <PdpHeader 
+            v-if="accommodation?.item"
+            :title="accommodation.item.title"
+            :location="getLocationDisplay"
+            :rating="4.5"
+            :reviews="112"
+            :hostName="accommodation.item.owner?.name || 'میزبان'"
+            :hostImage="accommodation.item.owner?.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'"
+            :guests="accommodation.item.capacity?.base || 0"
+            :beds="6"
+            :baths="3"
+            :bedrooms="2"
+            :propertyType="accommodation.item.type?.title || 'اقامتگاه'"
+          />
+        </div>
+
+        <!-- Left Column (25%) - Now on the left in RTL -->
+        <div class="lg:w-1/4">
+          <!-- Content for left column will go here -->
+        </div>
+      </div>
+      
     </div>
   </div>
 </template>
@@ -34,6 +59,7 @@ import { useRoute } from 'vue-router'
 import { useNuxtApp } from 'nuxt/app'
 import type { AccommodationData } from '~/plugins/pdpApi'
 import ImageGallery from '~/components/pdp/ImageGallery.vue'
+import PdpHeader from '~/components/pdp/PdpHeader.vue'
 
 const route = useRoute()
 const nuxtApp = useNuxtApp()
