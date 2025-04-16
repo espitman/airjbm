@@ -60,7 +60,7 @@
           
           <!-- Amenities component -->
           <div class="mt-8">
-            <PdpAmenities />
+            <PdpAmenities :amenities="accommodation.item.amenitiesV2 || []" />
           </div>
         </div>
 
