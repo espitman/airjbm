@@ -1,6 +1,6 @@
 <template>
-  <div v-if="modelValue" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+  <div v-if="modelValue" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" @click="$emit('update:modelValue', false)">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" @click.stop>
       <div class="sticky top-0 bg-white border-b border-gray-200 p-4">
         <div class="flex justify-between items-center">
           <h3 class="text-2xl font-bold text-gray-900">همه امکانات</h3>
@@ -34,11 +34,11 @@
             <div class="space-y-3">
               <div v-for="(item, itemIndex) in category.items" :key="itemIndex" 
                 class="flex items-center py-3 border-b border-gray-200 last:border-b-0">
-                <div class="w-6 h-6 ml-3 text-gray-600" :class="{ 'opacity-50': !item.state }">
+                <div class="w-8 h-8 ml-4 text-gray-600" :class="{ 'opacity-50': !item.state }">
                   <img :src="item.icon.url" :alt="item.title.fa" class="w-full h-full object-contain" />
                 </div>
                 <div class="flex-1">
-                  <div class="text-base font-medium" :class="{ 'opacity-50 line-through': !item.state }">{{ item.title.fa }}</div>
+                  <div class="text-base text-gray-700" :class="{ 'opacity-50 line-through': !item.state }">{{ item.title.fa }}</div>
                   <ul v-if="item.items && item.items.length > 0" class="mt-1 text-sm text-gray-600 flex flex-wrap gap-2">
                     <li v-for="(subItem, subIndex) in item.items" :key="subIndex" class="flex items-center">
                       <span class="w-1.5 h-1.5 bg-gray-400 rounded-full ml-2"></span>
