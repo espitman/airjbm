@@ -82,7 +82,7 @@ import type { AccommodationData } from '~/plugins/pdpApi'
 import ImageGallery from '~/components/pdp/ImageGallery.vue'
 import PdpHeader from '~/components/pdp/PdpHeader.vue'
 import PdpDescription from '~/components/pdp/PdpDescription.vue'
-import PdpAmenities from '~/components/ui/PdpAmenities.vue'
+import PdpAmenities from '~/components/pdp/PdpAmenities.vue'
 
 const route = useRoute()
 const nuxtApp = useNuxtApp()

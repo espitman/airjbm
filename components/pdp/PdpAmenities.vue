@@ -166,4 +166,4 @@
   
   <script setup>
   // Component can be extended with props and reactivity if needed
-  </script>
+  </script> 
