@@ -1,6 +1,9 @@
 <template>
   <div>
     <HeroSection />
+    <div class="container mx-auto px-4 my-16">
+      <Stays />
+    </div>
     <PopularCategories  />
     <ExploreCities />
     <FeaturedListings 
@@ -30,5 +33,6 @@ import PopularCategories from '~/components/home/PopularCategories.vue'
 import FeaturedListings from '~/components/home/FeaturedListings.vue'
 import ExploreCities from '~/components/home/ExploreCities.vue'
 import VrboBanner from '~/components/home/VrboBanner.vue'
+import Stays from '~/components/home/Stays.vue'
 </script>
 
