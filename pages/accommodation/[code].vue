@@ -50,6 +50,13 @@
             :bedrooms="accommodation.item.accommodationMetrics?.bedroomsCount || 0"
             :propertyType="accommodation.item.typeDetails?.title_fa || 'اقامتگاه'"
           />
+          
+          <!-- Description component -->
+          <div class="mt-8" v-if="accommodation?.item?.description">
+            <PdpDescription 
+              :description="accommodation.item.description"
+            />
+          </div>
         </div>
 
         <!-- Left Column (25%) - Now on the left in RTL -->
@@ -69,6 +76,7 @@ import { useNuxtApp } from 'nuxt/app'
 import type { AccommodationData } from '~/plugins/pdpApi'
 import ImageGallery from '~/components/pdp/ImageGallery.vue'
 import PdpHeader from '~/components/pdp/PdpHeader.vue'
+import PdpDescription from '~/components/pdp/PdpDescription.vue'
 
 const route = useRoute()
 const nuxtApp = useNuxtApp()
