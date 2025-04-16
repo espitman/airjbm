@@ -71,16 +71,17 @@
           :modules="[Pagination, Navigation]"
           :pagination="false"
           :navigation="false"
-          class="w-full h-full"
+          class="w-full h-full overflow-hidden"
           @swiper="onSwiper"
         >
-          <SwiperSlide v-for="(image, idx) in images" :key="image.url">
-            <div class="w-full h-full cursor-pointer" @click="openLightbox(idx)">
+          <SwiperSlide v-for="(image, idx) in images" :key="image.url" class="overflow-hidden">
+            <div class="w-full h-full cursor-pointer relative overflow-hidden group" @click="openLightbox(idx)">
               <img
                 :src="image.url"
                 :alt="`${title} - تصویر ${idx + 1}`"
                 class="w-full h-full object-cover"
               />
+              <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
             </div>
           </SwiperSlide>
         </Swiper>
@@ -97,7 +98,7 @@
     >
       <!-- Main Image -->
       <div
-        class="relative col-span-2 row-span-2 w-full h-full cursor-pointer"
+        class="relative col-span-2 row-span-2 w-full h-full cursor-pointer overflow-hidden group"
         @click="openLightbox(0)"
       >
         <img
@@ -105,26 +106,29 @@
           :alt="title"
           class="w-full h-full object-cover"
         />
+        <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
       </div>
       <!-- 2x2 grid for next 4 images -->
       <template v-for="(image, idx) in images.slice(1, 5)" :key="idx">
-        <div class="relative w-full h-full cursor-pointer" @click="openLightbox(idx + 1)">
+        <div class="relative w-full h-full cursor-pointer overflow-hidden group" @click="openLightbox(idx + 1)">
           <img
             :src="image.url"
             :alt="`${title} - تصویر ${idx + 2}`"
             class="w-full h-full object-cover"
           />
-          <!-- Overlay on the last image -->
-          <button
-            v-if="idx === 3 && images.length > 5"
-            class="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-lg font-semibold"
-            @click.stop="$emit('show-all')"
-          >
-            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553 2.276A2 2 0 0121 14.118V17a2 2 0 01-2 2H5a2 2 0 01-2-2v-2.882a2 2 0 01.447-1.842L8 10m7-5a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            Show all photos
-          </button>
+          <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
+          <!-- Show All Images button on the last image -->
+          <div v-if="idx === 3 && images.length > 5" class="absolute bottom-3 left-3 z-20">
+            <button 
+              class="bg-white text-gray-900 px-3 py-1 rounded-lg text-sm font-medium shadow-md hover:bg-gray-100 transition-colors duration-200 flex items-center gap-2"
+              @click.stop="openLightbox(0)"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              نمایش همه تصاویر
+            </button>
+          </div>
         </div>
       </template>
     </div>
@@ -192,26 +196,5 @@ const goToImage = (index: number) => {
 </script>
 
 <style scoped>
-:deep(.swiper) {
-  overflow: hidden;
-}
-
-:deep(.swiper-slide) {
-  overflow: hidden;
-}
-
-:deep(.swiper-wrapper) {
-  z-index: 1;
-}
-
-@media (min-width: 768px) {
-  .grid-cols-4 > div:first-child {
-    grid-row: span 2 / span 2;
-    grid-column: span 2 / span 2;
-    height: 100%;
-  }
-  .grid-cols-4 > div {
-    min-height: 0;
-  }
-}
+/* Removed all custom CSS in favor of Tailwind classes */
 </style> 
