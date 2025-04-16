@@ -1,8 +1,10 @@
 import { defineNuxtPlugin, useRuntimeConfig } from 'nuxt/app'
 import { AccommodationData } from '../types/accommodation'
+import { AmenitiesResponse } from '../types/amenities'
 
 export interface PdpApi {
   fetchAccommodationByCode: (code: string) => Promise<AccommodationData>
+  getAllAmenities: (accommodationId: string) => Promise<AmenitiesResponse>
 }
 
 export default defineNuxtPlugin(() => {
@@ -33,10 +35,34 @@ export default defineNuxtPlugin(() => {
     }
   }
   
+  const getAllAmenities = async (accommodationId: string): Promise<AmenitiesResponse> => {
+    try {
+      const response = await fetch(
+        `${baseURL}/accommodation/public/guest/accommodations/amenities/${accommodationId}`,
+        {
+          headers: {
+            'Accept': 'application/json, text/plain, */*'
+          }
+        }
+      )
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      return data
+    } catch (error) {
+      console.error('Error fetching amenities data:', error)
+      throw error
+    }
+  }
+  
   return {
     provide: {
       pdpApi: {
-        fetchAccommodationByCode
+        fetchAccommodationByCode,
+        getAllAmenities
       } as PdpApi
     }
   }
