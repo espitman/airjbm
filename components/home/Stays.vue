@@ -15,7 +15,7 @@
       <div class="relative flex-1 overflow-hidden">
         <div 
           ref="categoriesRef" 
-          class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide scroll-smooth snap-x snap-mandatory"
+          class="flex gap-4 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] scroll-smooth snap-x snap-mandatory"
         >
           <div 
             v-for="(category, index) in categories" 
@@ -68,27 +68,27 @@ const categoriesRef = ref(null);
 const categories = ref([
   {
     title: 'کنار ساحل',
-    image: 'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80'
+    image: '/images/stays/beach.jpg'
   },
   {
     title: 'میزبان حیوانات خانگی',
-    image: 'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80'
+    image: '/images/stays/pets.jpg'
   },
   {
     title: 'استخر شنا',
-    image: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80'
+    image: '/images/stays/pool.jpg'
   },
   {
     title: 'بیش از سه خوابگاه',
-    image: 'https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=89719a0d55dd05e2deae4120227e6efc&auto=format&fit=crop&w=1953&q=80'
+    image: '/images/stays/bedrooms.jpg'
   },
   {
     title: 'جکوزی',
-    image: 'https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8c6e5e3aba713b17aa1fe71ab4f0ae5b&auto=format&fit=crop&w=1352&q=80'
+    image: '/images/stays/hot-tub.jpg'
   },
   {
     title: 'چشم‌انداز کوه',
-    image: 'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
+    image: '/images/stays/mountain.jpg'
   }
 ]);
 
@@ -135,17 +135,4 @@ onMounted(() => {
     });
   }
 });
-</script>
-
-<style scoped>
-/* Hide scrollbar for Chrome, Safari and Opera */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-/* Hide scrollbar for IE, Edge and Firefox */
-.scrollbar-hide {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-}
-</style> 
+</script> 
