@@ -9,7 +9,12 @@ export default defineNuxtConfig({
     '@/assets/css/fonts.css',
     'swiper/css',
     'swiper/css/navigation',
-    'swiper/css/pagination'
+    'swiper/css/pagination',
+    'vue-image-lightbox/dist/vue-image-lightbox.min.css'
+  ],
+
+  plugins: [
+    '~/plugins/vue-lazyload'
   ],
 
   modules: [
