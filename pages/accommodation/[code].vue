@@ -34,8 +34,8 @@
             :province="accommodation.item.placeOfResidence?.area?.city?.province?.name?.fa || ''"
             :rating="accommodation.item.rateAndReview?.score || 0"
             :reviews="accommodation.item.rateAndReview?.count || 0"
-            :hostName="accommodation.item.ownerName || 'میزبان'"
-            :hostImage="accommodation.item.meta?.hostInfo?.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'"
+            :hostName="(accommodation.meta?.hostInfo?.fistName || '') + ' ' + (accommodation.meta?.hostInfo?.lastName || '') || 'میزبان'"
+            :hostImage="accommodation.meta?.hostInfo?.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'"
             :capacity="{
               base: accommodation.item.capacity?.guests?.base || 0,
               extra: accommodation.item.capacity?.guests?.extra || 0
