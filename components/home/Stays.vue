@@ -61,7 +61,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 
 // Reference to the scrollable container
 const categoriesRef = ref(null);
@@ -114,27 +114,72 @@ const scrollLeft = () => {
   }
 };
 
-// Add touch swipe functionality
+// Touch event variables
+let touchStartX = 0;
+let initialScrollLeft = 0;
+let isScrolling = false;
+let scrollTimeout = null;
+
+// Add touch swipe functionality with improved performance
 onMounted(() => {
   if (categoriesRef.value) {
-    let startX = 0;
-    let scrollLeft = 0;
-    
+    // Touch start event
     categoriesRef.value.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].pageX;
-      scrollLeft = categoriesRef.value.scrollLeft;
-    });
+      touchStartX = e.touches[0].pageX;
+      initialScrollLeft = categoriesRef.value.scrollLeft;
+      isScrolling = true;
+      
+      // Clear any existing timeout
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
+    }, { passive: true });
     
+    // Touch move event with throttling
     categoriesRef.value.addEventListener('touchmove', (e) => {
-      if (!startX) return;
+      if (!touchStartX || !isScrolling) return;
+      
+      e.preventDefault(); // Prevent default scrolling behavior
+      
       const x = e.touches[0].pageX;
-      const walk = (x - startX) * 2;
-      categoriesRef.value.scrollLeft = scrollLeft - walk;
-    });
+      const walk = (x - touchStartX) * 1.5; // Reduced multiplier for smoother scrolling
+      
+      // Use requestAnimationFrame for smoother scrolling
+      requestAnimationFrame(() => {
+        categoriesRef.value.scrollLeft = initialScrollLeft - walk;
+      });
+    }, { passive: false });
     
+    // Touch end event
     categoriesRef.value.addEventListener('touchend', () => {
-      startX = 0;
-    });
+      isScrolling = false;
+      touchStartX = 0;
+      
+      // Add a small delay before allowing new scroll events
+      scrollTimeout = setTimeout(() => {
+        isScrolling = false;
+      }, 100);
+    }, { passive: true });
+    
+    // Touch cancel event
+    categoriesRef.value.addEventListener('touchcancel', () => {
+      isScrolling = false;
+      touchStartX = 0;
+    }, { passive: true });
+  }
+});
+
+// Clean up event listeners
+onUnmounted(() => {
+  if (categoriesRef.value) {
+    categoriesRef.value.removeEventListener('touchstart', () => {});
+    categoriesRef.value.removeEventListener('touchmove', () => {});
+    categoriesRef.value.removeEventListener('touchend', () => {});
+    categoriesRef.value.removeEventListener('touchcancel', () => {});
+    
+    if (scrollTimeout) {
+      clearTimeout(scrollTimeout);
+    }
   }
 });
 </script> 
