@@ -82,16 +82,33 @@
 
     <!-- Action buttons -->
     <div class="space-y-4">
-      <button class="w-full py-3 px-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors">
-        رزرو
+      <button 
+        class="w-full py-3 px-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        :disabled="isLoading"
+        @click="showPricePreview"
+      >
+        <span v-if="isLoading" class="flex items-center justify-center gap-2">
+          <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+          </svg>
+          در حال محاسبه
+        </span>
+        <span v-else>رزرو</span>
       </button>
       <p class="text-sm text-gray-500 text-center">ارسال درخواست رزرو برای شما هزینه‌ای ندارد!</p>
     </div>
 
     <!-- Payment Details -->
-    <div v-if="receiptData" class="mt-6 pt-6 border-t border-gray-200">
+    <div v-if="isLoading || receiptData" class="mt-6 pt-6 border-t border-gray-200">
       <h3 class="text-lg font-medium text-gray-900 mb-4">جزئیات پرداخت</h3>
-      <div class="space-y-2">
+      <div v-if="isLoading" class="flex justify-center py-4">
+        <svg class="animate-spin h-8 w-8 text-indigo-600" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+        </svg>
+      </div>
+      <div v-else class="space-y-2">
         <div v-for="(item, index) in receiptData.items" :key="index" class="flex justify-between items-center">
           <span class="text-gray-600">{{ item.title }}</span>
           <span :class="{'text-red-600': item.priceColor === '#FF0000'}">{{ item.price }}</span>
@@ -130,6 +147,7 @@ const adults = ref(1)
 const showCalendar = ref(false)
 const checkInDate = ref<Date | null>(null)
 const checkOutDate = ref<Date | null>(null)
+const isLoading = ref(false)
 const receiptData = ref<{
   price: {
     total: number
@@ -213,6 +231,7 @@ const showPricePreview = async () => {
   }
 
   try {
+    isLoading.value = true
     const nuxtApp = useNuxtApp()
     const reservationApi = nuxtApp.$reservationApi as {
       receipt: (data: ReceiptRequest) => Promise<ReceiptResponse>
@@ -246,6 +265,8 @@ const showPricePreview = async () => {
   } catch (error) {
     console.error('Error fetching receipt:', error)
     alert('خطا در دریافت اطلاعات قیمت')
+  } finally {
+    isLoading.value = false
   }
 }
 
