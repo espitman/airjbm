@@ -19,12 +19,27 @@
           type="text" 
           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           placeholder="تاریخ را انتخاب کنید"
+          @click="showCalendar = true"
+          :value="selectedDates"
+          readonly
         />
         <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         </div>
+      </div>
+    </div>
+
+    <!-- Calendar Modal -->
+    <div v-if="showCalendar" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="relative">
+        <PdpCalendar 
+          :initial-check-in="checkInDate"
+          :initial-check-out="checkOutDate"
+          @close="showCalendar = false" 
+          @dates-selected="handleDatesSelected" 
+        />
       </div>
     </div>
 
@@ -74,12 +89,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import PdpCalendar from './PdpCalendar.vue'
 
 const adults = ref(1)
+const showCalendar = ref(false)
+const checkInDate = ref<Date | null>(null)
+const checkOutDate = ref<Date | null>(null)
+
+const selectedDates = computed(() => {
+  if (!checkInDate.value || !checkOutDate.value) return ''
+  return `${formatDate(checkInDate.value)} - ${formatDate(checkOutDate.value)}`
+})
 
 const increaseAdults = () => adults.value++
 const decreaseAdults = () => {
   if (adults.value > 1) adults.value--
+}
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('fa-IR')
+}
+
+const handleDatesSelected = (dates: { checkIn: Date; checkOut: Date }) => {
+  checkInDate.value = dates.checkIn
+  checkOutDate.value = dates.checkOut
+  showCalendar.value = false
 }
 </script> 
