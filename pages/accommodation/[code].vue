@@ -18,9 +18,9 @@
     <div v-else>
       <!-- Full width image gallery -->
       <ImageGallery 
-        v-if="accommodation?.item?.placeImages?.length"
-        :images="accommodation.item.placeImages"
-        :title="accommodation.item.title"
+        v-if="accommodation?.result?.item?.placeImages?.length"
+        :images="accommodation.result.item.placeImages"
+        :title="accommodation.result.item.title"
       />
       
       <!-- Two column layout for content below gallery -->
@@ -28,67 +28,67 @@
         <!-- Right Column (8/12) - Now on the right in RTL -->
         <div class="lg:w-8/12">
           <PdpHeader 
-            v-if="accommodation?.item"
-            :title="accommodation.item.title"
-            :city="accommodation.item.placeOfResidence?.area?.city?.name?.fa || ''"
-            :province="accommodation.item.placeOfResidence?.area?.city?.province?.name?.fa || ''"
-            :rating="accommodation.item.rateAndReview?.score || 0"
-            :reviews="accommodation.item.rateAndReview?.count || 0"
-            :hostName="(accommodation.meta?.hostInfo?.fistName || '') + ' ' + (accommodation.meta?.hostInfo?.lastName || '') || 'میزبان'"
-            :hostImage="accommodation.meta?.hostInfo?.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'"
+            v-if="accommodation?.result?.item"
+            :title="accommodation.result.item.title"
+            :city="accommodation.result.item.placeOfResidence?.area?.city?.name?.fa || ''"
+            :province="accommodation.result.item.placeOfResidence?.area?.city?.province?.name?.fa || ''"
+            :rating="accommodation.result.item.rateAndReview?.score || 0"
+            :reviews="accommodation.result.item.rateAndReview?.count || 0"
+            :hostName="(accommodation.result.meta?.hostInfo?.fistName || '') + ' ' + (accommodation.result.meta?.hostInfo?.lastName || '') || 'میزبان'"
+            :hostImage="accommodation.result.meta?.hostInfo?.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'"
             :capacity="{
-              base: accommodation.item.capacity?.guests?.base || 0,
-              extra: accommodation.item.capacity?.guests?.extra || 0
+              base: accommodation.result.item.capacity?.guests?.base || 0,
+              extra: accommodation.result.item.capacity?.guests?.extra || 0
             }"
             :beds="{
-              double: accommodation.item.capacity?.beds?.double || 0,
-              mattress: accommodation.item.capacity?.beds?.mattress || 0,
-              single: accommodation.item.capacity?.beds?.single || 0,
-              twin: accommodation.item.capacity?.beds?.twin || 0
+              double: accommodation.result.item.capacity?.beds?.double || 0,
+              mattress: accommodation.result.item.capacity?.beds?.mattress || 0,
+              single: accommodation.result.item.capacity?.beds?.single || 0,
+              twin: accommodation.result.item.capacity?.beds?.twin || 0
             }"
-            :baths="accommodation.item.accommodationMetrics?.bathroomsCount || 0"
-            :bedrooms="accommodation.item.accommodationMetrics?.bedroomsCount || 0"
-            :propertyType="accommodation.item.typeDetails?.title_fa || 'اقامتگاه'"
+            :baths="accommodation.result.item.accommodationMetrics?.bathroomsCount || 0"
+            :bedrooms="accommodation.result.item.accommodationMetrics?.bedroomsCount || 0"
+            :propertyType="accommodation.result.item.typeDetails?.title_fa || 'اقامتگاه'"
           />
           
           <!-- Description component -->
-          <div class="mt-8" v-if="accommodation?.item?.description">
+          <div class="mt-8" v-if="accommodation?.result?.item?.description">
             <PdpDescription 
-              :description="accommodation.item.description"
+              :description="accommodation.result.item.description"
             />
           </div>
           
           <!-- Amenities component -->
           <div class="mt-8">
             <PdpAmenities 
-              :amenities="accommodation.item.amenitiesV2 || []" 
-              :count="accommodation.item.selectedAmenitiesCount || 0"
+              :amenities="accommodation?.result?.item?.amenitiesV2 || []" 
+              :count="accommodation?.result?.item?.selectedAmenitiesCount || 0"
             />
           </div>
 
           <!-- Badges component -->
           <div class="mt-8">
             <PdpBadges 
-              :badges="accommodation.item.badges || { main: [], secondary: [] }"
+              :badges="accommodation?.result?.item?.badges || { main: [], secondary: [] }"
             />
           </div>
 
           <!-- Distance component -->
           <div class="mt-8">
             <PdpDistance 
-              :nearbyCenters="accommodation.item.nearbyCentersV2 || []"
+              :nearbyCenters="accommodation?.result?.item?.nearbyCentersV2 || []"
             />
           </div>
 
           <!-- Rules component -->
           <div class="mt-8">
             <PdpRules 
-              :restrictedRules="accommodation.item.restrictedRules || []"
-              :negativeRestrictedRules="accommodation.item.negativeRestrictedRules || []"
-              :checkIn="accommodation.item.checkIn || '08:00'"
-              :checkOut="accommodation.item.checkOut || '14:00'"
-              :cancellationPolicyText="accommodation.item.cancellationPolicyText"
-              :accommodation-id="accommodation.item.id"
+              :restrictedRules="accommodation?.result?.item?.restrictedRules || []"
+              :negativeRestrictedRules="accommodation?.result?.item?.negativeRestrictedRules || []"
+              :checkIn="accommodation?.result?.item?.checkIn || '08:00'"
+              :checkOut="accommodation?.result?.item?.checkOut || '14:00'"
+              :cancellationPolicyText="accommodation?.result?.item?.cancellationPolicyText"
+              :accommodation-id="accommodation?.result?.item?.id"
             />
           </div>
         </div>
@@ -97,9 +97,9 @@
         <div class="lg:w-4/12">
           <div class="sticky top-24 z-[40]">
             <PdpBookingForm 
-              :calendar="accommodation?.item?.calendar"
-              :accommodation-id="accommodation?.item?.id || ''"
-              :max-capacity="(accommodation?.item?.capacity?.guests?.base || 0) + (accommodation?.item?.capacity?.guests?.extra || 0)"
+              :calendar="accommodation?.result?.item?.calendar"
+              :accommodation-id="accommodation?.result?.item?.id || ''"
+              :max-capacity="(accommodation?.result?.item?.capacity?.guests?.base || 0) + (accommodation?.result?.item?.capacity?.guests?.extra || 0)"
             />
           </div>
         </div>
@@ -139,7 +139,7 @@ const fetchAccommodationDetails = async () => {
     loading.value = true
     error.value = null
     const data = await pdpApi.fetchAccommodationByCode(code.value)
-    accommodation.value = data.result
+    accommodation.value = data
     console.log(accommodation.value)
   } catch (err) {
     error.value = 'متاسفانه در دریافت اطلاعات اقامتگاه مشکلی پیش آمده است.'
@@ -156,36 +156,35 @@ const formatPrice = (price: number) => {
 }
 
 const getCapacity = computed(() => {
-  if (!accommodation.value?.capacity) return 'ظرفیت نامشخص'
-  const base = accommodation.value.capacity.base || 0
-  const extra = accommodation.value.capacity.extra || 0
+  if (!accommodation.value?.result?.item?.capacity?.guests) return 'ظرفیت نامشخص'
+  const base = accommodation.value.result.item.capacity.guests.base || 0
+  const extra = accommodation.value.result.item.capacity.guests.extra || 0
   return `${base + extra} نفر`
 })
 
 const getLocationDisplay = computed(() => {
   if (!accommodation.value) return 'موقعیت نامشخص'
   
-  // If we have both province and city, show both
-  if (accommodation.value.province_fa && accommodation.value.city_fa) {
-    return `${accommodation.value.province_fa}، ${accommodation.value.city_fa}`
+  const province = accommodation.value.result.item.placeOfResidence?.area?.city?.province?.name?.fa
+  const city = accommodation.value.result.item.placeOfResidence?.area?.city?.name?.fa
+  
+  if (province && city) {
+    return `${province}، ${city}`
   }
   
-  // If we have just province
-  if (accommodation.value.province_fa) {
-    return accommodation.value.province_fa
+  if (province) {
+    return province
   }
   
-  // If we have just city
-  if (accommodation.value.city_fa) {
-    return accommodation.value.city_fa
+  if (city) {
+    return city
   }
   
-  // If we have location
-  if (accommodation.value.location) {
-    return accommodation.value.location
+  const location = accommodation.value.result.item.placeOfResidence?.location
+  if (location) {
+    return `${location.lat}, ${location.lng}`
   }
   
-  // Fallback
   return 'موقعیت نامشخص'
 })
 
