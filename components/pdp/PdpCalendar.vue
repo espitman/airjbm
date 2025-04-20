@@ -323,6 +323,7 @@ function selectDate(date: moment.Moment): void {
     } else {
       // If selected date is after check-in, set it as check-out
       checkOutDate.value = date;
+      
       // Only emit the dates, don't close the calendar
       emit('dates-selected', {
         checkIn: checkInDate.value.toDate(),
@@ -411,6 +412,42 @@ function close(): void {
 function isPastDate(date: moment.Moment): boolean {
   const dateStr = date.format('YYYY-MM-DD');
   const calendarDate = calendarDates.value.get(dateStr);
+  
+  // If we have a check-in date, handle the special rules
+  if (checkInDate.value) {
+    // If we have a check-out date, all days between them should be active
+    if (checkOutDate.value) {
+      if (date.isBetween(checkInDate.value, checkOutDate.value, 'day', '[]')) {
+        return false;
+      }
+    } else {
+      // If we only have check-in date, find the first inactive day
+      let firstInactiveDay = null;
+      let currentDate = checkInDate.value.clone();
+      
+      while (true) {
+        const currentDateStr = currentDate.format('YYYY-MM-DD');
+        const currentCalendarDate = calendarDates.value.get(currentDateStr);
+        
+        if (currentCalendarDate && !currentCalendarDate.isAvailable) {
+          firstInactiveDay = currentDate.clone();
+          break;
+        }
+        currentDate.add(1, 'day');
+      }
+      
+      // Make the first inactive day active
+      if (firstInactiveDay && date.isSame(firstInactiveDay, 'day')) {
+        return false;
+      }
+      
+      // Make all days after the first inactive day inactive
+      if (firstInactiveDay && date.isAfter(firstInactiveDay, 'day')) {
+        return true;
+      }
+    }
+  }
+  
   return date.isBefore(currentDate, 'day') || (calendarDate && !calendarDate.isAvailable);
 }
 
