@@ -20,7 +20,7 @@
           </thead>
           <!-- Data Rows -->
           <tbody>
-            <tr v-for="(item, index) in groupedItems" :key="index" class="border-t border-gray-100">
+            <tr v-for="(item, index) in groupedItems" :key="index" class="border-t border-gray-100 hover:bg-gray-50 transition-colors duration-200">
               <td class="py-4 text-left text-gray-700 font-medium">{{ item.key }}</td>
               <td class="py-4 text-left text-gray-500">
                 {{ $persianTranslations.convertToPersian(item.walk) }}
