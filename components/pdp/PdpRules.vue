@@ -44,13 +44,12 @@
           <div class="flex items-start">
             <div class="ml-4 text-gray-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
             </div>
             <div>
               <h4 class="text-lg font-medium text-gray-900 mb-1">{{ $persianTranslations.getPersianRuleName(rule) }}</h4>
-              <p class="text-gray-600">{{ rule.positive }}</p>
+              <p class="text-gray-600 text-sm">{{ rule.positive }}</p>
             </div>
           </div>
         </template>
@@ -65,7 +64,7 @@
             </div>
             <div>
               <h4 class="text-lg font-medium text-gray-900 mb-1">{{ $persianTranslations.getPersianRuleName(rule) }}</h4>
-              <p class="text-gray-600">{{ rule.negative }}</p>
+              <p class="text-gray-600 text-sm">{{ rule.negative }}</p>
             </div>
           </div>
         </template>
