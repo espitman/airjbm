@@ -71,6 +71,7 @@
           <button 
             @click="increaseAdults" 
             class="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-gray-50"
+            :class="{'opacity-50 cursor-not-allowed': adults >= props.maxCapacity}"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -78,6 +79,9 @@
           </button>
         </div>
       </div>
+      <p v-if="showCapacityError" class="mt-2 text-sm text-red-600">
+        حداکثر ظرفیت این اقامتگاه {{ props.maxCapacity }} نفر می‌باشد
+      </p>
     </div>
 
     <!-- Action buttons -->
@@ -92,7 +96,7 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
           </svg>
-          در حال محاسبه
+          در حال محاسبه...
         </span>
         <span v-else>رزرو</span>
       </button>
@@ -137,6 +141,7 @@ const props = defineProps<{
     jabamaDiscount?: number;
   }[];
   accommodationId: string;
+  maxCapacity: number;
 }>()
 
 onMounted(() => {
@@ -148,6 +153,7 @@ const showCalendar = ref(false)
 const checkInDate = ref<Date | null>(null)
 const checkOutDate = ref<Date | null>(null)
 const isLoading = ref(false)
+const showCapacityError = ref(false)
 const receiptData = ref<{
   price: {
     total: number
@@ -213,13 +219,19 @@ const selectedDates = computed(() => {
 })
 
 const increaseAdults = () => {
-  adults.value++
-  showPricePreview()
+  if (adults.value < props.maxCapacity) {
+    adults.value++
+    showCapacityError.value = false
+    showPricePreview()
+  } else {
+    showCapacityError.value = true
+  }
 }
 
 const decreaseAdults = () => {
   if (adults.value > 1) {
     adults.value--
+    showCapacityError.value = false
     showPricePreview()
   }
 }

@@ -73,6 +73,7 @@
             <PdpBookingForm 
               :calendar="accommodation?.item?.calendar"
               :accommodation-id="accommodation?.item?.id || ''"
+              :max-capacity="(accommodation?.item?.capacity?.guests?.base || 0) + (accommodation?.item?.capacity?.guests?.extra || 0)"
             />
           </div>
         </div>
