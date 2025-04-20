@@ -65,6 +65,13 @@
               :count="accommodation.item.selectedAmenitiesCount || 0"
             />
           </div>
+
+          <!-- Badges component -->
+          <div class="mt-8">
+            <PdpBadges 
+              :badges="accommodation.item.badges || { main: [], secondary: [] }"
+            />
+          </div>
         </div>
 
         <!-- Left Column (4/12) - Now on the left in RTL -->
@@ -93,6 +100,7 @@ import PdpHeader from '~/components/pdp/PdpHeader.vue'
 import PdpDescription from '~/components/pdp/PdpDescription.vue'
 import PdpAmenities from '~/components/pdp/PdpAmenities.vue'
 import PdpBookingForm from '~/components/pdp/PdpBookingForm.vue'
+import PdpBadges from '~/components/pdp/PdpBadges.vue'
 
 const route = useRoute()
 const nuxtApp = useNuxtApp()
