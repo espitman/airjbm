@@ -8,12 +8,7 @@
       <h3 class="text-xl font-bold text-gray-900 mb-4">سیاست لغو رزرو</h3>
       <div class="text-gray-600 space-y-4">
         <p>
-          بازگشت ۵۰٪ از مبلغ رزرو در صورت لغو اقامتگاه توسط مسافر در مدت ۴۸ ساعت پس از
-          رزرو موفق و ۱۴ روز قبل از زمان ورود.
-        </p>
-        <p>
-          سپس، لغو اقامتگاه ۱۴ روز قبل از زمان ورود، بازگشت ۵۰٪ از کل
-          مبلغ پرداختی (منهای هزینه خدمات).
+          {{ cancellationPolicyText }}
         </p>
       </div>
     </div>
@@ -99,6 +94,10 @@ const props = defineProps({
   checkOut: {
     type: String,
     default: '14:00'
+  },
+  cancellationPolicyText: {
+    type: String,
+    default: ''
   }
 });
 
