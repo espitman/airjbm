@@ -119,6 +119,7 @@ const props = defineProps<{
     discount?: number;
     jabamaDiscount?: number;
   }[];
+  accommodationId: string;
 }>()
 
 onMounted(() => {
@@ -218,7 +219,7 @@ const showPricePreview = async () => {
     }
 
     const response = await reservationApi.receipt({
-      accommodationId: "65a257e310c5e1001b0c4b5f",
+      accommodationId: props.accommodationId,
       checkIn: checkInDate.value.toISOString().split('T')[0],
       checkOut: checkOutDate.value.toISOString().split('T')[0],
       passengers: {

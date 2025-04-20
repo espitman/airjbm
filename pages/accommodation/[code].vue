@@ -72,6 +72,7 @@
           <div class="sticky top-8">
             <PdpBookingForm 
               :calendar="accommodation?.item?.calendar"
+              :accommodation-id="accommodation?.item?.id || ''"
             />
           </div>
         </div>
