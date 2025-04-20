@@ -70,7 +70,10 @@
         <!-- Left Column (4/12) - Now on the left in RTL -->
         <div class="lg:w-4/12">
           <div class="sticky top-8">
-            <PdpBookingForm />
+            <PdpBookingForm 
+              :price-data="{ minPrice: 2500000, currency: 'IRR' }"
+              :calendar="accommodation?.item?.calendar"
+            />
           </div>
         </div>
       </div>

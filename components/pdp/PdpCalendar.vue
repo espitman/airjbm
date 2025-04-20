@@ -104,7 +104,10 @@
             >
               <div class="h-10 w-full bg-gray-100"></div>
             </div>
-            <span class="relative z-10">{{ date.jDate() }}</span>
+            <div class="relative z-10 flex flex-col items-center">
+              <span>{{ date.jDate() }}</span>
+              <span v-if="getDatePrice(date)" class="text-xs text-gray-500">{{ formatPrice(getDatePrice(date)) }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -142,7 +145,10 @@
             >
               <div class="h-10 w-full bg-gray-100"></div>
             </div>
-            <span class="relative z-10">{{ date.jDate() }}</span>
+            <div class="relative z-10 flex flex-col items-center">
+              <span>{{ date.jDate() }}</span>
+              <span v-if="getDatePrice(date)" class="text-xs text-gray-500">{{ formatPrice(getDatePrice(date)) }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -165,6 +171,13 @@ import moment from 'moment-jalaali';
 const props = defineProps<{
   initialCheckIn?: Date;
   initialCheckOut?: Date;
+  calendar?: {
+    dates: {
+      date: string;
+      price: number;
+      isAvailable: boolean;
+    }[];
+  };
 }>();
 
 const emit = defineEmits<{
@@ -182,6 +195,7 @@ const checkOutDate = ref<moment.Moment | null>(null);
 
 // Initialize dates from props
 onMounted(() => {
+    console.log(props)
   // Initialize selected dates if provided
   if (props.initialCheckIn) {
     checkInDate.value = moment(props.initialCheckIn);
@@ -397,11 +411,35 @@ function close(): void {
 }
 
 function isPastDate(date: moment.Moment): boolean {
-  return date.isBefore(moment().startOf('day'));
+  const dateStr = date.format('YYYY-MM-DD');
+  const calendarDate = calendarDates.value.get(dateStr);
+  return date.isBefore(currentDate, 'day') || (calendarDate && !calendarDate.isAvailable);
 }
 
 function isInRange(date: moment.Moment): boolean {
   if (!checkInDate.value || !checkOutDate.value) return false;
   return date.isBetween(checkInDate.value, checkOutDate.value, 'day', '[]');
+}
+
+// Add new computed properties for calendar data
+const calendarDates = computed(() => {
+  if (!props.calendar?.dates) return new Map();
+  return new Map(
+    props.calendar.dates.map(date => [
+      moment(date.date).format('YYYY-MM-DD'),
+      { price: date.price, isAvailable: date.isAvailable }
+    ])
+  );
+});
+
+// Add function to get price for a date
+function getDatePrice(date: moment.Moment) {
+  const dateStr = date.format('YYYY-MM-DD');
+  return calendarDates.value.get(dateStr)?.price;
+}
+
+// Add price formatting function
+function formatPrice(price: number) {
+  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 </script> 

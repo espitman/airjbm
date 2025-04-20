@@ -3,10 +3,10 @@
     <!-- Popular tag -->
     <div class="flex items-center justify-between mb-8">
       <div class="flex items-center">
-        <span class="text-sm font-medium text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">محبوب</span>
+        <span class="text-sm font-medium text-gray-600">شروع قیمت از</span>
       </div>
       <div class="flex items-center">
-        <span class="text-2xl font-bold text-gray-900">۲,۵۰۰,۰۰۰</span>
+        <span class="text-2xl font-bold text-gray-900">{{ formatPrice(minPrice) }}</span>
         <span class="text-base text-gray-500 mr-2">تومان</span>
       </div>
     </div>
@@ -35,8 +35,9 @@
     <div v-if="showCalendar" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="relative">
         <PdpCalendar 
-          :initial-check-in="checkInDate"
-          :initial-check-out="checkOutDate"
+          :initial-check-in="checkInDate || undefined"
+          :initial-check-out="checkOutDate || undefined"
+          :calendar="calendar"
           @close="showCalendar = false" 
           @dates-selected="handleDatesSelected" 
         />
@@ -89,13 +90,61 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import PdpCalendar from './PdpCalendar.vue'
+
+
+const props = defineProps<{
+  priceData?: {
+    minPrice: number;
+    currency: string;
+  };
+  calendar?: {
+    date: string;
+    price: number;
+    status: string;
+  }[];
+}>()
+
+onMounted(() => {
+    console.log(props)
+})
 
 const adults = ref(1)
 const showCalendar = ref(false)
 const checkInDate = ref<Date | null>(null)
 const checkOutDate = ref<Date | null>(null)
+
+// Calculate minimum price for first 14 available days
+const minPrice = computed(() => {
+  console.log('Calendar data:', props.calendar);
+  if (!props.calendar?.length) {
+    console.log('No calendar data, using default price');
+    return props.priceData?.minPrice || 2500000;
+  }
+  
+  // Filter available days and take first 14
+  const first14Days = props.calendar
+    .filter(date => date.status === 'available')
+    .slice(0, 14);
+  console.log('First 14 available days:', first14Days);
+  
+  // If we don't have 14 days, return default price
+  if (first14Days.length < 14) {
+    console.log('Less than 14 days available, using default price');
+    return props.priceData?.minPrice || 2500000;
+  }
+  
+  // Find minimum price among first 14 days and convert from Rial to Toman
+  const minPrice = Math.min(...first14Days.map(date => date.price)) / 10;
+  console.log('Calculated min price (Toman):', minPrice);
+  return minPrice;
+});
+
+// Format price with thousands separator
+const formatPrice = (price: number) => {
+  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+}
 
 const selectedDates = computed(() => {
   if (!checkInDate.value || !checkOutDate.value) return ''
