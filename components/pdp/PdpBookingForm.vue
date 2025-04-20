@@ -218,10 +218,18 @@ const showPricePreview = async () => {
       receipt: (data: ReceiptRequest) => Promise<ReceiptResponse>
     }
 
+    // Format dates in YYYY-MM-DD format while preserving the local date
+    const formatDateForApi = (date: Date) => {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    }
+
     const response = await reservationApi.receipt({
       accommodationId: props.accommodationId,
-      checkIn: checkInDate.value.toISOString().split('T')[0],
-      checkOut: checkOutDate.value.toISOString().split('T')[0],
+      checkIn: formatDateForApi(checkInDate.value),
+      checkOut: formatDateForApi(checkOutDate.value),
       passengers: {
         adults: adults.value,
         children: 0
