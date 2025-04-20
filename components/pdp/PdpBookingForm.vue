@@ -1,13 +1,19 @@
 <template>
   <div class="max-w-7xl mx-auto p-4 md:p-6 bg-white rounded-3xl border border-gray-100 shadow-sm">
-    <!-- Popular tag -->
-    <div class="flex items-center justify-between mb-8">
+    <!-- Price box -->
+    <div class="flex items-end justify-between mb-8">
       <div class="flex items-center">
         <span class="text-sm font-medium text-gray-600">شروع قیمت از</span>
       </div>
-      <div class="flex items-center">
-        <span class="text-2xl font-bold text-gray-900">{{ formatPrice(minPrice) }}</span>
-        <span class="text-base text-gray-500 mr-2">تومان</span>
+      <div class="flex items-end flex-col">
+        <div class="flex items-center gap-2 mb-1">
+          <span v-if="minPrice.originalPrice" class="text-base text-gray-400 line-through">{{ formatPrice(minPrice.originalPrice) }}</span>
+          <span v-if="minPrice.discountPercent > 0" class="text-sm font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full">%{{ minPrice.discountPercent }}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-2xl font-bold text-gray-900">{{ formatPrice(minPrice.price) }}</span>
+          <span class="text-sm text-gray-500">تومان / شب</span>
+        </div>
       </div>
     </div>
 
@@ -103,6 +109,8 @@ const props = defineProps<{
     date: string;
     price: number;
     status: string;
+    discount?: number;
+    jabamaDiscount?: number;
   }[];
 }>()
 
@@ -120,7 +128,11 @@ const minPrice = computed(() => {
   console.log('Calendar data:', props.calendar);
   if (!props.calendar?.length) {
     console.log('No calendar data, using default price');
-    return props.priceData?.minPrice || 2500000;
+    return {
+      price: props.priceData?.minPrice || 2500000,
+      originalPrice: null,
+      discountPercent: 0
+    };
   }
   
   // Filter available days and take first 14
@@ -132,13 +144,25 @@ const minPrice = computed(() => {
   // If we don't have 14 days, return default price
   if (first14Days.length < 14) {
     console.log('Less than 14 days available, using default price');
-    return props.priceData?.minPrice || 2500000;
+    return {
+      price: props.priceData?.minPrice || 2500000,
+      originalPrice: null,
+      discountPercent: 0
+    };
   }
   
-  // Find minimum price among first 14 days and convert from Rial to Toman
-  const minPrice = Math.min(...first14Days.map(date => date.price)) / 10;
-  console.log('Calculated min price (Toman):', minPrice);
-  return minPrice;
+  // Find day with minimum price
+  const minPriceDay = first14Days.reduce((min, day) => day.price < min.price ? day : min);
+  
+  // Calculate total discount percentage
+  const totalDiscountPercent = (minPriceDay.discount || 0) + (minPriceDay.jabamaDiscount || 0);
+  
+  // Convert from Rial to Toman
+  const price = minPriceDay.price / 10;
+  const originalPrice = totalDiscountPercent > 0 ? (minPriceDay.price / (1 - totalDiscountPercent / 100)) / 10 : null;
+  
+  console.log('Calculated min price (Toman):', price, 'Original:', originalPrice);
+  return { price, originalPrice, discountPercent: totalDiscountPercent };
 });
 
 // Format price with thousands separator
