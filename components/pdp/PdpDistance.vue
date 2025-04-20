@@ -8,16 +8,29 @@
       <div class="w-32 h-px bg-gray-200 mb-8"></div>
 
       <!-- Content -->
-      <div v-if="nearbyCenters.length > 0" class="flex flex-col space-y-6">
-        <div v-for="(center, index) in nearbyCenters" :key="index" class="flex flex-col">
-          <span class="text-base font-medium text-gray-700">{{ center.title }}</span>
-          <ul class="mt-2 space-y-2">
-            <li v-for="(item, itemIndex) in center.items" :key="itemIndex" class="flex justify-between items-center">
-              <span class="text-sm text-gray-700 text-right">{{ item.key }}</span>
-              <span class="text-sm text-gray-500 text-left">{{ item.value }}</span>
-            </li>
-          </ul>
-        </div>
+      <div v-if="nearbyCenters.length > 0" class="w-full">
+        <table class="w-full">
+          <!-- Header Row -->
+          <thead>
+            <tr>
+              <th class="text-left py-4 text-gray-700">مرکز</th>
+              <th class="text-left py-4 text-gray-700">پیاده روی</th>
+              <th class="text-left py-4 text-gray-700">خودرو</th>
+            </tr>
+          </thead>
+          <!-- Data Rows -->
+          <tbody>
+            <tr v-for="(item, index) in groupedItems" :key="index" class="border-t border-gray-100">
+              <td class="py-4 text-left text-gray-700 font-medium">{{ item.key }}</td>
+              <td class="py-4 text-left text-gray-500">
+                {{ item.walk || '-' }}
+              </td>
+              <td class="py-4 text-left text-gray-500">
+                {{ item.car || '-' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <!-- No Data Message -->
@@ -38,5 +51,30 @@ const props = defineProps({
   }
 });
 
-
+const groupedItems = computed(() => {
+  // Merge all items from both centers
+  const allItems = props.nearbyCenters.flatMap(center => center.items || []);
+  
+  // Group by key
+  const grouped = allItems.reduce((acc, item) => {
+    if (!acc[item.key]) {
+      acc[item.key] = {
+        key: item.key,
+        walk: null,
+        car: null
+      };
+    }
+    
+    if (item.accessibleBy === 'walk') {
+      acc[item.key].walk = item.value;
+    } else if (item.accessibleBy === 'car') {
+      acc[item.key].car = item.value;
+    }
+    
+    return acc;
+  }, {});
+  
+  // Convert to array
+  return Object.values(grouped);
+});
 </script> 
