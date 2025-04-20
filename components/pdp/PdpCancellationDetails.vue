@@ -3,34 +3,6 @@
     <!-- Main heading -->
     <h1 class="text-2xl font-bold text-gray-900 mb-8 text-left">قوانین لغو رزرو</h1>
     
-    <!-- Tabs -->
-    <div class="flex justify-start mb-6 border-b border-gray-200">
-      <div class="flex space-x-reverse space-x-8">
-        <button 
-          @click="activeTab = 'flexible'"
-          :class="[
-            'pb-4 font-medium border-b-2',
-            activeTab === 'flexible' 
-              ? 'text-gray-900 border-gray-900' 
-              : 'text-gray-500 hover:text-gray-700 border-transparent'
-          ]"
-        >
-          سهل گیرانه
-        </button>
-        <button 
-          @click="activeTab = 'peak'"
-          :class="[
-            'pb-4 font-medium border-b-2',
-            activeTab === 'peak' 
-              ? 'text-gray-900 border-gray-900' 
-              : 'text-gray-500 hover:text-gray-700 border-transparent'
-          ]"
-        >
-          قوانین ویژه روزهای پیک
-        </button>
-      </div>
-    </div>
-    
     <!-- Loading state -->
     <div v-if="loading" class="flex justify-center items-center py-12">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
@@ -50,6 +22,34 @@
     
     <!-- Content -->
     <template v-else>
+      <!-- Tabs -->
+      <div class="flex justify-start mb-6 border-b border-gray-200">
+        <div class="flex space-x-reverse space-x-8">
+          <button 
+            @click="activeTab = 'flexible'"
+            :class="[
+              'pb-4 font-medium border-b-2',
+              activeTab === 'flexible' 
+                ? 'text-gray-900 border-gray-900' 
+                : 'text-gray-500 hover:text-gray-700 border-transparent'
+            ]"
+          >
+            {{ flexiblePolicy?.title || 'سیاست لغو' }}
+          </button>
+          <button 
+            @click="activeTab = 'peak'"
+            :class="[
+              'pb-4 font-medium border-b-2',
+              activeTab === 'peak' 
+                ? 'text-gray-900 border-gray-900' 
+                : 'text-gray-500 hover:text-gray-700 border-transparent'
+            ]"
+          >
+            قوانین ویژه روزهای پیک
+          </button>
+        </div>
+      </div>
+      
       <!-- Flexible Policy Content -->
       <div v-if="activeTab === 'flexible' && flexiblePolicy">
         <!-- Description -->
@@ -177,9 +177,10 @@ const fetchCancellationPolicy = async () => {
     const response = await $pdpApi.getCancellationPolicyDetails(props.accommodationId);
     
     if (response.success && response.result.cancellationPolicy.length > 0) {
-      // Find flexible and peak policies
-      flexiblePolicy.value = response.result.cancellationPolicy.find(policy => policy.isDefault) || null;
-      peakPolicy.value = response.result.cancellationPolicy.find(policy => !policy.isDefault) || null;
+      // Always use the first item as flexible policy
+      flexiblePolicy.value = response.result.cancellationPolicy[0] || null;
+      // Use the second item (if exists) as peak policy
+      peakPolicy.value = response.result.cancellationPolicy.length > 1 ? response.result.cancellationPolicy[1] : null;
       
       // Set initial active tab based on available policies
       if (!flexiblePolicy.value && peakPolicy.value) {
