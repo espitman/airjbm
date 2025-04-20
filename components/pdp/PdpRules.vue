@@ -39,74 +39,52 @@
     <div>
       <h3 class="text-xl font-bold text-gray-900 mb-4">نکات ویژه</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Children -->
-        <div class="flex items-start">
-          <div class="ml-4 text-gray-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+        <!-- Restricted Rules (Positive) -->
+        <template v-for="rule in restrictedRules" :key="rule.name">
+          <div class="flex items-start">
+            <div class="ml-4 text-gray-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <div>
+              <h4 class="text-lg font-medium text-gray-900 mb-1">{{ rule.name }}</h4>
+              <p class="text-gray-600">{{ rule.positive }}</p>
+            </div>
           </div>
-          <div>
-            <h4 class="text-lg font-medium text-gray-900 mb-1">کودکان</h4>
-            <p class="text-gray-600">امکان اقامت کودکان: سن ۰ تا ۱۷ سال</p>
-          </div>
-        </div>
+        </template>
         
-        <!-- Events -->
-        <div class="flex items-start">
-          <div class="ml-4 text-gray-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+        <!-- Negative Restricted Rules -->
+        <template v-for="rule in negativeRestrictedRules" :key="rule.name">
+          <div class="flex items-start">
+            <div class="ml-4 text-gray-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+              </svg>
+            </div>
+            <div>
+              <h4 class="text-lg font-medium text-gray-900 mb-1">{{ rule.name }}</h4>
+              <p class="text-gray-600">{{ rule.negative }}</p>
+            </div>
           </div>
-          <div>
-            <h4 class="text-lg font-medium text-gray-900 mb-1">مراسم</h4>
-            <p class="text-gray-600">برگزاری مراسم مجاز نیست</p>
-          </div>
-        </div>
-        
-        <!-- Pets -->
-        <div class="flex items-start">
-          <div class="ml-4 text-gray-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
-          </div>
-          <div>
-            <h4 class="text-lg font-medium text-gray-900 mb-1">حیوانات خانگی</h4>
-            <p class="text-gray-600">ورود حیوانات خانگی مجاز نیست</p>
-          </div>
-        </div>
-        
-        <!-- Smoking -->
-        <div class="flex items-start">
-          <div class="ml-4 text-gray-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-            </svg>
-          </div>
-          <div>
-            <h4 class="text-lg font-medium text-gray-900 mb-1">سیگار</h4>
-            <p class="text-gray-600">استعمال دخانیات مجاز نیست</p>
-          </div>
-        </div>
+        </template>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-// Component can be extended with props if needed
-// import { defineProps } from 'vue';
-// 
-// const props = defineProps({
-//   cancellationPolicy: String,
-//   checkInTime: String,
-//   checkOutTime: String,
-//   childrenPolicy: String,
-//   eventsPolicy: String,
-//   petsPolicy: String,
-//   smokingPolicy: String
-// });
+import { computed } from 'vue';
+
+const props = defineProps({
+  restrictedRules: {
+    type: Array,
+    default: () => []
+  },
+  negativeRestrictedRules: {
+    type: Array,
+    default: () => []
+  }
+});
 </script> 

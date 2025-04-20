@@ -82,7 +82,10 @@
 
           <!-- Rules component -->
           <div class="mt-8">
-            <PdpRules />
+            <PdpRules 
+              :restrictedRules="accommodation.item.restrictedRules || []"
+              :negativeRestrictedRules="accommodation.item.negativeRestrictedRules || []"
+            />
           </div>
         </div>
 
