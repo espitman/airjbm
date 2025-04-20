@@ -86,7 +86,6 @@
       const response = await pdpApi.getAllAmenities('6744eafa5ef0d7001b8f2e84')
       allAmenities.value = response.result.amenities
     } catch (err) {
-      console.error('Error fetching all amenities:', err)
       error.value = 'متاسفانه در دریافت اطلاعات امکانات مشکلی پیش آمده است.'
     } finally {
       loading.value = false

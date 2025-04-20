@@ -167,9 +167,7 @@ const receiptData = ref<{
 
 // Calculate minimum price for first 14 available days
 const minPrice = computed(() => {
-  console.log('Calendar data:', props.calendar);
   if (!props.calendar?.length) {
-    console.log('No calendar data, using default price');
     return {
       price: 2500000,
       originalPrice: null,
@@ -181,11 +179,9 @@ const minPrice = computed(() => {
   const first14Days = props.calendar
     .filter(date => date.status === 'available')
     .slice(0, 14);
-  console.log('First 14 available days:', first14Days);
   
   // If we don't have 14 days, return default price
   if (first14Days.length < 14) {
-    console.log('Less than 14 days available, using default price');
     return {
       price: 2500000,
       originalPrice: null,
@@ -203,7 +199,6 @@ const minPrice = computed(() => {
   const price = minPriceDay.price / 10;
   const originalPrice = totalDiscountPercent > 0 ? (minPriceDay.price / (1 - totalDiscountPercent / 100)) / 10 : null;
   
-  console.log('Calculated min price (Toman):', price, 'Original:', originalPrice);
   return { price, originalPrice, discountPercent: totalDiscountPercent };
 });
 
@@ -272,8 +267,6 @@ const showPricePreview = async () => {
         children: 0
       }
     })
-
-    console.log('Receipt Response:', response)
     
     // Store the receipt data for display
     receiptData.value = {
@@ -281,7 +274,6 @@ const showPricePreview = async () => {
       items: response.result.items
     }
   } catch (error) {
-    console.error('Error fetching receipt:', error)
     toast.error('خطا در دریافت اطلاعات قیمت', {
       position: "top-right",
       autoClose: 3000,
@@ -323,7 +315,6 @@ const handleSubmit = async () => {
   try {
     // ... existing code ...
   } catch (error) {
-    console.error('Error submitting booking:', error)
     toast.error('خطا در ثبت رزرو. لطفا دوباره تلاش کنید.')
   }
 }

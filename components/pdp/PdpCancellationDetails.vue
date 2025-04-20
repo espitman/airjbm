@@ -205,7 +205,6 @@ const fetchCancellationPolicy = async () => {
       error.value = 'اطلاعات قوانین لغو رزرو در دسترس نیست';
     }
   } catch (err) {
-    console.error('Error fetching cancellation policy:', err);
     error.value = 'خطا در دریافت اطلاعات قوانین لغو رزرو';
   } finally {
     loading.value = false;

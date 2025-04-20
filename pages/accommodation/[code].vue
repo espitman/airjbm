@@ -153,10 +153,8 @@ const fetchAccommodationDetails = async () => {
     error.value = null
     const data = await pdpApi.fetchAccommodationByCode(code.value)
     accommodation.value = data
-    console.log(accommodation.value)
   } catch (err) {
     error.value = 'متاسفانه در دریافت اطلاعات اقامتگاه مشکلی پیش آمده است.'
-    console.error('Error fetching accommodation details:', err)
   } finally {
     loading.value = false
   }
