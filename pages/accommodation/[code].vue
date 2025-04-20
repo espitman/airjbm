@@ -24,9 +24,9 @@
       />
       
       <!-- Two column layout for content below gallery -->
-      <div class="flex flex-col lg:flex-row gap-8 mt-8">
-        <!-- Right Column (75%) - Now on the right in RTL -->
-        <div class="lg:w-3/4">
+      <div class="flex flex-col lg:flex-row gap-4 mt-8">
+        <!-- Right Column (8/12) - Now on the right in RTL -->
+        <div class="lg:w-8/12">
           <PdpHeader 
             v-if="accommodation?.item"
             :title="accommodation.item.title"
@@ -67,9 +67,11 @@
           </div>
         </div>
 
-        <!-- Left Column (25%) - Now on the left in RTL -->
-        <div class="lg:w-1/4">
-          <!-- Content for left column will go here -->
+        <!-- Left Column (4/12) - Now on the left in RTL -->
+        <div class="lg:w-4/12">
+          <div class="sticky top-8">
+            <PdpBookingForm />
+          </div>
         </div>
       </div>
       
@@ -86,6 +88,7 @@ import ImageGallery from '~/components/pdp/ImageGallery.vue'
 import PdpHeader from '~/components/pdp/PdpHeader.vue'
 import PdpDescription from '~/components/pdp/PdpDescription.vue'
 import PdpAmenities from '~/components/pdp/PdpAmenities.vue'
+import PdpBookingForm from '~/components/pdp/PdpBookingForm.vue'
 
 const route = useRoute()
 const nuxtApp = useNuxtApp()
