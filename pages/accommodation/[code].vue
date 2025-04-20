@@ -88,6 +88,7 @@
               :checkIn="accommodation.item.checkIn || '08:00'"
               :checkOut="accommodation.item.checkOut || '14:00'"
               :cancellationPolicyText="accommodation.item.cancellationPolicyText"
+              :accommodation-id="accommodation.item.id"
             />
           </div>
         </div>

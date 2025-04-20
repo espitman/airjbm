@@ -102,7 +102,7 @@
                 </svg>
               </button>
             </div>
-            <PdpCancellationDetails />
+            <PdpCancellationDetails :accommodation-id="accommodationId" />
           </div>
         </div>
       </div>
@@ -138,6 +138,10 @@ const props = defineProps({
   cancellationPolicyText: {
     type: String,
     default: ''
+  },
+  accommodationId: {
+    type: String,
+    required: true
   }
 });
 

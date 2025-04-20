@@ -31,112 +31,176 @@
       </div>
     </div>
     
-    <!-- Flexible Policy Content -->
-    <div v-if="activeTab === 'flexible'">
-      <!-- Description -->
-      <p class="text-gray-700 mb-10 text-left leading-relaxed">
-        از لحظه رزرو تا ۲ روز قبل از تاریخ ورود کل مبلغ رزرو بازگشت داده می‌شود.
-      </p>
-      
-      <!-- Timeline -->
-      <div class="relative">
-        <!-- Vertical line -->
-        <div class="absolute right-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+    <!-- Loading state -->
+    <div v-if="loading" class="flex justify-center items-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+    </div>
+    
+    <!-- Error state -->
+    <div v-else-if="error" class="text-center py-8">
+      <div class="text-red-600 mb-4">
+        <svg class="w-12 h-12 mx-auto" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 8v4m0 4h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 class="text-2xl font-bold mb-2">خطا!</h2>
+      <p class="text-gray-600">{{ error }}</p>
+    </div>
+    
+    <!-- Content -->
+    <template v-else>
+      <!-- Flexible Policy Content -->
+      <div v-if="activeTab === 'flexible' && flexiblePolicy">
+        <!-- Description -->
+        <p class="text-gray-700 mb-10 text-left leading-relaxed">
+          {{ flexiblePolicy.description }}
+        </p>
         
-        <!-- Timeline items -->
-        <div class="space-y-16">
-          <!-- Item 1 -->
-          <div class="relative flex">
-            <div class="absolute right-0 mt-1">
-              <div class="h-8 w-8 rounded-full bg-teal-100 border-4 border-white ring-2 ring-teal-400 flex items-center justify-center z-10"></div>
-            </div>
-            <div class="mr-16">
-              <h3 class="text-lg font-bold text-gray-900 mb-2 text-left">۲ روز قبل از ورود مهمان</h3>
-              <p class="text-gray-700 text-left">پرداخت کامل وجه به مهمان</p>
-            </div>
-          </div>
+        <!-- Timeline -->
+        <div class="relative">
+          <!-- Vertical line -->
+          <div class="absolute right-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
           
-          <!-- Item 2 -->
-          <div class="relative flex">
-            <div class="absolute right-0 mt-1">
-              <div class="h-8 w-8 rounded-full bg-yellow-100 border-4 border-white ring-2 ring-yellow-400 flex items-center justify-center z-10"></div>
+          <!-- Timeline items -->
+          <div class="space-y-16">
+            <!-- Before Check-in -->
+            <div class="relative flex">
+              <div class="absolute right-0 mt-1">
+                <div class="h-8 w-8 rounded-full border-4 border-white ring-2 flex items-center justify-center z-10" :style="{ backgroundColor: flexiblePolicy.beforeCheckIn.color + '20', borderColor: flexiblePolicy.beforeCheckIn.color }"></div>
+              </div>
+              <div class="mr-16">
+                <h3 class="text-lg font-bold text-gray-900 mb-2 text-left">{{ flexiblePolicy.beforeCheckIn.title }}</h3>
+                <p class="text-gray-700 text-left">{{ flexiblePolicy.beforeCheckIn.text }}</p>
+              </div>
             </div>
-            <div class="mr-16">
-              <h3 class="text-lg font-bold text-gray-900 mb-2 text-left">تا روز ورود مهمان</h3>
-              <p class="text-gray-700 text-left">۲۰٪ مبلغ شب اول + ۱۰٪ مبلغ شب‌های باقیمانده</p>
+            
+            <!-- Until Check-in -->
+            <div class="relative flex">
+              <div class="absolute right-0 mt-1">
+                <div class="h-8 w-8 rounded-full border-4 border-white ring-2 flex items-center justify-center z-10" :style="{ backgroundColor: flexiblePolicy.untilCheckIn.color + '20', borderColor: flexiblePolicy.untilCheckIn.color }"></div>
+              </div>
+              <div class="mr-16">
+                <h3 class="text-lg font-bold text-gray-900 mb-2 text-left">{{ flexiblePolicy.untilCheckIn.title }}</h3>
+                <p class="text-gray-700 text-left">{{ flexiblePolicy.untilCheckIn.text }}</p>
+              </div>
             </div>
-          </div>
-          
-          <!-- Item 3 -->
-          <div class="relative flex">
-            <div class="absolute right-0 mt-1">
-              <div class="h-8 w-8 rounded-full bg-red-100 border-4 border-white ring-2 ring-red-400 flex items-center justify-center z-10"></div>
-            </div>
-            <div class="mr-16">
-              <h3 class="text-lg font-bold text-gray-900 mb-2 text-left">از روز ورود تا خروج مهمان</h3>
-              <p class="text-gray-700 text-left">۱۰۰٪ مبلغ شب‌های سپری شده + ۲۰٪ مبلغ شب‌های باقیمانده</p>
+            
+            <!-- After Check-in -->
+            <div class="relative flex">
+              <div class="absolute right-0 mt-1">
+                <div class="h-8 w-8 rounded-full border-4 border-white ring-2 flex items-center justify-center z-10" :style="{ backgroundColor: flexiblePolicy.afterCheckIn.color + '20', borderColor: flexiblePolicy.afterCheckIn.color }"></div>
+              </div>
+              <div class="mr-16">
+                <h3 class="text-lg font-bold text-gray-900 mb-2 text-left">{{ flexiblePolicy.afterCheckIn.title }}</h3>
+                <p class="text-gray-700 text-left">{{ flexiblePolicy.afterCheckIn.text }}</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Peak Day Policy Content -->
-    <div v-else>
-      <!-- Description -->
-      <p class="text-gray-700 mb-10 text-left leading-relaxed">
-        در روزهای پیک (تعطیلات رسمی و آخر هفته) قوانین لغو متفاوت است.
-      </p>
-      
-      <!-- Timeline -->
-      <div class="relative">
-        <!-- Vertical line -->
-        <div class="absolute right-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+      <!-- Peak Day Policy Content -->
+      <div v-else-if="activeTab === 'peak' && peakPolicy">
+        <!-- Description -->
+        <p class="text-gray-700 mb-10 text-left leading-relaxed">
+          {{ peakPolicy.description }}
+        </p>
         
-        <!-- Timeline items -->
-        <div class="space-y-16">
-          <!-- Item 1 -->
-          <div class="relative flex">
-            <div class="absolute right-0 mt-1">
-              <div class="h-8 w-8 rounded-full bg-teal-100 border-4 border-white ring-2 ring-teal-400 flex items-center justify-center z-10"></div>
-            </div>
-            <div class="mr-16">
-              <h3 class="text-lg font-bold text-gray-900 mb-2 text-left">۷ روز قبل از ورود مهمان</h3>
-              <p class="text-gray-700 text-left">۵۰٪ مبلغ کل رزرو</p>
-            </div>
-          </div>
+        <!-- Timeline -->
+        <div class="relative">
+          <!-- Vertical line -->
+          <div class="absolute right-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
           
-          <!-- Item 2 -->
-          <div class="relative flex">
-            <div class="absolute right-0 mt-1">
-              <div class="h-8 w-8 rounded-full bg-yellow-100 border-4 border-white ring-2 ring-yellow-400 flex items-center justify-center z-10"></div>
+          <!-- Timeline items -->
+          <div class="space-y-16">
+            <!-- Before Check-in -->
+            <div class="relative flex">
+              <div class="absolute right-0 mt-1">
+                <div class="h-8 w-8 rounded-full border-4 border-white ring-2 flex items-center justify-center z-10" :style="{ backgroundColor: peakPolicy.beforeCheckIn.color + '20', borderColor: peakPolicy.beforeCheckIn.color }"></div>
+              </div>
+              <div class="mr-16">
+                <h3 class="text-lg font-bold text-gray-900 mb-2 text-left">{{ peakPolicy.beforeCheckIn.title }}</h3>
+                <p class="text-gray-700 text-left">{{ peakPolicy.beforeCheckIn.text }}</p>
+              </div>
             </div>
-            <div class="mr-16">
-              <h3 class="text-lg font-bold text-gray-900 mb-2 text-left">۳ روز قبل از ورود مهمان</h3>
-              <p class="text-gray-700 text-left">۷۵٪ مبلغ کل رزرو</p>
+            
+            <!-- Until Check-in -->
+            <div class="relative flex">
+              <div class="absolute right-0 mt-1">
+                <div class="h-8 w-8 rounded-full border-4 border-white ring-2 flex items-center justify-center z-10" :style="{ backgroundColor: peakPolicy.untilCheckIn.color + '20', borderColor: peakPolicy.untilCheckIn.color }"></div>
+              </div>
+              <div class="mr-16">
+                <h3 class="text-lg font-bold text-gray-900 mb-2 text-left">{{ peakPolicy.untilCheckIn.title }}</h3>
+                <p class="text-gray-700 text-left">{{ peakPolicy.untilCheckIn.text }}</p>
+              </div>
             </div>
-          </div>
-          
-          <!-- Item 3 -->
-          <div class="relative flex">
-            <div class="absolute right-0 mt-1">
-              <div class="h-8 w-8 rounded-full bg-red-100 border-4 border-white ring-2 ring-red-400 flex items-center justify-center z-10"></div>
-            </div>
-            <div class="mr-16">
-              <h3 class="text-lg font-bold text-gray-900 mb-2 text-left">کمتر از ۳ روز تا ورود مهمان</h3>
-              <p class="text-gray-700 text-left">۱۰۰٪ مبلغ کل رزرو</p>
+            
+            <!-- After Check-in -->
+            <div class="relative flex">
+              <div class="absolute right-0 mt-1">
+                <div class="h-8 w-8 rounded-full border-4 border-white ring-2 flex items-center justify-center z-10" :style="{ backgroundColor: peakPolicy.afterCheckIn.color + '20', borderColor: peakPolicy.afterCheckIn.color }"></div>
+              </div>
+              <div class="mr-16">
+                <h3 class="text-lg font-bold text-gray-900 mb-2 text-left">{{ peakPolicy.afterCheckIn.title }}</h3>
+                <p class="text-gray-700 text-left">{{ peakPolicy.afterCheckIn.text }}</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useNuxtApp } from '#app';
+import type { CancellationPolicyItem } from '~/types/cancellation-policy';
 
+const props = defineProps<{
+  accommodationId: string;
+}>();
+
+const { $pdpApi } = useNuxtApp();
 const activeTab = ref('flexible');
+const loading = ref(true);
+const error = ref<string | null>(null);
+const flexiblePolicy = ref<CancellationPolicyItem | null>(null);
+const peakPolicy = ref<CancellationPolicyItem | null>(null);
+
+const fetchCancellationPolicy = async () => {
+  try {
+    loading.value = true;
+    error.value = null;
+    
+    const response = await $pdpApi.getCancellationPolicyDetails(props.accommodationId);
+    
+    if (response.success && response.result.cancellationPolicy.length > 0) {
+      // Find flexible and peak policies
+      flexiblePolicy.value = response.result.cancellationPolicy.find(policy => policy.isDefault) || null;
+      peakPolicy.value = response.result.cancellationPolicy.find(policy => !policy.isDefault) || null;
+      
+      // Set initial active tab based on available policies
+      if (!flexiblePolicy.value && peakPolicy.value) {
+        activeTab.value = 'peak';
+      }
+    } else {
+      error.value = 'اطلاعات قوانین لغو رزرو در دسترس نیست';
+    }
+  } catch (err) {
+    console.error('Error fetching cancellation policy:', err);
+    error.value = 'خطا در دریافت اطلاعات قوانین لغو رزرو';
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  if (props.accommodationId) {
+    fetchCancellationPolicy();
+  }
+});
 </script>
 
 <style>
