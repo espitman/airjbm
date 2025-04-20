@@ -106,7 +106,6 @@
             </div>
             <div class="relative z-10 flex flex-col items-center">
               <span>{{ date.jDate() }}</span>
-              <span v-if="getDatePrice(date)" class="text-xs text-gray-500">{{ formatPrice(getDatePrice(date)) }}</span>
             </div>
           </div>
         </div>
@@ -147,7 +146,6 @@
             </div>
             <div class="relative z-10 flex flex-col items-center">
               <span>{{ date.jDate() }}</span>
-              <span v-if="getDatePrice(date)" class="text-xs text-gray-500">{{ formatPrice(getDatePrice(date)) }}</span>
             </div>
           </div>
         </div>
@@ -172,12 +170,12 @@ const props = defineProps<{
   initialCheckIn?: Date;
   initialCheckOut?: Date;
   calendar?: {
-    dates: {
-      date: string;
-      price: number;
-      isAvailable: boolean;
-    }[];
-  };
+    date: string;
+    price: number;
+    status: string;
+    discount?: number;
+    jabamaDiscount?: number;
+  }[];
 }>();
 
 const emit = defineEmits<{
@@ -423,11 +421,11 @@ function isInRange(date: moment.Moment): boolean {
 
 // Add new computed properties for calendar data
 const calendarDates = computed(() => {
-  if (!props.calendar?.dates) return new Map();
+  if (!props.calendar) return new Map();
   return new Map(
-    props.calendar.dates.map(date => [
+    props.calendar.map(date => [
       moment(date.date).format('YYYY-MM-DD'),
-      { price: date.price, isAvailable: date.isAvailable }
+      { price: date.price, isAvailable: date.status === 'available' }
     ])
   );
 });
