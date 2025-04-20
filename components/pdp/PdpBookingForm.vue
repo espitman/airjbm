@@ -96,10 +96,6 @@ import PdpCalendar from './PdpCalendar.vue'
 
 
 const props = defineProps<{
-  priceData?: {
-    minPrice: number;
-    currency: string;
-  };
   calendar?: {
     date: string;
     price: number;
@@ -124,7 +120,7 @@ const minPrice = computed(() => {
   if (!props.calendar?.length) {
     console.log('No calendar data, using default price');
     return {
-      price: props.priceData?.minPrice || 2500000,
+      price: 2500000,
       originalPrice: null,
       discountPercent: 0
     };
@@ -140,7 +136,7 @@ const minPrice = computed(() => {
   if (first14Days.length < 14) {
     console.log('Less than 14 days available, using default price');
     return {
-      price: props.priceData?.minPrice || 2500000,
+      price: 2500000,
       originalPrice: null,
       discountPercent: 0
     };
