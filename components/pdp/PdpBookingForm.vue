@@ -240,19 +240,26 @@ const showPricePreview = async () => {
     return
   }
 
+  // Format dates in YYYY-MM-DD format while preserving the local date
+  const formatDateForApi = (date: Date) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  // Update URL with parameters
+  const params = new URLSearchParams(window.location.search)
+  params.set('checkIn', formatDateForApi(checkInDate.value))
+  params.set('checkOut', formatDateForApi(checkOutDate.value))
+  params.set('adults', adults.value.toString())
+  window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`)
+
   try {
     isLoading.value = true
     const nuxtApp = useNuxtApp()
     const reservationApi = nuxtApp.$reservationApi as {
       receipt: (data: ReceiptRequest) => Promise<ReceiptResponse>
-    }
-
-    // Format dates in YYYY-MM-DD format while preserving the local date
-    const formatDateForApi = (date: Date) => {
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
-      return `${year}-${month}-${day}`
     }
 
     const response = await reservationApi.receipt({
@@ -305,4 +312,35 @@ const handleSubmit = async () => {
     toast.error('خطا در ثبت رزرو. لطفا دوباره تلاش کنید.')
   }
 }
+
+onMounted(() => {
+  // Read parameters from URL
+  const params = new URLSearchParams(window.location.search)
+  const checkInParam = params.get('checkIn')
+  const checkOutParam = params.get('checkOut')
+  const adultsParam = params.get('adults')
+
+  // Set check-in date if present
+  if (checkInParam) {
+    checkInDate.value = new Date(checkInParam)
+  }
+
+  // Set check-out date if present
+  if (checkOutParam) {
+    checkOutDate.value = new Date(checkOutParam)
+  }
+
+  // Set number of adults if present
+  if (adultsParam) {
+    const adultsCount = parseInt(adultsParam)
+    if (!isNaN(adultsCount) && adultsCount > 0 && adultsCount <= props.maxCapacity) {
+      adults.value = adultsCount
+    }
+  }
+
+  // If we have both dates, show price preview
+  if (checkInDate.value && checkOutDate.value) {
+    showPricePreview()
+  }
+})
 </script> 
