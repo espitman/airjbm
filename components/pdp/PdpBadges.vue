@@ -5,6 +5,7 @@
       <h2 class="text-xl md:text-2xl font-bold text-gray-900">
         مشخصات کلی اقامتگاه
       </h2>
+      <div class="w-32 h-px bg-gray-200 mb-8"></div>
 
       <!-- Content -->
       <div class="flex flex-col space-y-4">
