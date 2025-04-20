@@ -49,7 +49,7 @@
               </svg>
             </div>
             <div>
-              <h4 class="text-lg font-medium text-gray-900 mb-1">{{ rule.name }}</h4>
+              <h4 class="text-lg font-medium text-gray-900 mb-1">{{ $persianTranslations.getPersianRuleName(rule) }}</h4>
               <p class="text-gray-600">{{ rule.positive }}</p>
             </div>
           </div>
@@ -64,7 +64,7 @@
               </svg>
             </div>
             <div>
-              <h4 class="text-lg font-medium text-gray-900 mb-1">{{ rule.name }}</h4>
+              <h4 class="text-lg font-medium text-gray-900 mb-1">{{ $persianTranslations.getPersianRuleName(rule) }}</h4>
               <p class="text-gray-600">{{ rule.negative }}</p>
             </div>
           </div>
@@ -76,6 +76,9 @@
 
 <script setup>
 import { computed } from 'vue';
+import { useNuxtApp } from '#app';
+
+const { $persianTranslations } = useNuxtApp();
 
 const props = defineProps({
   restrictedRules: {

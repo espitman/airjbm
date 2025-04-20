@@ -27,6 +27,18 @@ const regionMap = {
   'city': 'شهری'
 }
 
+// Map of rule keys to their Persian translations
+const ruleMap = {
+  'children': 'کودکان',
+  'events': 'مراسم',
+  'pets': 'حیوانات خانگی',
+  'smoke': 'سیگار',
+  '24h_reception': 'پذیرش ۲۴ ساعته',
+  'single_persons': 'گروه‌های مجردی',
+  'melli_card': 'کارت ملی',
+  'ceremony': 'میهمانی'
+}
+
 // Persian numbers mapping
 const persianNumbers = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
 
@@ -109,6 +121,14 @@ export default defineNuxtPlugin(() => {
         convertToPersian: (value: string | null | undefined): string => {
           if (!value) return '-';
           return value.replace(/[0-9]/g, d => persianNumbers[parseInt(d)]);
+        },
+
+        // Get Persian name for a rule
+        getPersianRuleName: (rule: { name: string } | null | undefined): string => {
+          if (rule?.name && ruleMap[rule.name]) {
+            return ruleMap[rule.name]
+          }
+          return rule?.name || 'نامشخص'
         }
       }
     }
