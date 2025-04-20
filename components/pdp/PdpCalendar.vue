@@ -321,7 +321,7 @@ function selectDate(date: moment.Moment): void {
         navigateToSelectedMonth(date);
       }
     } else {
-      // If selected date is after check-in, set it as check-out
+      // If selected date is after or same as check-in, set it as check-out
       checkOutDate.value = date;
       
       // Only emit the dates, don't close the calendar
@@ -443,6 +443,11 @@ function isPastDate(date: moment.Moment): boolean {
       
       // Make all days after the first inactive day inactive
       if (firstInactiveDay && date.isAfter(firstInactiveDay, 'day')) {
+        return true;
+      }
+      
+      // Make the check-in day not selectable for check-out
+      if (date.isSame(checkInDate.value, 'day')) {
         return true;
       }
     }
