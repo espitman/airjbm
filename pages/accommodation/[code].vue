@@ -85,6 +85,8 @@
             <PdpRules 
               :restrictedRules="accommodation.item.restrictedRules || []"
               :negativeRestrictedRules="accommodation.item.negativeRestrictedRules || []"
+              :checkIn="accommodation.item.checkIn || '08:00'"
+              :checkOut="accommodation.item.checkOut || '14:00'"
             />
           </div>
         </div>
