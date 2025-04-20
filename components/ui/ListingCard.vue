@@ -197,7 +197,16 @@ const getTypeName = computed(() => {
 
 // Get route parameter with fallback
 const getRouteParam = computed(() => {
-  return props.listing.code || props.listing.id || ''
+  const params = new URLSearchParams(window.location.search)
+  const checkIn = params.get('check_in')
+  const checkOut = params.get('check_out')
+  const adults = params.get('passengerCount')
+  
+  let route = props.listing.code.toString()
+  if (checkIn && checkOut) {
+    route += `?checkIn=${checkIn}&checkOut=${checkOut}&adults=${adults || 1}`
+  }
+  return route
 })
 </script>
 
