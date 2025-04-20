@@ -4,7 +4,6 @@
     <div class="flex justify-between items-start mb-6">
       <div>
         <h2 class="text-3xl font-bold text-gray-900 mb-1">{{ nightsCount }} شب</h2>
-        <p class="text-gray-500 text-lg">{{ formatDateRange }}</p>
       </div>
       
       <!-- Check-in/Check-out inputs -->
@@ -41,7 +40,14 @@
     
     <!-- Calendar navigation -->
     <div class="flex justify-between items-center mb-6">
-      <button @click="nextMonth" class="text-gray-900 hover:text-gray-600">
+      <button 
+        @click="previousMonths" 
+        :class="[
+          'text-gray-400 hover:text-gray-600 transition-colors',
+          { 'opacity-30 cursor-not-allowed': !canGoPrevious }
+        ]"
+        :disabled="!canGoPrevious"
+      >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
@@ -49,7 +55,14 @@
       
       <div class="flex-1"></div>
       
-      <button @click="previousMonth" class="text-gray-400 hover:text-gray-600">
+      <button 
+        @click="nextMonths" 
+        :class="[
+          'text-gray-400 hover:text-gray-600 transition-colors',
+          { 'opacity-30 cursor-not-allowed': !canGoNext }
+        ]"
+        :disabled="!canGoNext"
+      >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
@@ -190,6 +203,16 @@ const nightsCount = computed(() => {
 const firstMonthDates = computed(() => generateMonthDates(firstMonth.value));
 const secondMonthDates = computed(() => generateMonthDates(secondMonth.value));
 
+const canGoPrevious = computed(() => {
+  const newFirstMonth = firstMonth.value.clone().subtract(2, 'jMonth');
+  return !newFirstMonth.isBefore(currentDate, 'month');
+});
+
+const canGoNext = computed(() => {
+  const newSecondMonth = secondMonth.value.clone().add(2, 'jMonth');
+  return !newSecondMonth.isAfter(currentDate.clone().add(4, 'month'), 'month');
+});
+
 function generateMonthDates(date: moment.Moment) {
   const dates: moment.Moment[] = [];
   const firstDay = date.clone().startOf('jMonth');
@@ -273,14 +296,24 @@ function clearCheckOut(): void {
   checkOutDate.value = null;
 }
 
-function previousMonth(): void {
-  firstMonth.value.subtract(1, 'jMonth');
-  secondMonth.value.subtract(1, 'jMonth');
+function previousMonths(): void {
+  if (!canGoPrevious.value) return;
+  
+  const newFirstMonth = firstMonth.value.clone().subtract(2, 'jMonth');
+  const newSecondMonth = secondMonth.value.clone().subtract(2, 'jMonth');
+  
+  firstMonth.value = newFirstMonth;
+  secondMonth.value = newSecondMonth;
 }
 
-function nextMonth(): void {
-  firstMonth.value.add(1, 'jMonth');
-  secondMonth.value.add(1, 'jMonth');
+function nextMonths(): void {
+  if (!canGoNext.value) return;
+  
+  const newFirstMonth = firstMonth.value.clone().add(2, 'jMonth');
+  const newSecondMonth = secondMonth.value.clone().add(2, 'jMonth');
+  
+  firstMonth.value = newFirstMonth;
+  secondMonth.value = newSecondMonth;
 }
 
 function close(): void {

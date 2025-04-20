@@ -118,7 +118,7 @@
           />
           <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
           <!-- Show All Images button on the last image -->
-          <div v-if="idx === 3 && images.length > 5" class="absolute bottom-3 left-3 z-20">
+          <div v-if="idx === 3 && images.length > 5" class="absolute bottom-3 left-3">
             <button 
               class="bg-white text-gray-900 px-3 py-1 rounded-lg text-sm font-medium shadow-md hover:bg-gray-100 transition-colors duration-200 flex items-center gap-2"
               @click.stop="openLightbox(0)"
