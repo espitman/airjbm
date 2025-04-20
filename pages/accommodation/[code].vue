@@ -91,6 +91,18 @@
               :accommodation-id="accommodation?.result?.item?.id"
             />
           </div>
+          
+          <!-- Map component -->
+          <div class="mt-8">
+            <PdpMap
+              v-if="accommodation?.result?.item?.placeOfResidence?.location"
+              :latitude="accommodation.result.item.placeOfResidence.location.lat"
+              :longitude="accommodation.result.item.placeOfResidence.location.lng"
+              :title="accommodation.result.item.title"
+              :address="getLocationDisplay"
+              :radius="500"
+            />
+          </div>
         </div>
 
         <!-- Left Column (4/12) - Now on the left in RTL -->
@@ -122,6 +134,7 @@ import PdpBookingForm from '../../components/pdp/PdpBookingForm.vue'
 import PdpBadges from '../../components/pdp/PdpBadges.vue'
 import PdpDistance from '../../components/pdp/PdpDistance.vue'
 import PdpRules from '../../components/pdp/PdpRules.vue'
+import PdpMap from '../../components/pdp/PdpMap.vue'
 
 const route = useRoute()
 const nuxtApp = useNuxtApp()

@@ -36,7 +36,8 @@ const ruleMap = {
   '24h_reception': 'پذیرش ۲۴ ساعته',
   'single_persons': 'گروه‌های مجردی',
   'melli_card': 'کارت ملی',
-  'ceremony': 'میهمانی'
+  'ceremony': 'میهمانی',
+  'intimate': 'مدارک'
 }
 
 // Persian numbers mapping
