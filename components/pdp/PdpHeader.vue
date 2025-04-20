@@ -85,57 +85,46 @@
       </div>
 
       <!-- Property details -->
-      <div class="flex flex-wrap gap-6 pt-4 border-t border-gray-200 mt-4">
-        <div class="flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-          </svg>
-          <span class="text-base">
-            <span class="md:hidden">{{ totalCapacity }}</span>
-            <span class="hidden md:inline">
+      <div class="flex flex-col gap-6 pt-4 border-t border-gray-200 mt-4">
+        <!-- First row: Bed details in single row -->
+        <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
+          <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span class="text-sm md:text-base text-gray-700">ظرفیت تا {{ totalCapacity }} نفر ({{ capacity.base }} نفر پایه + تا {{ capacity.extra }} نفر اضافه)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" class="h-5 w-5 text-gray-500">
+              <path d="M22 17.5H2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M22 21V16C22 14.1144 22 13.1716 21.4142 12.5858C20.8284 12 19.8856 12 18 12H6C4.11438 12 3.17157 12 2.58579 12.5858C2 13.1716 2 14.1144 2 16V21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M16 12V10.6178C16 10.1103 15.9085 9.94054 15.4396 9.7405C14.4631 9.32389 13.2778 9 12 9C10.7222 9 9.53688 9.32389 8.5604 9.7405C8.09154 9.94054 8 10.1103 8 10.6178L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+              <path d="M20 12V7.36057C20 6.66893 20 6.32311 19.8292 5.99653C19.6584 5.66995 19.4151 5.50091 18.9284 5.16283C16.9661 3.79978 14.5772 3 12 3C9.42282 3 7.03391 3.79978 5.07163 5.16283C4.58492 5.50091 4.34157 5.66995 4.17079 5.99653C4 6.32311 4 6.66893 4 7.36057V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+            </svg>
+            <span class="text-sm md:text-base">
+              <template v-if="bedrooms > 0">
+                {{ bedrooms }} <span class="md:hidden">اتاق</span><span class="hidden md:inline">اتاق خواب</span>
+              </template>
+              <template v-if="bedrooms > 0">
+                <span class="text-gray-300 px-1 inline-block">|‌</span>
+              </template>
               <template v-if="beds.double > 0">
-                {{ beds.double }} تخت دو نفره 
+                {{ beds.double }} <span class="hidden md:inline">تخت</span> دو نفره 
               </template>
               <template v-if="beds.double > 0 && (beds.single > 0 || beds.mattress > 0)">
-                |‌
+                <span class="text-gray-300 px-1 inline-block">|‌</span>
               </template>
               <template v-if="beds.single > 0">
-                {{ beds.single }} تخت یک نفره
+                {{ beds.single }} <span class="hidden md:inline">تخت</span> یک نفره
               </template>
               <template v-if="beds.single > 0 && beds.mattress > 0">
-                |‌
+                <span class="text-gray-300 px-1 inline-block">|‌</span>
               </template>
               <template v-if="beds.mattress > 0">
-                {{ beds.mattress }} رخت‌خواب سنتی
+                {{ beds.mattress }} <span class="hidden md:inline">رخت‌خواب</span> سنتی
               </template>
             </span>
-          </span>
-        </div>
-        <div class="flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" class="h-5 w-5 text-gray-500">
-            <path d="M22 17.5H2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M22 21V16C22 14.1144 22 13.1716 21.4142 12.5858C20.8284 12 19.8856 12 18 12H6C4.11438 12 3.17157 12 2.58579 12.5858C2 13.1716 2 14.1144 2 16V21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M16 12V10.6178C16 10.1103 15.9085 9.94054 15.4396 9.7405C14.4631 9.32389 13.2778 9 12 9C10.7222 9 9.53688 9.32389 8.5604 9.7405C8.09154 9.94054 8 10.1103 8 10.6178L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-            <path d="M20 12V7.36057C20 6.66893 20 6.32311 19.8292 5.99653C19.6584 5.66995 19.4151 5.50091 18.9284 5.16283C16.9661 3.79978 14.5772 3 12 3C9.42282 3 7.03391 3.79978 5.07163 5.16283C4.58492 5.50091 4.34157 5.66995 4.17079 5.99653C4 6.32311 4 6.66893 4 7.36057V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-          </svg>
-          <span class="text-base">
-            <span class="md:hidden">{{ totalBeds }}</span>
-            <span class="hidden md:inline">{{ totalBeds }} تخت</span>
-          </span>
-        </div>
-        <div class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" class="h-6 w-6"><path d="M22 12H15C14.3509 12 13.7193 11.7895 13.2 11.4L10.8 9.6C10.2807 9.21053 9.64911 9 9 9H2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3 9V11C3 14.7712 3 16.6569 4.17157 17.8284C5.34315 19 7.22876 19 11 19H14C16.8089 19 18.2134 19 19.2223 18.3259C19.659 18.034 20.034 17.659 20.3259 17.2223C21 16.2134 21 14.8089 21 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M18 19V21M6 19V21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5 9V4.5C5 3.67157 5.67157 3 6.5 3C7.32843 3 8 3.67157 8 4.5V5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-          <span class="text-base">
-            <span class="md:hidden">{{ baths }}</span>
-            <span class="hidden md:inline">{{ baths }} حمام</span>
-          </span>
-        </div>
-        <div class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" class="h-6 w-6"><path d="M17 16V8C17 5.64298 17 4.46447 16.2678 3.73223C15.5355 3 14.357 3 12 3H8C5.64298 3 4.46447 3 3.73223 3.73223C3 4.46447 3 5.64298 3 8V16C3 18.357 3 19.5355 3.73223 20.2678C4.46447 21 5.64298 21 8 21H12C14.357 21 15.5355 21 16.2678 20.2678C17 19.5355 17 18.357 17 16Z" stroke="currentColor" stroke-width="1.5"></path><path d="M11 21H17C18.8856 21 19.8284 21 20.4142 20.4142C21 19.8284 21 18.8856 21 17V10C21 8.11438 21 7.17157 20.4142 6.58579C19.8284 6 18.8856 6 17 6" stroke="currentColor" stroke-width="1.5"></path><path d="M13 11V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
-          <span class="text-base">
-            <span class="md:hidden">{{ bedrooms }}</span>
-            <span class="hidden md:inline">{{ bedrooms }} اتاق خواب</span>
-          </span>
+          </div>
         </div>
       </div>
     </div>
