@@ -10,6 +10,19 @@
         <p>
           {{ cancellationPolicyText }}
         </p>
+        <button 
+          v-if="cancellationPolicyText"
+          @click="showModal = true" 
+          class="text-gray-900 hover:text-gray-700 font-medium inline-flex items-center mt-2"
+        >
+          مشاهده جزئیات بیشتر
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <p v-else class="text-gray-500 italic">
+          اطلاعاتی در این مورد ثبت نشده است.
+        </p>
       </div>
     </div>
     
@@ -69,14 +82,50 @@
         </template>
       </div>
     </div>
+    
+    <!-- Modal -->
+    <div v-if="showModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="showModal = false"></div>
+
+        <!-- Modal panel -->
+        <div class="inline-block align-bottom bg-white rounded-lg text-right overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div class="sm:flex sm:items-start">
+              <div class="mt-3 text-center sm:mt-0 sm:text-right w-full">
+                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                  سیاست لغو رزرو
+                </h3>
+                <div class="mt-2">
+                  <p class="text-sm text-gray-500">
+                    {{ cancellationPolicyText }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            <button 
+              type="button" 
+              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+              @click="showModal = false"
+            >
+              بستن
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useNuxtApp } from '#app';
 
 const { $persianTranslations } = useNuxtApp();
+const showModal = ref(false);
 
 const props = defineProps({
   restrictedRules: {
