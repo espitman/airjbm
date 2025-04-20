@@ -72,6 +72,13 @@
               :badges="accommodation.item.badges || { main: [], secondary: [] }"
             />
           </div>
+
+          <!-- Distance component -->
+          <div class="mt-8">
+            <PdpDistance 
+              :nearbyCenters="accommodation.item.nearbyCentersV2 || []"
+            />
+          </div>
         </div>
 
         <!-- Left Column (4/12) - Now on the left in RTL -->
@@ -101,6 +108,7 @@ import PdpDescription from '~/components/pdp/PdpDescription.vue'
 import PdpAmenities from '~/components/pdp/PdpAmenities.vue'
 import PdpBookingForm from '~/components/pdp/PdpBookingForm.vue'
 import PdpBadges from '~/components/pdp/PdpBadges.vue'
+import PdpDistance from '~/components/pdp/PdpDistance.vue'
 
 const route = useRoute()
 const nuxtApp = useNuxtApp()
