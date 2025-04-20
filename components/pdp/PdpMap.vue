@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-7xl mx-auto p-4 md:p-6 bg-white rounded-3xl border border-gray-100 shadow-sm">
-    <h2 class="text-3xl font-bold text-gray-900 mb-8">موقعیت اقامتگاه</h2>
-    <p class="text-xl text-gray-500 mb-8">موقعیت مکانی دقیق هاستل پس از رزرو کامل ارسال خواهد شد.</p>
+    <h2 class="text-3xl font-bold text-gray-900 mb-4">موقعیت اقامتگاه</h2>
+    <p class="text-l text-gray-500 mb-8">موقعیت مکانی دقیق هاستل پس از رزرو کامل ارسال خواهد شد.</p>
     
     <!-- First divider -->
     <div class="w-32 h-px bg-gray-200 mb-8"></div>

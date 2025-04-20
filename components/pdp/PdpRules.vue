@@ -1,10 +1,10 @@
 <template>
   <div class="max-w-7xl mx-auto p-4 md:p-6 bg-white rounded-3xl border border-gray-100 shadow-sm">
-    <h2 class="text-3xl font-bold text-gray-900 mb-6">قوانین و مقررات</h2>
+    <h2 class="text-3xl font-bold text-gray-900 mb-4">قوانین و مقررات</h2>
     
-    <div class="w-24 h-px bg-gray-200 mb-6"></div>
+    <div class="w-32 h-px bg-gray-200 mb-8"></div>
     
-    <div class="mb-6">
+    <div class="mb-8">
       <h3 class="text-xl font-bold text-gray-900 mb-4">سیاست لغو رزرو</h3>
       <div class="text-gray-600 space-y-4">
         <p>
@@ -13,7 +13,7 @@
         <button 
           v-if="cancellationPolicyText"
           @click="showModal = true" 
-          class="text-gray-900 hover:text-gray-700 font-medium inline-flex items-center mt-2"
+          class="text-gray-900 hover:text-gray-700 font-medium inline-flex items-center mt-2 transition-colors"
         >
           مشاهده جزئیات بیشتر
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -26,18 +26,18 @@
       </div>
     </div>
     
-    <div class="w-full h-px bg-gray-200 mb-6"></div>
+    <div class="w-full h-px bg-gray-200 mb-8"></div>
     
-    <div class="mb-6">
+    <div class="mb-8">
       <h3 class="text-xl font-bold text-gray-900 mb-4">ساعات ورود و خروج</h3>
       <div class="flex flex-col md:flex-row gap-4">
-        <div class="bg-gray-100 rounded-lg p-4 flex-1 transition-colors duration-200 hover:bg-gray-200">
+        <div class="bg-gray-100 rounded-xl p-4 flex-1 transition-colors duration-200 hover:bg-gray-50">
           <div class="flex items-center justify-between">
             <div class="text-gray-600">ورود</div>
             <div class="text-gray-900 text-lg font-medium">{{ persianCheckIn }}</div>
           </div>
         </div>
-        <div class="bg-gray-100 rounded-lg p-4 flex-1 transition-colors duration-200 hover:bg-gray-200">
+        <div class="bg-gray-100 rounded-xl p-4 flex-1 transition-colors duration-200 hover:bg-gray-50">
           <div class="flex items-center justify-between">
             <div class="text-gray-600">خروج</div>
             <div class="text-gray-900 text-lg font-medium">{{ persianCheckOut }}</div>
@@ -46,7 +46,7 @@
       </div>
     </div>
     
-    <div class="w-full h-px bg-gray-200 mb-6"></div>
+    <div class="w-full h-px bg-gray-200 mb-8"></div>
     
     <div>
       <h3 class="text-xl font-bold text-gray-900 mb-4">نکات ویژه</h3>
@@ -87,10 +87,10 @@
     <div v-if="showModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <!-- Background overlay -->
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="showModal = false"></div>
+        <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" aria-hidden="true" @click="showModal = false"></div>
 
         <!-- Modal panel -->
-        <div class="inline-block align-bottom bg-white rounded-lg text-right overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+        <div class="inline-block align-bottom bg-white rounded-3xl text-right overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
           <div class="bg-white">
             <PdpCancellationDetails 
               :accommodation-id="accommodationId" 
