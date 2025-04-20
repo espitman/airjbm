@@ -1,0 +1,20 @@
+.toast-content {
+  font-family: 'Vazirmatn', sans-serif !important;
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+.Toastify__toast {
+  font-family: 'Vazirmatn', sans-serif !important;
+  direction: rtl !important;
+}
+
+.Toastify__toast-body {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+.Toastify__close-button {
+  margin-right: auto !important;
+  margin-left: 0 !important;
+} 

@@ -7,6 +7,7 @@ export default defineNuxtConfig({
   css: [
     '@/assets/css/main.css',
     '@/assets/css/fonts.css',
+    '@/assets/css/toast.css',
     'swiper/css',
     'swiper/css/navigation',
     'swiper/css/pagination',
@@ -14,7 +15,8 @@ export default defineNuxtConfig({
   ],
 
   plugins: [
-    '~/plugins/vue-lazyload'
+    '~/plugins/vue-lazyload',
+    '~/plugins/vue3-toastify.ts'
   ],
 
   modules: [

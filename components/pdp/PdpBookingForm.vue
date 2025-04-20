@@ -131,6 +131,8 @@ import { ref, computed, onMounted } from 'vue'
 import PdpCalendar from './PdpCalendar.vue'
 import { useNuxtApp } from 'nuxt/app'
 import type { ReceiptRequest, ReceiptResponse } from '../../types/reservation'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 
 const props = defineProps<{
   calendar?: {
@@ -143,10 +145,6 @@ const props = defineProps<{
   accommodationId: string;
   maxCapacity: number;
 }>()
-
-onMounted(() => {
-    console.log(props)
-})
 
 const adults = ref(1)
 const showCalendar = ref(false)
@@ -238,7 +236,7 @@ const decreaseAdults = () => {
 
 const showPricePreview = async () => {
   if (!checkInDate.value || !checkOutDate.value) {
-    alert('لطفا تاریخ ورود و خروج را انتخاب کنید')
+    toast.warning('لطفا تاریخ ورود و خروج را انتخاب کنید')
     return
   }
 
@@ -276,7 +274,13 @@ const showPricePreview = async () => {
     }
   } catch (error) {
     console.error('Error fetching receipt:', error)
-    alert('خطا در دریافت اطلاعات قیمت')
+    toast.error('خطا در دریافت اطلاعات قیمت', {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+    })
   } finally {
     isLoading.value = false
   }
@@ -291,5 +295,14 @@ const handleDatesSelected = (dates: { checkIn: Date; checkOut: Date }) => {
   checkOutDate.value = dates.checkOut
   showCalendar.value = false
   showPricePreview()
+}
+
+const handleSubmit = async () => {
+  try {
+    // ... existing code ...
+  } catch (error) {
+    console.error('Error submitting booking:', error)
+    toast.error('خطا در ثبت رزرو. لطفا دوباره تلاش کنید.')
+  }
 }
 </script> 
