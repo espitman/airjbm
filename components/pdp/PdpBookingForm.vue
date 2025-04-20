@@ -46,6 +46,7 @@
           :calendar="calendar"
           @close="showCalendar = false" 
           @dates-selected="handleDatesSelected" 
+          @dates-cleared="handleDatesCleared"
         />
       </div>
     </div>
@@ -302,6 +303,20 @@ const handleDatesSelected = (dates: { checkIn: Date; checkOut: Date }) => {
   checkOutDate.value = dates.checkOut
   showCalendar.value = false
   showPricePreview()
+}
+
+const handleDatesCleared = () => {
+  checkInDate.value = null;
+  checkOutDate.value = null;
+  
+  // Clear URL parameters
+  const params = new URLSearchParams(window.location.search);
+  params.delete('checkIn');
+  params.delete('checkOut');
+  window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+  
+  // Clear receipt data
+  receiptData.value = null;
 }
 
 const handleSubmit = async () => {

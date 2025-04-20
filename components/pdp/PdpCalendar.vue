@@ -181,6 +181,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'close'): void
   (e: 'dates-selected', dates: { checkIn: Date; checkOut: Date }): void
+  (e: 'dates-cleared'): void
 }>();
 
 const weekDays = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
@@ -388,6 +389,7 @@ function navigateToSelectedMonth(date: moment.Moment): void {
 function clearDates(): void {
   checkInDate.value = null;
   checkOutDate.value = null;
+  emit('dates-cleared');
 }
 
 function clearCheckIn(): void {
@@ -397,6 +399,11 @@ function clearCheckIn(): void {
 
 function clearCheckOut(): void {
   checkOutDate.value = null;
+  // Only emit dates-cleared if there was a check-in date that's now being cleared
+  if (checkInDate.value) {
+    checkInDate.value = null;
+    emit('dates-cleared');
+  }
 }
 
 function previousMonths(): void {
