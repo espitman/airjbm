@@ -182,11 +182,39 @@ const checkOutDate = ref<moment.Moment | null>(null);
 
 // Initialize dates from props
 onMounted(() => {
+  // Initialize selected dates if provided
   if (props.initialCheckIn) {
     checkInDate.value = moment(props.initialCheckIn);
   }
   if (props.initialCheckOut) {
     checkOutDate.value = moment(props.initialCheckOut);
+  }
+  
+  // If we have selected dates, show the page containing the selected month
+  const selectedMonth = checkOutDate.value || checkInDate.value;
+  if (selectedMonth) {
+    // Calculate which page to show based on the selected month
+    const selectedMonthNumber = selectedMonth.jMonth();
+    const currentMonthNumber = currentDate.jMonth();
+    
+    // Calculate the difference in months
+    let monthDiff = selectedMonthNumber - currentMonthNumber;
+    
+    // Adjust for year difference
+    if (selectedMonth.jYear() !== currentDate.jYear()) {
+      monthDiff += (selectedMonth.jYear() - currentDate.jYear()) * 12;
+    }
+    
+    // Calculate which page to show (each page has 2 months)
+    const pageNumber = Math.floor(monthDiff / 2);
+    
+    // Set the first and second months based on the page number
+    firstMonth.value = currentDate.clone().add(pageNumber * 2, 'jMonth');
+    secondMonth.value = firstMonth.value.clone().add(1, 'jMonth');
+  } else {
+    // If no dates selected, show current month and next month
+    firstMonth.value = currentDate.clone();
+    secondMonth.value = currentDate.clone().add(1, 'jMonth');
   }
 });
 
@@ -264,12 +292,22 @@ function selectDate(date: moment.Moment): void {
     // First selection or new selection after both dates were selected
     checkInDate.value = date;
     checkOutDate.value = null;
+    
+    // Navigate to the selected month if it's not in the current view
+    if (!isDateInCurrentView(date)) {
+      navigateToSelectedMonth(date);
+    }
   } else {
     // Second selection
     if (date.isBefore(checkInDate.value)) {
       // If selected date is before check-in, make it the new check-in
       checkInDate.value = date;
       checkOutDate.value = null;
+      
+      // Navigate to the selected month if it's not in the current view
+      if (!isDateInCurrentView(date)) {
+        navigateToSelectedMonth(date);
+      }
     } else {
       // If selected date is after check-in, set it as check-out
       checkOutDate.value = date;
@@ -278,6 +316,44 @@ function selectDate(date: moment.Moment): void {
         checkIn: checkInDate.value.toDate(),
         checkOut: checkOutDate.value.toDate()
       });
+      
+      // Navigate to the selected month if it's not in the current view
+      if (!isDateInCurrentView(date)) {
+        navigateToSelectedMonth(date);
+      }
+    }
+  }
+}
+
+function isDateInCurrentView(date: moment.Moment): boolean {
+  return (
+    (date.jMonth() === firstMonth.value.jMonth() && date.jYear() === firstMonth.value.jYear()) ||
+    (date.jMonth() === secondMonth.value.jMonth() && date.jYear() === secondMonth.value.jYear())
+  );
+}
+
+function navigateToSelectedMonth(date: moment.Moment): void {
+  // Calculate how many months we need to move
+  const currentFirstMonth = firstMonth.value.clone();
+  const targetMonth = date.clone().startOf('jMonth');
+  
+  // Calculate the difference in months
+  const monthDiff = targetMonth.diff(currentFirstMonth, 'jMonth');
+  
+  // If we need to go forward
+  if (monthDiff > 0) {
+    // Calculate how many times we need to click next
+    const clicksNeeded = Math.floor(monthDiff / 2);
+    for (let i = 0; i < clicksNeeded; i++) {
+      nextMonths();
+    }
+  }
+  // If we need to go backward
+  else if (monthDiff < 0) {
+    // Calculate how many times we need to click previous
+    const clicksNeeded = Math.floor(Math.abs(monthDiff) / 2);
+    for (let i = 0; i < clicksNeeded; i++) {
+      previousMonths();
     }
   }
 }
