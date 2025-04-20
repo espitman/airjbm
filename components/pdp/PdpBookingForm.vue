@@ -87,13 +87,29 @@
       </button>
       <p class="text-sm text-gray-500 text-center">ارسال درخواست رزرو برای شما هزینه‌ای ندارد!</p>
     </div>
+
+    <!-- Payment Details -->
+    <div v-if="receiptData" class="mt-6 pt-6 border-t border-gray-200">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">جزئیات پرداخت</h3>
+      <div class="space-y-2">
+        <div v-for="(item, index) in receiptData.items" :key="index" class="flex justify-between items-center">
+          <span class="text-gray-600">{{ item.title }}</span>
+          <span :class="{'text-red-600': item.priceColor === '#FF0000'}">{{ item.price }}</span>
+        </div>
+        <div class="flex justify-between items-center pt-2 border-t border-gray-200">
+          <span class="font-medium text-gray-900">مبلغ قابل پرداخت</span>
+          <span class="font-medium text-gray-900">{{ formatPrice(receiptData.price.total / 10) }} تومان</span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import PdpCalendar from './PdpCalendar.vue'
-
+import { useNuxtApp } from 'nuxt/app'
+import type { ReceiptRequest, ReceiptResponse } from '../../types/reservation'
 
 const props = defineProps<{
   calendar?: {
@@ -113,6 +129,17 @@ const adults = ref(1)
 const showCalendar = ref(false)
 const checkInDate = ref<Date | null>(null)
 const checkOutDate = ref<Date | null>(null)
+const receiptData = ref<{
+  price: {
+    total: number
+    full: number
+  }
+  items: Array<{
+    title: string
+    price: string
+    priceColor?: string
+  }>
+} | null>(null)
 
 // Calculate minimum price for first 14 available days
 const minPrice = computed(() => {
@@ -178,12 +205,39 @@ const decreaseAdults = () => {
   }
 }
 
-const showPricePreview = () => {
-  const dates = checkInDate.value && checkOutDate.value 
-    ? `${formatDate(checkInDate.value)} تا ${formatDate(checkOutDate.value)}`
-    : 'تاریخ انتخاب نشده'
-  
-  alert(`تاریخ: ${dates}\nتعداد مسافر: ${adults.value} نفر`)
+const showPricePreview = async () => {
+  if (!checkInDate.value || !checkOutDate.value) {
+    alert('لطفا تاریخ ورود و خروج را انتخاب کنید')
+    return
+  }
+
+  try {
+    const nuxtApp = useNuxtApp()
+    const reservationApi = nuxtApp.$reservationApi as {
+      receipt: (data: ReceiptRequest) => Promise<ReceiptResponse>
+    }
+
+    const response = await reservationApi.receipt({
+      accommodationId: "65a257e310c5e1001b0c4b5f",
+      checkIn: checkInDate.value.toISOString().split('T')[0],
+      checkOut: checkOutDate.value.toISOString().split('T')[0],
+      passengers: {
+        adults: adults.value,
+        children: 0
+      }
+    })
+
+    console.log('Receipt Response:', response)
+    
+    // Store the receipt data for display
+    receiptData.value = {
+      price: response.result.price,
+      items: response.result.items
+    }
+  } catch (error) {
+    console.error('Error fetching receipt:', error)
+    alert('خطا در دریافت اطلاعات قیمت')
+  }
 }
 
 const formatDate = (date: Date) => {
