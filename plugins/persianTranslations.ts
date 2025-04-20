@@ -27,6 +27,9 @@ const regionMap = {
   'city': 'شهری'
 }
 
+// Persian numbers mapping
+const persianNumbers = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+
 export default defineNuxtPlugin(() => {
   return {
     provide: {
@@ -98,40 +101,14 @@ export default defineNuxtPlugin(() => {
 
         // Format a date string from Gregorian to Jalali
         formatDateToJalali: (dateString: string): string => {
-          if (!dateString) return '';
-          
-          try {
-            // Check if the date string is valid
-            if (!dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
-              return dateString;
-            }
-            
-            const m = moment(dateString, 'YYYY-MM-DD');
-            if (!m.isValid()) {
-              return dateString;
-            }
-            
-            // Format with leading zeros for month and day
-            const jYear = m.jYear();
-            const jMonth = (m.jMonth() + 1).toString().padStart(2, '0');
-            const jDay = m.jDate().toString().padStart(2, '0');
-            
-            return `${jYear}/${jMonth}/${jDay}`;
-          } catch (error) {
-            console.error('Error converting date:', error);
-            return dateString;
-          }
+          const m = moment(dateString);
+          return m.format('jYYYY/jMM/jDD');
         },
 
-        // Convert Jalali to Gregorian
-        jalaliToGregorian: (jy: number, jm: number, jd: number): string => {
-          try {
-            const m = moment(`${jy}/${jm}/${jd}`, 'jYYYY/jM/jD');
-            return m.format('YYYY-MM-DD');
-          } catch (error) {
-            console.error('Error converting Jalali to Gregorian:', error);
-            return '';
-          }
+        // Convert numbers to Persian
+        convertToPersian: (value: string | null | undefined): string => {
+          if (!value) return '-';
+          return value.replace(/[0-9]/g, d => persianNumbers[parseInt(d)]);
         }
       }
     }
