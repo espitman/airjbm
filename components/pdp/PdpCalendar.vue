@@ -81,31 +81,31 @@
         <div class="grid grid-cols-7 gap-y-4">
           <div 
             v-for="date in firstMonthDates" 
-            :key="date.format('YYYY-MM-DD')"
+            :key="date ? date.format('YYYY-MM-DD') : 'empty'"
             class="text-center relative h-10 flex items-center justify-center cursor-pointer transition-colors duration-200"
             :class="{
-              'text-gray-300 cursor-not-allowed': isPastDate(date),
-              'text-gray-900 hover:bg-gray-100': !isPastDate(date) && !isSelected(date) && !isInRange(date) && isDateInMonth(date, firstMonth),
-              'text-gray-400': !isDateInMonth(date, firstMonth),
-              'text-white': isSelected(date),
-              'bg-gray-100': isInRange(date)
+              'text-gray-300 cursor-not-allowed': date && isPastDate(date),
+              'text-gray-900 hover:bg-gray-100': date && !isPastDate(date) && !isSelected(date) && !isInRange(date) && isDateInMonth(date, firstMonth),
+              'text-gray-400': !date || (date && !isDateInMonth(date, firstMonth)),
+              'text-white': date && isSelected(date),
+              'bg-gray-100': date && isInRange(date)
             }"
-            @click="!isPastDate(date) && selectDate(date)"
+            @click="date && !isPastDate(date) && selectDate(date)"
           >
             <div 
-              v-if="isSelected(date)"
+              v-if="date && isSelected(date)"
               class="absolute inset-0 flex items-center justify-center"
             >
               <div class="h-10 w-10 rounded-full bg-black"></div>
             </div>
             <div
-              v-else-if="isInRange(date)"
+              v-else-if="date && isInRange(date)"
               class="absolute inset-0 flex items-center justify-center"
             >
               <div class="h-10 w-full bg-gray-100"></div>
             </div>
             <div class="relative z-10 flex flex-col items-center">
-              <span>{{ date.jDate() }}</span>
+              <span v-if="date">{{ date.jDate() }}</span>
             </div>
           </div>
         </div>
@@ -121,31 +121,31 @@
         <div class="grid grid-cols-7 gap-y-4">
           <div 
             v-for="date in secondMonthDates" 
-            :key="date.format('YYYY-MM-DD')"
+            :key="date ? date.format('YYYY-MM-DD') : 'empty'"
             class="text-center relative h-10 flex items-center justify-center cursor-pointer transition-colors duration-200"
             :class="{
-              'text-gray-300 cursor-not-allowed': isPastDate(date),
-              'text-gray-900 hover:bg-gray-100': !isPastDate(date) && !isSelected(date) && !isInRange(date) && isDateInMonth(date, secondMonth),
-              'text-gray-400': !isDateInMonth(date, secondMonth),
-              'text-white': isSelected(date),
-              'bg-gray-100': isInRange(date)
+              'text-gray-300 cursor-not-allowed': date && isPastDate(date),
+              'text-gray-900 hover:bg-gray-100': date && !isPastDate(date) && !isSelected(date) && !isInRange(date) && isDateInMonth(date, secondMonth),
+              'text-gray-400': !date || (date && !isDateInMonth(date, secondMonth)),
+              'text-white': date && isSelected(date),
+              'bg-gray-100': date && isInRange(date)
             }"
-            @click="!isPastDate(date) && selectDate(date)"
+            @click="date && !isPastDate(date) && selectDate(date)"
           >
             <div 
-              v-if="isSelected(date)"
+              v-if="date && isSelected(date)"
               class="absolute inset-0 flex items-center justify-center"
             >
               <div class="h-10 w-10 rounded-full bg-black"></div>
             </div>
             <div
-              v-else-if="isInRange(date)"
+              v-else-if="date && isInRange(date)"
               class="absolute inset-0 flex items-center justify-center"
             >
               <div class="h-10 w-full bg-gray-100"></div>
             </div>
             <div class="relative z-10 flex flex-col items-center">
-              <span>{{ date.jDate() }}</span>
+              <span v-if="date">{{ date.jDate() }}</span>
             </div>
           </div>
         </div>
@@ -193,7 +193,6 @@ const checkOutDate = ref<moment.Moment | null>(null);
 
 // Initialize dates from props
 onMounted(() => {
-    console.log(props)
   // Initialize selected dates if provided
   if (props.initialCheckIn) {
     checkInDate.value = moment(props.initialCheckIn);
@@ -223,6 +222,20 @@ onMounted(() => {
     // Set the first and second months based on the page number
     firstMonth.value = currentDate.clone().add(pageNumber * 2, 'jMonth');
     secondMonth.value = firstMonth.value.clone().add(1, 'jMonth');
+    
+    // Force a re-render of the calendar to ensure the selected dates are properly displayed
+    setTimeout(() => {
+      // This will trigger a re-render of the calendar
+      const temp = firstMonth.value.clone();
+      firstMonth.value = secondMonth.value.clone();
+      secondMonth.value = temp;
+      
+      // Then set them back to the correct values
+      setTimeout(() => {
+        firstMonth.value = currentDate.clone().add(pageNumber * 2, 'jMonth');
+        secondMonth.value = firstMonth.value.clone().add(1, 'jMonth');
+      }, 0);
+    }, 0);
   } else {
     // If no dates selected, show current month and next month
     firstMonth.value = currentDate.clone();
@@ -258,10 +271,10 @@ function generateMonthDates(date: moment.Moment) {
   const firstDay = date.clone().startOf('jMonth');
   const lastDay = date.clone().endOf('jMonth');
   
-  // Add days from previous month
+  // Add empty slots for days before the first day of the month
   const firstDayOfWeek = firstDay.day();
   for (let i = firstDayOfWeek - 1; i >= 0; i--) {
-    dates.push(firstDay.clone().subtract(i + 1, 'days'));
+    dates.push(null);
   }
   
   // Add days of current month
@@ -269,10 +282,10 @@ function generateMonthDates(date: moment.Moment) {
     dates.push(firstDay.clone().add(i, 'days'));
   }
   
-  // Add days from next month
+  // Add empty slots for remaining days to complete the grid
   const remainingDays = 42 - dates.length; // 6 rows * 7 days = 42
-  for (let i = 1; i <= remainingDays; i++) {
-    dates.push(lastDay.clone().add(i, 'days'));
+  for (let i = 0; i < remainingDays; i++) {
+    dates.push(null);
   }
   
   return dates;
@@ -294,9 +307,10 @@ function isDateInMonth(date: moment.Moment, month: moment.Moment): boolean {
 }
 
 function isSelected(date: moment.Moment): boolean {
+  if (!date) return false;
   if (!checkInDate.value) return false;
-  if (!checkOutDate.value) return date.isSame(checkInDate.value);
-  return date.isSame(checkInDate.value) || date.isSame(checkOutDate.value);
+  if (!checkOutDate.value) return date.isSame(checkInDate.value, 'day');
+  return date.isSame(checkInDate.value, 'day') || date.isSame(checkOutDate.value, 'day');
 }
 
 function selectDate(date: moment.Moment): void {
