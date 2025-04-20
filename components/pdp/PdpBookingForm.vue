@@ -85,12 +85,7 @@
       <button class="w-full py-3 px-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors">
         رزرو
       </button>
-      <button class="w-full py-3 px-4 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center">
-        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
-        افزودن به علاقه‌مندی‌ها
-      </button>
+      <p class="text-sm text-gray-500 text-center">ارسال درخواست رزرو برای شما هزینه‌ای ندارد!</p>
     </div>
   </div>
 </template>
@@ -175,9 +170,24 @@ const selectedDates = computed(() => {
   return `${formatDate(checkInDate.value)} - ${formatDate(checkOutDate.value)}`
 })
 
-const increaseAdults = () => adults.value++
+const increaseAdults = () => {
+  adults.value++
+  showPricePreview()
+}
+
 const decreaseAdults = () => {
-  if (adults.value > 1) adults.value--
+  if (adults.value > 1) {
+    adults.value--
+    showPricePreview()
+  }
+}
+
+const showPricePreview = () => {
+  const dates = checkInDate.value && checkOutDate.value 
+    ? `${formatDate(checkInDate.value)} تا ${formatDate(checkOutDate.value)}`
+    : 'تاریخ انتخاب نشده'
+  
+  alert(`تاریخ: ${dates}\nتعداد مسافر: ${adults.value} نفر`)
 }
 
 const formatDate = (date: Date) => {
@@ -188,5 +198,6 @@ const handleDatesSelected = (dates: { checkIn: Date; checkOut: Date }) => {
   checkInDate.value = dates.checkIn
   checkOutDate.value = dates.checkOut
   showCalendar.value = false
+  showPricePreview()
 }
 </script> 
