@@ -9,26 +9,26 @@
       <!-- Content -->
       <div class="flex flex-col space-y-4">
         <!-- Main badges -->
-        <div v-if="badges.main?.length" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div v-for="(badge, index) in badges.main" :key="index" class="flex items-center gap-2">
+        <div v-if="badges.main?.length" class="flex flex-col space-y-4">
+          <div v-for="(badge, index) in badges.main" :key="index" class="flex items-center gap-6">
             <div class="w-6 h-6 text-gray-600">
               <img :src="badge.icon" :alt="badge.title" class="w-full h-full object-contain" />
             </div>
             <div class="flex flex-col">
-              <span class="text-base text-gray-700">{{ badge.title }}</span>
+              <span class="text-base font-medium text-gray-700">{{ badge.title }}</span>
               <span v-if="badge.data?.length" class="text-sm text-gray-500">{{ badge.data.join('، ') }}</span>
             </div>
           </div>
         </div>
 
         <!-- Secondary badges -->
-        <div v-if="badges.secondary?.length" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div v-for="(badge, index) in badges.secondary" :key="index" class="flex items-center gap-2">
+        <div v-if="badges.secondary?.length" class="flex flex-col space-y-4">
+          <div v-for="(badge, index) in badges.secondary" :key="index" class="flex items-center gap-6">
             <div class="w-6 h-6 text-gray-600">
               <img :src="badge.icon" :alt="badge.title" class="w-full h-full object-contain" />
             </div>
             <div class="flex flex-col">
-              <span class="text-base text-gray-700">{{ badge.title }}</span>
+              <span class="text-base font-medium text-gray-700">{{ badge.title }}</span>
               <span v-if="badge.data?.length" class="text-sm text-gray-500">{{ badge.data.join('، ') }}</span>
             </div>
           </div>
