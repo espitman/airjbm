@@ -1,5 +1,16 @@
 <template>
-  <div class="max-w-4xl mx-auto p-6 font-vazir" dir="rtl">
+  <div class="max-w-4xl mx-auto p-6 font-vazir relative" dir="rtl">
+    <!-- Close button -->
+    <button 
+      @click="$emit('close')" 
+      class="absolute top-2 left-2 text-gray-400 hover:text-gray-500 z-10"
+      aria-label="Close"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+    
     <!-- Main heading -->
     <h1 class="text-2xl font-bold text-gray-900 mb-8 text-left">قوانین لغو رزرو</h1>
     
@@ -160,6 +171,10 @@ import type { CancellationPolicyItem } from '../../types/cancellation-policy';
 
 const props = defineProps<{
   accommodationId: string;
+}>();
+
+const emit = defineEmits<{
+  (e: 'close'): void;
 }>();
 
 const { $pdpApi } = useNuxtApp() as unknown as { $pdpApi: { getCancellationPolicyDetails: (id: string) => Promise<any> } };
