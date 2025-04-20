@@ -113,7 +113,7 @@
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
         </svg>
       </div>
-      <div v-else class="space-y-2">
+      <div v-else-if="receiptData" class="space-y-2">
         <div v-for="(item, index) in receiptData.items" :key="index" class="flex justify-between items-center">
           <span class="text-gray-600">{{ item.title }}</span>
           <span :class="{'text-red-600': item.priceColor === '#FF0000'}">{{ item.price }}</span>

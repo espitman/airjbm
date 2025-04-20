@@ -155,14 +155,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useNuxtApp } from '#app';
-import type { CancellationPolicyItem } from '~/types/cancellation-policy';
+import { useNuxtApp } from 'nuxt/app';
+import type { CancellationPolicyItem } from '../../types/cancellation-policy';
 
 const props = defineProps<{
   accommodationId: string;
 }>();
 
-const { $pdpApi } = useNuxtApp();
+const { $pdpApi } = useNuxtApp() as unknown as { $pdpApi: { getCancellationPolicyDetails: (id: string) => Promise<any> } };
 const activeTab = ref('flexible');
 const loading = ref(true);
 const error = ref<string | null>(null);
