@@ -1,10 +1,12 @@
 import { defineNuxtPlugin, useRuntimeConfig } from 'nuxt/app'
 import { AccommodationData } from '../types/accommodation'
 import { AmenitiesResponse } from '../types/amenities'
+import { CancellationPolicyResponse } from '../types/cancellation-policy'
 
 export interface PdpApi {
   fetchAccommodationByCode: (code: string) => Promise<AccommodationData>
   getAllAmenities: (accommodationId: string) => Promise<AmenitiesResponse>
+  getCancellationPolicyDetails: (accommodationId: string) => Promise<CancellationPolicyResponse>
 }
 
 export default defineNuxtPlugin(() => {
@@ -57,12 +59,36 @@ export default defineNuxtPlugin(() => {
       throw error
     }
   }
+
+  const getCancellationPolicyDetails = async (accommodationId: string): Promise<CancellationPolicyResponse> => {
+    try {
+      const response = await fetch(
+        `${baseURL}/accommodation/public/guest/accommodations/cancellation-policy/${accommodationId}`,
+        {
+          headers: {
+            'Accept': 'application/json, text/plain, */*'
+          }
+        }
+      )
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      return data
+    } catch (error) {
+      console.error('Error fetching cancellation policy details:', error)
+      throw error
+    }
+  }
   
   return {
     provide: {
       pdpApi: {
         fetchAccommodationByCode,
-        getAllAmenities
+        getAllAmenities,
+        getCancellationPolicyDetails
       } as PdpApi
     }
   }
