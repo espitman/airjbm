@@ -69,7 +69,7 @@
 
         <!-- Left Column (4/12) - Now on the left in RTL -->
         <div class="lg:w-4/12">
-          <div class="sticky top-24 z-[60]">
+          <div class="sticky top-24 z-[40]">
             <PdpBookingForm 
               :calendar="accommodation?.item?.calendar"
               :accommodation-id="accommodation?.item?.id || ''"
