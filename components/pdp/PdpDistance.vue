@@ -13,19 +13,19 @@
           <!-- Header Row -->
           <thead>
             <tr>
-              <th class="text-left py-4 text-gray-700">مرکز</th>
-              <th class="text-left py-4 text-gray-700">پیاده روی</th>
-              <th class="text-left py-4 text-gray-700">خودرو</th>
+              <th class="text-left py-3 md:py-4 text-gray-700 text-sm md:text-base">فاصله از</th>
+              <th class="text-left py-3 md:py-4 text-gray-700 text-sm md:text-base">پیاده روی</th>
+              <th class="text-left py-3 md:py-4 text-gray-700 text-sm md:text-base">خودرو</th>
             </tr>
           </thead>
           <!-- Data Rows -->
           <tbody>
             <tr v-for="(item, index) in groupedItems" :key="index" class="border-t border-gray-100 hover:bg-gray-50 transition-colors duration-200">
-              <td class="py-4 text-left text-gray-700 font-medium">{{ item.key }}</td>
-              <td class="py-4 text-left text-gray-500">
+              <td class="py-3 md:py-4 text-left text-gray-700 font-medium text-sm md:text-base">{{ formatKey(item.key) }}</td>
+              <td class="py-3 md:py-4 text-left text-gray-500 text-sm md:text-base">
                 {{ $persianTranslations.convertToPersian(item.walk) }}
               </td>
-              <td class="py-4 text-left text-gray-500">
+              <td class="py-3 md:py-4 text-left text-gray-500 text-sm md:text-base">
                 {{ $persianTranslations.convertToPersian(item.car) }}
               </td>
             </tr>
@@ -77,4 +77,8 @@ const groupedItems = computed(() => {
   // Convert to array
   return Object.values(grouped);
 });
+
+const formatKey = (key) => {
+  return key.replace(/^فاصله از\s+/, '');
+};
 </script> 
